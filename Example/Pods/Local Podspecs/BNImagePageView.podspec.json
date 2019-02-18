@@ -1,22 +1,23 @@
 {
   "name": "BNImagePageView",
   "version": "0.1.0",
-  "summary": "A short description of BNImagePageView.",
-  "description": "TODO: Add long description of the pod here.",
-  "homepage": "https://github.com/ban nan/BNImagePageView",
+  "summary": "Present PicturesView as a page  and Ready to show animate in and out Screen",
+  "description": "Present PicturesView as a page  and Ready to show animate in and out fullScreen",
+  "homepage": "https://github.com/chanon-apimaha/BNImagePageView",
   "license": {
     "type": "MIT",
     "file": "LICENSE"
   },
   "authors": {
-    "ban nan": "pong.np1@gmail.com"
+    "Banchai Nangpang": "pong.np1@gmail.com"
   },
   "source": {
-    "git": "https://github.com/ban nan/BNImagePageView.git",
+    "git": "https://github.com/chanon-apimaha/BNImagePageView.git",
     "tag": "0.1.0"
   },
   "platforms": {
-    "ios": "8.0"
+    "ios": "9.0"
   },
-  "source_files": "BNImagePageView/Classes/**/*"
+  "source_files": "BNImagePageView/Classes/**/*",
+  "swift_version": "4.2"
 }

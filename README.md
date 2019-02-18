@@ -1,6 +1,6 @@
 # BNImagePageView
 
-[![CI Status](https://img.shields.io/travis/ban nan/BNImagePageView.svg?style=flat)](https://travis-ci.org/ban nan/BNImagePageView)
+[![CI Status](https://img.shields.io/travis/chanon-apimaha/BNImagePageView.svg?style=flat)](https://travis-ci.org/chanon-apimaha/BNImagePageView)
 [![Version](https://img.shields.io/cocoapods/v/BNImagePageView.svg?style=flat)](https://cocoapods.org/pods/BNImagePageView)
 [![License](https://img.shields.io/cocoapods/l/BNImagePageView.svg?style=flat)](https://cocoapods.org/pods/BNImagePageView)
 [![Platform](https://img.shields.io/cocoapods/p/BNImagePageView.svg?style=flat)](https://cocoapods.org/pods/BNImagePageView)
