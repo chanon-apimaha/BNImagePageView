@@ -11,6 +11,10 @@ To run the example project, clone the repo, and run `pod install` from the Examp
 
 ## Requirements
 
+```ruby
+swift '4.2', ios version '9.0+'
+```
+
 ## Installation
 
 BNImagePageView is available through [CocoaPods](https://cocoapods.org). To install
@@ -26,4 +30,4 @@ Banchai Nangpang, pong.np1@gmail.com
 
 ## License
 
-BNImagePageView is available under the MIT license. See the LICENSE file for more info.
+BNImagePageView is available under the MIT license. See the [LICENSE](https://github.com/chanon-apimaha/BNImagePageView/blob/master/LICENSE) file for more info.
