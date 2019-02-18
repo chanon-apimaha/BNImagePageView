@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'BNImagePageView_Example' do
+  pod 'BNImagePageView', :path => '../'
+
+  target 'BNImagePageView_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
