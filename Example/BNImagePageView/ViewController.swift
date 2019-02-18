@@ -8,6 +8,7 @@
 
 import UIKit
 import BNImagePageView
+import Kingfisher
 
 class ViewController: UIViewController {
 
