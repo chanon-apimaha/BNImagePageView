@@ -1,0 +1,6 @@
+framework module Pods_BNImagePageView_Example {
+  umbrella header "Pods-BNImagePageView_Example-umbrella.h"
+
+  export *
+  module * { export * }
+}

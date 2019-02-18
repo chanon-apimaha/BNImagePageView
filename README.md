@@ -22,7 +22,7 @@ pod 'BNImagePageView'
 
 ## Author
 
-ban nan, pong.np1@gmail.com
+Banchai Nangpang, pong.np1@gmail.com
 
 ## License
 

@@ -1,0 +1,16 @@
+PODS:
+  - BNImagePageView (0.1.0)
+
+DEPENDENCIES:
+  - BNImagePageView (from `../`)
+
+EXTERNAL SOURCES:
+  BNImagePageView:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  BNImagePageView: cf5db0b32a0c4c16d62c0fa4fc71da4549125e1e
+
+PODFILE CHECKSUM: b3877675f8c2776f862dba43facef6bee902c88f
+
+COCOAPODS: 1.6.0

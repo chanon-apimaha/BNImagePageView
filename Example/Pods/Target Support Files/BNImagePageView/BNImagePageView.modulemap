@@ -1,0 +1,6 @@
+framework module BNImagePageView {
+  umbrella header "BNImagePageView-umbrella.h"
+
+  export *
+  module * { export * }
+}
