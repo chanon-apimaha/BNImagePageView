@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import BNImagePageView
 
 class ViewController: UIViewController {
 

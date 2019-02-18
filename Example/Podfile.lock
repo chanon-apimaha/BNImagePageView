@@ -1,5 +1,5 @@
 PODS:
-  - BNImagePageView (0.1.0)
+  - BNImagePageView (0.1.1)
 
 DEPENDENCIES:
   - BNImagePageView (from `../`)
@@ -9,7 +9,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  BNImagePageView: 695bf9f7fee3cf0d6140bdf20eebe4a451ef86e6
+  BNImagePageView: e6fff2b7f548d7a152d983917c9d001457211cf6
 
 PODFILE CHECKSUM: b3877675f8c2776f862dba43facef6bee902c88f
 
