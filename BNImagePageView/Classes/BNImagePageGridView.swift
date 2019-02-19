@@ -5,16 +5,16 @@
 //  Created by Developer Pantip on 18/2/2562 BE.
 //
 
-//import UIKit
+import UIKit
 //import PTConfig
 
 class BNImagePageGridView: UIPageViewController {
     private var mImageView: UIImageView!//Require
-    private var axImgaePageData: [BNImagePageViewController.ImgaePageData]!
+    private var axImgaePageData: [ImgaePageData]!
     private var atIndexPath: IndexPath!
     private var iNumOfPage: Int = 0
     
-    init(mImageView: UIImageView, axImgaePageData: [BNImagePageViewController.ImgaePageData], atIndexPath: IndexPath, transitionStyle: UIPageViewController.TransitionStyle, navigationOrientation: UIPageViewController.NavigationOrientation, options: [String : Any]?) {
+    init(mImageView: UIImageView, axImgaePageData: [ImgaePageData], atIndexPath: IndexPath, transitionStyle: UIPageViewController.TransitionStyle, navigationOrientation: UIPageViewController.NavigationOrientation, options: [String : Any]?) {
         super.init(
             transitionStyle: transitionStyle,
             navigationOrientation: navigationOrientation,
@@ -390,10 +390,10 @@ public extension UINavigationController {
     //แสดงรูป สำหรับรูปเดียว  ไม่เกี่ยวกับหน้าอ่านกระทุ้
     public func BNImagePage(mImageViewShowFirst mImageView: UIImageView, sImageUrl: String, PageSpacing: Int = 20, transitionStyle: UIPageViewController.TransitionStyle = .scroll) {
         let atIndexPath = IndexPath(row: 0, section: 0)
-        var axImgaePageData: [BNImagePageViewController.ImgaePageData] = []
+        var axImgaePageData: [ImgaePageData] = []
         let axInfomation = NSMutableAttributedString()
         axInfomation.append(NSAttributedString(string:""))
-        axImgaePageData.append(BNImagePageViewController.ImgaePageData(
+        axImgaePageData.append(ImgaePageData(
             atIndex: atIndexPath,
             sImageUrl: sImageUrl,
             fWidth: (mImageView.image?.size.width)!,
@@ -402,7 +402,7 @@ public extension UINavigationController {
     }
     
     //แสดงรูป สำหรับแบ่งแสดงเป็นหน้าต่อหนึ่งรูป
-    public func BNImagePage(mImageViewShowFirst mImageView: UIImageView, axImgaePageData: [BNImagePageViewController.ImgaePageData] , atIndexPath: IndexPath, PageSpacing: Int = 20, transitionStyle: UIPageViewController.TransitionStyle = .scroll) {
+    public func BNImagePage(mImageViewShowFirst mImageView: UIImageView, axImgaePageData: [ImgaePageData] , atIndexPath: IndexPath, PageSpacing: Int = 20, transitionStyle: UIPageViewController.TransitionStyle = .scroll) {
         let optionsDict = [convertFromUIPageViewControllerOptionsKey(UIPageViewController.OptionsKey.interPageSpacing) : PageSpacing]
         let oPantipImagePageController = BNImagePageGridView(
             mImageView:  mImageView,

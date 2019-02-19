@@ -12,7 +12,7 @@ extension BNImagePageDelegate {
     func getVisiableViewController(_ viewController: UIViewController) {}
 }
 
-public class BNImagePageViewController: UIViewController, UIPopoverPresentationControllerDelegate {
+class BNImagePageViewController: UIViewController, UIPopoverPresentationControllerDelegate {
     var mImageView: UIImageView!//Require
     var sImageUrl: String!//Require
     fileprivate var fShareSourceRect: CGRect = CGRect.zero
@@ -39,16 +39,9 @@ public class BNImagePageViewController: UIViewController, UIPopoverPresentationC
     fileprivate var fEndpointX: CGFloat = 0.0
     fileprivate var bIsOut: Bool = false
     
-    public struct ImgaePageData {
-        public let atIndex: IndexPath
-        public var sImageUrl: String = ""
-        public let fWidth: CGFloat
-        public let fHeight: CGFloat
-    }
-    
     var work: DispatchWorkItem = DispatchWorkItem(block: {})
     
-    override public func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .black
         if self.oRetrieveImageTask != nil {
@@ -92,7 +85,7 @@ public class BNImagePageViewController: UIViewController, UIPopoverPresentationC
         }
     }
     
-    override public func viewWillDisappear(_ animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         //UIApplication.shared.statusBarStyle = self.oldStatusbarColor
         if self.mImageView.alpha < 1 {
@@ -100,7 +93,7 @@ public class BNImagePageViewController: UIViewController, UIPopoverPresentationC
         }
     }
     
-    override public func viewDidAppear(_ animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         self.delegate?.getVisiableViewController(self)
     }
@@ -300,7 +293,7 @@ public class BNImagePageViewController: UIViewController, UIPopoverPresentationC
         }
     }
     
-    override public func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
+    override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
         UIView.animate(withDuration: 0.2, animations: { () -> Void in
             self.view.backgroundColor = self.view.backgroundColor?.withAlphaComponent(1.0)
         }, completion:nil)
@@ -319,7 +312,7 @@ public class BNImagePageViewController: UIViewController, UIPopoverPresentationC
         }
     }
     
-    @objc public func pressShare(_ sender: UIButton) {
+    @objc func pressShare(_ sender: UIButton) {
         if !self.bIsShowImage && (self.mZoomImageView.subviews.count <= 0) {
             self.fShareSourceRect = self.mButtonShare.frame
             self.requestAuthorizationIfNeeded()
@@ -418,7 +411,7 @@ public class BNImagePageViewController: UIViewController, UIPopoverPresentationC
 //        }
     }
     
-    override public func didReceiveMemoryWarning() {
+    override  func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         ImageCache.default.clearDiskCache()
         ImageCache.default.clearMemoryCache()
