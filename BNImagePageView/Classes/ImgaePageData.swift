@@ -13,7 +13,7 @@ public class ImgaePageData {
      var fWidth: CGFloat = 0.0
      var fHeight: CGFloat = 0.0
     
-    init(atIndex: IndexPath, sImageUrl: String, fWidth: CGFloat, fHeight: CGFloat) {
+    public init(atIndex: IndexPath, sImageUrl: String, fWidth: CGFloat, fHeight: CGFloat) {
         self.atIndex = atIndex
         self.sImageUrl = sImageUrl
         self.fWidth = fWidth
