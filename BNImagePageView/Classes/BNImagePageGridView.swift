@@ -386,9 +386,9 @@ fileprivate func convertToOptionalUIPageViewControllerOptionsKeyDictionary(_ inp
 }
 
 
-extension UINavigationController {
+public extension UINavigationController {
     //แสดงรูป สำหรับรูปเดียว  ไม่เกี่ยวกับหน้าอ่านกระทุ้
-    func BNImagePage(mImageViewShowFirst mImageView: UIImageView, sImageUrl: String, PageSpacing: Int = 20, transitionStyle: UIPageViewController.TransitionStyle = .scroll) {
+    public func BNImagePage(mImageViewShowFirst mImageView: UIImageView, sImageUrl: String, PageSpacing: Int = 20, transitionStyle: UIPageViewController.TransitionStyle = .scroll) {
         let atIndexPath = IndexPath(row: 0, section: 0)
         var axImgaePageData: [BNImagePageViewController.ImgaePageData] = []
         let axInfomation = NSMutableAttributedString()
@@ -402,7 +402,7 @@ extension UINavigationController {
     }
     
     //แสดงรูป สำหรับแบ่งแสดงเป็นหน้าต่อหนึ่งรูป
-    func BNImagePage(mImageViewShowFirst mImageView: UIImageView, axImgaePageData: [BNImagePageViewController.ImgaePageData] , atIndexPath: IndexPath, PageSpacing: Int = 20, transitionStyle: UIPageViewController.TransitionStyle = .scroll) {
+    public func BNImagePage(mImageViewShowFirst mImageView: UIImageView, axImgaePageData: [BNImagePageViewController.ImgaePageData] , atIndexPath: IndexPath, PageSpacing: Int = 20, transitionStyle: UIPageViewController.TransitionStyle = .scroll) {
         let optionsDict = [convertFromUIPageViewControllerOptionsKey(UIPageViewController.OptionsKey.interPageSpacing) : PageSpacing]
         let oPantipImagePageController = BNImagePageGridView(
             mImageView:  mImageView,
