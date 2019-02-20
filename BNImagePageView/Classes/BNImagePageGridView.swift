@@ -6,7 +6,6 @@
 //
 
 import UIKit
-//import PTConfig
 
 class BNImagePageGridView: UIPageViewController {
     private var mImageView: UIImageView!//Require
@@ -318,7 +317,6 @@ class BNImagePageGridView: UIPageViewController {
 }
 
 extension BNImagePageGridView: UIPageViewControllerDataSource, UIPageViewControllerDelegate{
-    
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
         if completed {
             if let axChildVC = pageViewController.viewControllers,

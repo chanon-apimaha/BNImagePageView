@@ -2,7 +2,6 @@
 import UIKit
 import Photos
 import Kingfisher
-//import PTConfig
 
 protocol BNImagePageDelegate: NSObjectProtocol {
     func getVisiableViewController(_ viewController: UIViewController)
@@ -22,7 +21,7 @@ class BNImagePageViewController: UIViewController, UIPopoverPresentationControll
     weak var delegate: BNImagePageDelegate?
     var bIsPagingEnabled: Bool = false
     
-    fileprivate var mScrollView: UIScrollView = UIScrollView()
+    public var mScrollView: UIScrollView = UIScrollView()
     public var mZoomImageView: UIImageView = UIImageView()
     fileprivate var mLoadingActivity: UIActivityIndicatorView = UIActivityIndicatorView(style: .whiteLarge)
     fileprivate var mShareActivity: UIActivityViewController = UIActivityViewController(activityItems: [], applicationActivities: nil)
@@ -236,6 +235,7 @@ class BNImagePageViewController: UIViewController, UIPopoverPresentationControll
     @objc private func handleDoubleTapScrollView(recognizer: UITapGestureRecognizer) {
         if self.mScrollView.zoomScale == self.mScrollView.minimumZoomScale {
             self.mScrollView.zoom(to: zoomRectForScale(scale: self.mScrollView.maximumZoomScale, center: recognizer.location(in: recognizer.view)), animated: true)
+            
         } else {
             self.mScrollView.setZoomScale(self.mScrollView.minimumZoomScale, animated: true)
         }
@@ -248,6 +248,7 @@ class BNImagePageViewController: UIViewController, UIPopoverPresentationControll
         let newCenter = self.mZoomImageView.convert(center, from: self.mScrollView)
         zoomRect.origin.x = newCenter.x - (zoomRect.size.width / 2.0)
         zoomRect.origin.y = newCenter.y - (zoomRect.size.height / 2.0)
+        print("zoomRect:",  zoomRect, "delegate:",  self.mScrollView.delegate)
         return zoomRect
     }
     
@@ -420,11 +421,11 @@ class BNImagePageViewController: UIViewController, UIPopoverPresentationControll
 }
 
 extension BNImagePageViewController: UIScrollViewDelegate {
-    private func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return self.mZoomImageView
     }
     
-    private func scrollViewDidZoom(_ scrollView: UIScrollView){
+     func scrollViewDidZoom(_ scrollView: UIScrollView){
         let scrollViewSize: CGSize = self.scrollViewVisibleSize();
         var imageCenter: CGPoint = CGPoint(x: self.mScrollView.contentSize.width/2.0, y:
             self.mScrollView.contentSize.height/2.0)
@@ -472,7 +473,7 @@ extension BNImagePageViewController: UIScrollViewDelegate {
 }
 
 extension BNImagePageViewController: UIGestureRecognizerDelegate {
-    private func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         if let oPanGestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer {
             let translation = oPanGestureRecognizer.translation(in: self.view)
             if (fabsf(Float(translation.y)) > fabsf(Float(translation.x)))  {
@@ -484,7 +485,7 @@ extension BNImagePageViewController: UIGestureRecognizerDelegate {
         return true
     }
     
-    private func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         if let oPanGestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer {
             let translation = oPanGestureRecognizer.translation(in: self.view)
             if (fabsf(Float(translation.y)) > fabsf(Float(translation.x)))  {
