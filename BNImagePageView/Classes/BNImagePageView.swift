@@ -11,7 +11,7 @@ extension BNImagePageDelegate {
     func getVisiableViewController(_ viewController: UIViewController) {}
 }
 
-class BNImagePageViewController: UIViewController, UIPopoverPresentationControllerDelegate {
+open class BNImagePageViewController: UIViewController, UIPopoverPresentationControllerDelegate {
     var mImageView: UIImageView!//Require
     var sImageUrl: String!//Require
     fileprivate var fShareSourceRect: CGRect = CGRect.zero
@@ -40,7 +40,7 @@ class BNImagePageViewController: UIViewController, UIPopoverPresentationControll
     
     var work: DispatchWorkItem = DispatchWorkItem(block: {})
     
-    override func viewDidLoad() {
+    override open func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .black
         if self.oRetrieveImageTask != nil {
@@ -84,7 +84,7 @@ class BNImagePageViewController: UIViewController, UIPopoverPresentationControll
         }
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
+    override open func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         //UIApplication.shared.statusBarStyle = self.oldStatusbarColor
         if self.mImageView.alpha < 1 {
@@ -92,7 +92,7 @@ class BNImagePageViewController: UIViewController, UIPopoverPresentationControll
         }
     }
     
-    override func viewDidAppear(_ animated: Bool) {
+    override open func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         self.delegate?.getVisiableViewController(self)
     }
@@ -248,7 +248,6 @@ class BNImagePageViewController: UIViewController, UIPopoverPresentationControll
         let newCenter = self.mZoomImageView.convert(center, from: self.mScrollView)
         zoomRect.origin.x = newCenter.x - (zoomRect.size.width / 2.0)
         zoomRect.origin.y = newCenter.y - (zoomRect.size.height / 2.0)
-        print("zoomRect:",  zoomRect, "delegate:",  self.mScrollView.delegate)
         return zoomRect
     }
     
@@ -294,7 +293,7 @@ class BNImagePageViewController: UIViewController, UIPopoverPresentationControll
         }
     }
     
-    override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
+    override open func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
         UIView.animate(withDuration: 0.2, animations: { () -> Void in
             self.view.backgroundColor = self.view.backgroundColor?.withAlphaComponent(1.0)
         }, completion:nil)
@@ -412,7 +411,7 @@ class BNImagePageViewController: UIViewController, UIPopoverPresentationControll
 //        }
     }
     
-    override  func didReceiveMemoryWarning() {
+    override  open func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         ImageCache.default.clearDiskCache()
         ImageCache.default.clearMemoryCache()
@@ -421,11 +420,11 @@ class BNImagePageViewController: UIViewController, UIPopoverPresentationControll
 }
 
 extension BNImagePageViewController: UIScrollViewDelegate {
-     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+    public func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return self.mZoomImageView
     }
     
-     func scrollViewDidZoom(_ scrollView: UIScrollView){
+    public func scrollViewDidZoom(_ scrollView: UIScrollView){
         let scrollViewSize: CGSize = self.scrollViewVisibleSize();
         var imageCenter: CGPoint = CGPoint(x: self.mScrollView.contentSize.width/2.0, y:
             self.mScrollView.contentSize.height/2.0)
@@ -473,7 +472,7 @@ extension BNImagePageViewController: UIScrollViewDelegate {
 }
 
 extension BNImagePageViewController: UIGestureRecognizerDelegate {
-     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+     public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         if let oPanGestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer {
             let translation = oPanGestureRecognizer.translation(in: self.view)
             if (fabsf(Float(translation.y)) > fabsf(Float(translation.x)))  {
@@ -485,7 +484,7 @@ extension BNImagePageViewController: UIGestureRecognizerDelegate {
         return true
     }
     
-     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+     public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         if let oPanGestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer {
             let translation = oPanGestureRecognizer.translation(in: self.view)
             if (fabsf(Float(translation.y)) > fabsf(Float(translation.x)))  {

@@ -7,7 +7,7 @@
 
 import UIKit
 
-class BNImagePageGridView: UIPageViewController {
+ open class BNImagePageGridView: UIPageViewController {
     private var mImageView: UIImageView!//Require
     private var axImgaePageData: [ImgaePageData]!
     private var atIndexPath: IndexPath!
@@ -25,7 +25,7 @@ class BNImagePageGridView: UIPageViewController {
         self.iNumOfPage = self.axImgaePageData.count
     }
     
-    required init?(coder: NSCoder) {
+    required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
@@ -74,7 +74,7 @@ class BNImagePageGridView: UIPageViewController {
         NotificationCenter.default.removeObserver(self, name: UIApplication.didChangeStatusBarOrientationNotification, object: nil);
     }
     
-    override func viewDidLoad()
+    override open func viewDidLoad()
     {
         super.viewDidLoad()
         self.dataSource = self
@@ -101,7 +101,7 @@ class BNImagePageGridView: UIPageViewController {
         self.view.addGestureRecognizer(oneTapGest)
     }
     
-    override func viewDidAppear(_ animated: Bool) {
+    override open func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         self.view.backgroundColor = .black
     }
@@ -317,7 +317,7 @@ class BNImagePageGridView: UIPageViewController {
 }
 
 extension BNImagePageGridView: UIPageViewControllerDataSource, UIPageViewControllerDelegate{
-    func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
+    public func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
         if completed {
             if let axChildVC = pageViewController.viewControllers,
                 let oCurrentVC = axChildVC.first as? BNImagePageViewController, let index = self.pages.index(of: oCurrentVC) {
@@ -327,7 +327,7 @@ extension BNImagePageGridView: UIPageViewControllerDataSource, UIPageViewControl
         }
     }
     
-    func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
+    public func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         guard let viewControllerIndex = pages.index(of: viewController) else {
             return nil
         }
@@ -345,7 +345,7 @@ extension BNImagePageGridView: UIPageViewControllerDataSource, UIPageViewControl
         return pages[previousIndex]
     }
     
-    func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
+    public func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
         guard let viewControllerIndex = pages.index(of: viewController) else {
             return nil
         }
