@@ -7,7 +7,7 @@
 
 ## Example
 
-![Screenshot](11.png))
+![Screenshot](11.png)
 ![Screenshot](12.png)
 ![Screenshot](13.png)
 
