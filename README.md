@@ -7,7 +7,7 @@
 
 ## Example
 
-![](33.png)
+![](11.png)[](12.png)[](13.png)
 
 To run the example project, clone the repo, and run `pod install` from the Example directory first.
 
