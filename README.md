@@ -7,6 +7,8 @@
 
 ## Example
 
+![](https://scontent.fbkk5-4.fna.fbcdn.net/v/t1.0-9/199033_1435852956357_3764451_n.jpg?_nc_cat=110&_nc_ht=scontent.fbkk5-4.fna&oh=9005dc7a16b88026e39b2f113ac241b1&oe=5CF3168F)
+
 To run the example project, clone the repo, and run `pod install` from the Example directory first.
 
 ## Requirements
