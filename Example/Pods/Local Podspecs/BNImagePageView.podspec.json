@@ -1,6 +1,6 @@
 {
   "name": "BNImagePageView",
-  "version": "0.1.17",
+  "version": "0.1.18",
   "summary": "Present PicturesView as a page  and Ready to show animate in and out Screen",
   "description": "Present PicturesView as a page  and Ready to show animate in and out fullScreen",
   "homepage": "https://github.com/chanon-apimaha/BNImagePageView",
@@ -13,7 +13,7 @@
   },
   "source": {
     "git": "https://github.com/chanon-apimaha/BNImagePageView.git",
-    "tag": "0.1.17"
+    "tag": "0.1.18"
   },
   "platforms": {
     "ios": "9.0"
