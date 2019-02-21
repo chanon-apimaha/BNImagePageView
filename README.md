@@ -21,7 +21,7 @@ swift '4.2', ios version '9.0+'
 
 ## Installation
 
-BNImagePageView is available through [CocoaPods](https://cocoapods.org). To install
+BNImagePageView is available through [CocoaPods](https://cocoapods.org/pods/BNImagePageView). To install
 it, simply add the following line to your Podfile:
 
 ```ruby
