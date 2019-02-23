@@ -3,7 +3,7 @@ This application makes use of the following third party libraries:
 
 ## BNImagePageView
 
-Copyright (c) 2019 ban nan <pong.np1@gmail.com>
+Copyright (c) 2019 Banchai Nangpang <pong.np1@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
