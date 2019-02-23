@@ -7,10 +7,7 @@
 
 ## Example
 
-![Screenshot](11.png)
-![Screenshot](12.png)
-![Screenshot](13.png)
-
+![Screenshot](http://g.recordit.co/VuMp165R8w.gif)
 To run the example project, clone the repo, and run `pod install` from the Example directory first.
 
 ## Requirements
