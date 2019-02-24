@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import BNImagePageView
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -38,6 +39,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    }
+    
+    func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
+        var topMostWindowController : UIViewController? {
+            var topController: UIViewController? = UIApplication.shared.keyWindow?.rootViewController
+            
+            //  Getting topMost ViewController
+            while ((topController?.presentedViewController) != nil) {
+                topController = topController?.presentedViewController
+            }
+            
+            //  Returning topMost ViewController
+            return topController
+        }
+        switch topMostWindowController {
+        case is BNImagePageGridView, is BNImagePageViewController:
+            return .all
+        default:
+            break
+        }
+        return .portrait
     }
 
 
