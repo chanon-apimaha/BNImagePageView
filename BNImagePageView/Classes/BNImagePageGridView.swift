@@ -102,7 +102,7 @@ import UIKit
         }
 
         NotificationCenter.default.addObserver(self, selector: #selector(self.rotationView(notification:)), name: UIApplication.didChangeStatusBarOrientationNotification, object: nil)
-        if let index = self.axImgaePageData.index(where: { (item) -> Bool in
+        if let index = self.axImgaePageData.firstIndex(where: { (item) -> Bool in
             item.atIndex == self.atIndexPath
         }) {
             let firstVC = pages[index] as UIViewController
@@ -335,7 +335,7 @@ extension BNImagePageGridView: UIPageViewControllerDataSource, UIPageViewControl
     public func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
         if completed {
             if let axChildVC = pageViewController.viewControllers,
-                let oCurrentVC = axChildVC.first as? BNImagePageViewController, let index = self.pages.index(of: oCurrentVC) {
+                let oCurrentVC = axChildVC.first as? BNImagePageViewController, let index = self.pages.firstIndex(of: oCurrentVC) {
                 self.iCurrentIndex = index
                 self.mPageTitle.setTitle("\(index + 1)/\(self.iNumOfPage)", for: .normal)
             }
@@ -343,7 +343,7 @@ extension BNImagePageGridView: UIPageViewControllerDataSource, UIPageViewControl
     }
 
     public func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
-        guard let viewControllerIndex = pages.index(of: viewController) else {
+        guard let viewControllerIndex = pages.firstIndex(of: viewController) else {
             return nil
         }
 
@@ -361,7 +361,7 @@ extension BNImagePageGridView: UIPageViewControllerDataSource, UIPageViewControl
     }
 
     public func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
-        guard let viewControllerIndex = pages.index(of: viewController) else {
+        guard let viewControllerIndex = pages.firstIndex(of: viewController) else {
             return nil
         }
 
@@ -401,7 +401,7 @@ fileprivate func convertToOptionalUIPageViewControllerOptionsKeyDictionary(_ inp
 
 public extension UINavigationController {
     //แสดงรูป สำหรับรูปเดียว  ไม่เกี่ยวกับหน้าอ่านกระทุ้
-    public func BNImagePage(mImageViewShowFirst mImageView: UIImageView, sImageUrl: String, PageSpacing: Int = 20, transitionStyle: UIPageViewController.TransitionStyle = .scroll) {
+    func BNImagePage(mImageViewShowFirst mImageView: UIImageView, sImageUrl: String, PageSpacing: Int = 20, transitionStyle: UIPageViewController.TransitionStyle = .scroll) {
         let atIndexPath = IndexPath(row: 0, section: 0)
         var axImgaePageData: [ImgaePageData] = []
         let axInfomation = NSMutableAttributedString()
@@ -415,7 +415,7 @@ public extension UINavigationController {
     }
 
     //แสดงรูป สำหรับแบ่งแสดงเป็นหน้าต่อหนึ่งรูป
-    public func BNImagePage(mImageViewShowFirst mImageView: UIImageView, axImgaePageData: [ImgaePageData] , atIndexPath: IndexPath, PageSpacing: Int = 20, transitionStyle: UIPageViewController.TransitionStyle = .scroll) {
+    func BNImagePage(mImageViewShowFirst mImageView: UIImageView, axImgaePageData: [ImgaePageData] , atIndexPath: IndexPath, PageSpacing: Int = 20, transitionStyle: UIPageViewController.TransitionStyle = .scroll) {
         let optionsDict = [convertFromUIPageViewControllerOptionsKey(UIPageViewController.OptionsKey.interPageSpacing) : PageSpacing]
         let oPantipImagePageController = BNImagePageGridView(
             mImageView:  mImageView,

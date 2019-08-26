@@ -46,7 +46,7 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
     public var mZoomImageView: UIImageView = UIImageView()
     fileprivate var mLoadingActivity: UIActivityIndicatorView = UIActivityIndicatorView(style: .whiteLarge)
     fileprivate var mShareActivity: UIActivityViewController = UIActivityViewController(activityItems: [], applicationActivities: nil)
-    fileprivate var oRetrieveImageTask: RetrieveImageTask!
+    fileprivate var oRetrieveImageTask: DownloadTask!
     fileprivate var oldStatusbarColor: UIStatusBarStyle = UIApplication.shared.statusBarStyle
     fileprivate var panGesture: UIPanGestureRecognizer = UIPanGestureRecognizer()
     fileprivate var bIsShowImage: Bool = true
@@ -137,14 +137,17 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
             }
 
             let resource = ImageResource(downloadURL: bundleURL, cacheKey: "overImage")
-            self.oRetrieveImageTask = self.mZoomImageView.kf.setImage(with: resource, placeholder: self.mImageView.image, options: [.transition(.fade(0.15))], progressBlock: nil, completionHandler: { (image, error, cacheType, Url) in
-                if error == nil {
+            
+            self.oRetrieveImageTask = self.mZoomImageView.kf.setImage(with: resource, placeholder: self.mImageView.image, options: [.transition(.fade(0.15)), .cacheMemoryOnly], progressBlock: nil) { (result) in
+                switch result {
+                case .success(_):
                     self.setZoomImageFrame(imageSize: (self.mZoomImageView.image?.size)!)
                     self.mLoadingActivity.stopAnimating()
                     self.faceOutBlurEffect()
                     self.clearCacheImage()
                     self.bIsShowImage = false
-                } else {
+                    break
+                case .failure(_):
                     self.setZoomImageFrame(imageSize: (self.mImageView.image?.size)!)
                     if self.iLoadImageCount < 3 {
                         self.loadImage()
@@ -154,8 +157,29 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
                         self.bIsShowImage = false
                     }
                 }
-                self.mScrollView.isUserInteractionEnabled = true
-            })
+                 self.mScrollView.isUserInteractionEnabled = true
+            }
+            
+            
+//            self.oRetrieveImageTask = self.mZoomImageView.kf.setImage(with: resource, placeholder: self.mImageView.image, options: [.transition(.fade(0.15))], progressBlock: nil, completionHandler: { (image, error, cacheType, Url) in
+//                if error == nil {
+//                    self.setZoomImageFrame(imageSize: (self.mZoomImageView.image?.size)!)
+//                    self.mLoadingActivity.stopAnimating()
+//                    self.faceOutBlurEffect()
+//                    self.clearCacheImage()
+//                    self.bIsShowImage = false
+//                } else {
+//                    self.setZoomImageFrame(imageSize: (self.mImageView.image?.size)!)
+//                    if self.iLoadImageCount < 3 {
+//                        self.loadImage()
+//                    } else {
+//                        self.faceOutBlurEffect()
+//                        self.mLoadingActivity.stopAnimating()
+//                        self.bIsShowImage = false
+//                    }
+//                }
+//                self.mScrollView.isUserInteractionEnabled = true
+//            })
         } else {
             self.bIsShowImage = false
         }
@@ -402,6 +426,8 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
             })
         case .restricted:
             self.alertPhotoPermission()
+        @unknown default:
+            break
         }
     }
 

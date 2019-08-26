@@ -13,7 +13,7 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        let mImageView: UIImageView = UIImageView(URL: NSURL(string: "https://scontent.fbkk5-5.fna.fbcdn.net/v/t1.0-9/188417_1469360274019_5942840_n.jpg?_nc_cat=100&_nc_ht=scontent.fbkk5-5.fna&oh=8647b3692161ecc9662356bd0c989e1c&oe=5CE3BA66")!)
+        let mImageView: UIImageView = UIImageView(URL: NSURL(string: "https://homepages.cae.wisc.edu/~ece533/images/airplane.png")!)
         mImageView.isUserInteractionEnabled = true
         self.view.addSubview(mImageView)
         mImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -36,7 +36,7 @@ class ViewController: UIViewController {
     
     @objc private func handleDoubleTapScrollView(recognizer: UITapGestureRecognizer) {
         if let mImageView = recognizer.view as? UIImageView {
-        self.navigationController?.BNImagePage(mImageViewShowFirst: mImageView, sImageUrl: "https://scontent.fbkk5-5.fna.fbcdn.net/v/t1.0-9/188417_1469360274019_5942840_n.jpg?_nc_cat=100&_nc_ht=scontent.fbkk5-5.fna&oh=8647b3692161ecc9662356bd0c989e1c&oe=5CE3BA66")
+        self.navigationController?.BNImagePage(mImageViewShowFirst: mImageView, sImageUrl: "https://homepages.cae.wisc.edu/~ece533/images/airplane.png")
         }
     }
     

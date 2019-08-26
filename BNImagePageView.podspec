@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'BNImagePageView'
-  s.version          = '0.1.23'
+  s.version          = '0.1.25'
   s.summary          = 'Present PicturesView as a page  and Ready to show animate in and out Screen'
 
 # This description is used to generate tags and improve search results.
@@ -26,10 +26,10 @@ Pod::Spec.new do |s|
   s.source           = { :git => 'https://github.com/chanon-apimaha/BNImagePageView.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
-  s.ios.deployment_target = '9.0'
+  s.ios.deployment_target = '10.0'
 
   s.source_files = 'BNImagePageView/Classes/**/*'
-  s.swift_version = '4.2'
+  s.swift_version = '5'
 
   # s.resource_bundles = {
   #   'BNImagePageView' => ['BNImagePageView/Assets/*.png']
@@ -38,5 +38,5 @@ Pod::Spec.new do |s|
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
   # s.dependency 'AFNetworking', '~> 2.3'
-  s.dependency 'Kingfisher', '4.10.1'
+  s.dependency 'Kingfisher', '5.7.0'
 end
