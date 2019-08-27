@@ -22,12 +22,12 @@
 
 import UIKit
 
- open class BNImagePageGridView: UIPageViewController {
+open class BNImagePageGridView: UIPageViewController {
     private var mImageView: UIImageView!//Require
     private var axImgaePageData: [ImgaePageData]!
     private var atIndexPath: IndexPath!
     private var iNumOfPage: Int = 0
-
+    
     init(mImageView: UIImageView, axImgaePageData: [ImgaePageData], atIndexPath: IndexPath, transitionStyle: UIPageViewController.TransitionStyle, navigationOrientation: UIPageViewController.NavigationOrientation, options: [String : Any]?) {
         super.init(
             transitionStyle: transitionStyle,
@@ -39,33 +39,37 @@ import UIKit
         self.atIndexPath = atIndexPath
         self.iNumOfPage = self.axImgaePageData.count
     }
-
+    
     required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
+    override open var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return .all
+    }
+    
     var work: DispatchWorkItem = DispatchWorkItem(block: {})
-
+    
     fileprivate var iCurrentIndex: Int = 0
-
+    
     internal var mButtonClose: UIButton = UIButton()
     fileprivate var mConsRightClose: NSLayoutConstraint = NSLayoutConstraint()
     fileprivate var mConsTopClose: NSLayoutConstraint = NSLayoutConstraint()
     fileprivate var mConsWidthClose: NSLayoutConstraint = NSLayoutConstraint()
     fileprivate var mConsHeightClose: NSLayoutConstraint = NSLayoutConstraint()
-
+    
     internal var mButtonShare: UIButton = UIButton()
     fileprivate var mConsRightShare: NSLayoutConstraint = NSLayoutConstraint()
     fileprivate var mConsBottomShare: NSLayoutConstraint = NSLayoutConstraint()
     fileprivate var mConsWidthShare: NSLayoutConstraint = NSLayoutConstraint()
     fileprivate var mConsHeightShare: NSLayoutConstraint = NSLayoutConstraint()
-
+    
     internal var mPageTitle: UIButton = UIButton()
     fileprivate var mConsLeftPageTitle: NSLayoutConstraint = NSLayoutConstraint()
     fileprivate var mConsTopPageTitle: NSLayoutConstraint = NSLayoutConstraint()
     fileprivate var mConsWidthPageTitle: NSLayoutConstraint = NSLayoutConstraint()
     fileprivate var mConsHeightPageTitle: NSLayoutConstraint = NSLayoutConstraint()
-
+    
     fileprivate lazy var pages: [UIViewController] = {
         var axViewController: [UIViewController] = []
         for index in 0 ..< self.axImgaePageData.endIndex {
@@ -73,7 +77,7 @@ import UIKit
         }
         return axViewController
     }()
-
+    
     fileprivate func getViewController(index: Int) -> UIViewController
     {
         let oViewController = BNImagePageViewController()
@@ -84,11 +88,11 @@ import UIKit
         oViewController.bDoAnimate = false
         return oViewController
     }
-
+    
     deinit {
         NotificationCenter.default.removeObserver(self, name: UIApplication.didChangeStatusBarOrientationNotification, object: nil);
     }
-
+    
     override open func viewDidLoad()
     {
         super.viewDidLoad()
@@ -96,11 +100,11 @@ import UIKit
         self.delegate = self
         self.setUpButtonClose()
         self.setUpButtonShare()
-
+        
         if self.iNumOfPage > 1 {
             self.setPageTitle()
         }
-
+        
         NotificationCenter.default.addObserver(self, selector: #selector(self.rotationView(notification:)), name: UIApplication.didChangeStatusBarOrientationNotification, object: nil)
         if let index = self.axImgaePageData.firstIndex(where: { (item) -> Bool in
             item.atIndex == self.atIndexPath
@@ -110,24 +114,25 @@ import UIKit
             setViewControllers([firstVC], direction: .forward, animated: false, completion: nil)
             self.mPageTitle.setTitle("\(index + 1)/\(self.iNumOfPage)", for: .normal)
         }
-
+        
         let oneTapGest = UITapGestureRecognizer(target: self, action: #selector(self.handleOneTapScrollView(recognizer:)))
         oneTapGest.numberOfTapsRequired = 1
         self.view.addGestureRecognizer(oneTapGest)
     }
-
+    
     override open func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         self.view.backgroundColor = .black
     }
-
+    
     private func setUpButtonClose() {
-        self.mButtonClose.setImage(UIImage(named:"ic-topbar-closeimage"), for: .normal)
+        self.mButtonClose.setImage(UIImage(named:"ic-topbar-closeimage")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        self.mButtonClose.tintColor = .white
         self.mButtonClose.backgroundColor = UIColor.black.withAlphaComponent(0.6)
         self.mButtonClose.clipsToBounds = true
         self.mButtonClose.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(self.mButtonClose)
-
+        
         self.mConsRightClose = NSLayoutConstraint(
             item: self.mButtonClose,
             attribute: .right,
@@ -136,7 +141,7 @@ import UIKit
             attribute: .right,
             multiplier: 1,
             constant: 0)
-
+        
         self.mConsTopClose = NSLayoutConstraint(
             item: self.mButtonClose,
             attribute: NSLayoutConstraint.Attribute.top,
@@ -145,7 +150,7 @@ import UIKit
             attribute: NSLayoutConstraint.Attribute.top,
             multiplier: 1,
             constant: 0)
-
+        
         self.mConsWidthClose = NSLayoutConstraint(
             item: self.mButtonClose,
             attribute: NSLayoutConstraint.Attribute.width,
@@ -154,7 +159,7 @@ import UIKit
             attribute: NSLayoutConstraint.Attribute.notAnAttribute,
             multiplier: 1,
             constant: 0)
-
+        
         self.mConsHeightClose = NSLayoutConstraint(
             item: self.mButtonClose,
             attribute: NSLayoutConstraint.Attribute.height,
@@ -163,23 +168,23 @@ import UIKit
             attribute: NSLayoutConstraint.Attribute.notAnAttribute,
             multiplier: 1,
             constant: 0)
-
+        
         NSLayoutConstraint.activate([self.mConsRightClose, self.mConsTopClose, self.mConsWidthClose, self.mConsHeightClose])
-
+        
         self.mConsWidthClose.constant = 40.0
         self.mConsHeightClose.constant = 40.0
         self.mConsTopClose.constant = 34
         self.mConsRightClose.constant =  (UIDevice.current.userInterfaceIdiom == .pad ) ? -16 : -8
         self.mButtonClose.layer.cornerRadius = self.mConsWidthClose.constant / 2.0
     }
-
+    
     private func setUpButtonShare() {
         self.mButtonShare.setImage(UIImage(named:"ic-topbar-safeimage"), for: .normal)
         self.mButtonShare.clipsToBounds = true
         self.mButtonShare.backgroundColor = UIColor.black.withAlphaComponent(0.6)
         self.mButtonShare.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(self.mButtonShare)
-
+        
         self.mConsRightShare = NSLayoutConstraint(
             item: self.mButtonShare,
             attribute: .right,
@@ -188,7 +193,7 @@ import UIKit
             attribute: .right,
             multiplier: 1,
             constant: 0)
-
+        
         self.mConsBottomShare = NSLayoutConstraint(
             item: self.mButtonShare,
             attribute: NSLayoutConstraint.Attribute.bottom,
@@ -197,7 +202,7 @@ import UIKit
             attribute: NSLayoutConstraint.Attribute.bottom,
             multiplier: 1,
             constant: 0)
-
+        
         self.mConsWidthShare = NSLayoutConstraint(
             item: self.mButtonShare,
             attribute: NSLayoutConstraint.Attribute.width,
@@ -206,7 +211,7 @@ import UIKit
             attribute: NSLayoutConstraint.Attribute.notAnAttribute,
             multiplier: 1,
             constant: 0)
-
+        
         self.mConsHeightShare = NSLayoutConstraint(
             item: self.mButtonShare,
             attribute: NSLayoutConstraint.Attribute.height,
@@ -215,28 +220,28 @@ import UIKit
             attribute: NSLayoutConstraint.Attribute.notAnAttribute,
             multiplier: 1,
             constant: 0)
-
+        
         NSLayoutConstraint.activate([self.mConsRightShare, self.mConsBottomShare, self.mConsWidthShare, self.mConsHeightShare])
-
+        
         self.mConsRightShare.constant =  (UIDevice.current.userInterfaceIdiom == .pad) ? -16 : -8
-
+        
         if #available(iOS 11.0, *) {
             self.mConsBottomShare.constant =  (UIDevice.current.userInterfaceIdiom == .pad ) ? -32 : -24
         } else {
             self.mConsBottomShare.constant =  (UIDevice.current.userInterfaceIdiom == .pad ) ? -16 : -8
         }
-
+        
         self.mConsWidthShare.constant = 40
         self.mConsHeightShare.constant = 40
         self.mButtonShare.isHidden = false
         self.mButtonShare.layer.cornerRadius = self.mConsWidthShare.constant / 2.0
     }
-
+    
     func setPageTitle() {
         self.mPageTitle.backgroundColor = UIColor.black.withAlphaComponent(0.6)
         self.mPageTitle.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(self.mPageTitle)
-
+        
         self.mConsLeftPageTitle = NSLayoutConstraint(
             item: self.mPageTitle,
             attribute: .left,
@@ -245,7 +250,7 @@ import UIKit
             attribute: .left,
             multiplier: 1,
             constant: 0)
-
+        
         self.mConsTopPageTitle = NSLayoutConstraint(
             item: self.mPageTitle,
             attribute: NSLayoutConstraint.Attribute.top,
@@ -254,20 +259,20 @@ import UIKit
             attribute: NSLayoutConstraint.Attribute.top,
             multiplier: 1,
             constant: 0)
-
+        
         NSLayoutConstraint.activate([self.mConsLeftPageTitle, self.mConsTopPageTitle])
-
+        
         self.mConsTopPageTitle.constant = 34
         self.mConsLeftPageTitle.constant =  (UIDevice.current.userInterfaceIdiom == .pad ) ? 16 : 8
         self.mPageTitle.isHidden = false
         self.mPageTitle.layer.cornerRadius = 4.0//PTConfig.layerStyle.fCornerRadius
         self.mPageTitle.contentEdgeInsets = UIEdgeInsets(top: 4, left: 8, bottom: 4, right: 8)
     }
-
+    
     @objc private func handleOneTapScrollView(recognizer: UITapGestureRecognizer) {
         self.toggleBuutonCloseAndShare()
     }
-
+    
     private func toggleBuutonCloseAndShare(iSecoundDelay: Int = 0) {
         self.work.cancel()
         self.work = DispatchWorkItem(block: {
@@ -279,16 +284,16 @@ import UIKit
         })
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(iSecoundDelay), execute: self.work)
     }
-
+    
     private func buttonHide() {
         self.mConsTopPageTitle.constant = self.mConsTopPageTitle.constant * 0.5
         self.mConsTopClose.constant = self.mConsTopClose.constant * 0.5
         self.mConsBottomShare.constant =  self.mConsBottomShare.constant * 0.5
-
+        
         UIView.animate(withDuration: 0.25) {
             self.view.layoutIfNeeded()
         }
-
+        
         UIView.animate(withDuration: 0.2, delay: 0, options: [], animations: {
             self.mPageTitle.alpha = 0
             self.mButtonClose.alpha = 0
@@ -298,15 +303,15 @@ import UIKit
             self.mButtonShare.isHidden = true
             self.mButtonClose.isHidden = true
         })
-
-
+        
+        
     }
-
+    
     private func buttonShow() {
         self.mConsTopPageTitle.constant = 34.0
         self.mConsTopClose.constant = 34.0
-
-
+        
+        
         if #available(iOS 11.0, *) {
             self.mConsBottomShare.constant =  (UIDevice.current.userInterfaceIdiom == .pad) ? -32 : -24
         } else {
@@ -325,7 +330,7 @@ import UIKit
         }, completion: { (didComplete) -> Void in
         })
     }
-
+    
     @objc private func rotationView(notification: NSNotification) {
         self.buttonHide()
     }
@@ -341,41 +346,41 @@ extension BNImagePageGridView: UIPageViewControllerDataSource, UIPageViewControl
             }
         }
     }
-
+    
     public func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         guard let viewControllerIndex = pages.firstIndex(of: viewController) else {
             return nil
         }
-
+        
         let previousIndex = viewControllerIndex - 1
-
+        
         guard previousIndex >= 0 else {
             return nil
         }
-
+        
         guard pages.count > previousIndex else {
             return nil
         }
-
+        
         return pages[previousIndex]
     }
-
+    
     public func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
         guard let viewControllerIndex = pages.firstIndex(of: viewController) else {
             return nil
         }
-
+        
         let nextIndex = viewControllerIndex + 1
         let pagesCount = pages.count
-
+        
         guard pagesCount != nextIndex else {
             return nil
         }
-
+        
         guard pagesCount > nextIndex else {
             return nil
         }
-
+        
         return pages[nextIndex]
     }
 }
@@ -386,7 +391,7 @@ extension BNImagePageGridView : BNImagePageDelegate {
             oViewController.mButtonShare = self.mButtonShare
             self.mButtonClose.removeTarget(nil, action: nil, for: .allEvents)
             self.mButtonShare.removeTarget(nil, action: nil, for: .allEvents)
-            self.mButtonClose.addTarget(oViewController, action: #selector(oViewController.zoomOut), for: .touchUpInside)
+            self.mButtonClose.addTarget(oViewController, action: #selector(oViewController.zoomOut2), for: .touchUpInside)
             self.mButtonShare.addTarget(oViewController, action: #selector(oViewController.pressShare), for: .touchUpInside)
         }
     }
@@ -413,7 +418,7 @@ public extension UINavigationController {
             fHeight: (mImageView.image?.size.height)!))
         self.BNImagePage(mImageViewShowFirst: mImageView, axImgaePageData: axImgaePageData, atIndexPath: atIndexPath,PageSpacing: PageSpacing, transitionStyle: transitionStyle)
     }
-
+    
     //แสดงรูป สำหรับแบ่งแสดงเป็นหน้าต่อหนึ่งรูป
     func BNImagePage(mImageViewShowFirst mImageView: UIImageView, axImgaePageData: [ImgaePageData] , atIndexPath: IndexPath, PageSpacing: Int = 20, transitionStyle: UIPageViewController.TransitionStyle = .scroll) {
         let optionsDict = [convertFromUIPageViewControllerOptionsKey(UIPageViewController.OptionsKey.interPageSpacing) : PageSpacing]

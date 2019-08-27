@@ -37,11 +37,11 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
     var sImageUrl: String!//Require
     fileprivate var fShareSourceRect: CGRect = CGRect.zero
     var mButtonShare: UIButton = UIButton()
-
+    
     var bDoAnimate: Bool = true
     weak var delegate: BNImagePageDelegate?
     var bIsPagingEnabled: Bool = false
-
+    
     public var mScrollView: UIScrollView = UIScrollView()
     public var mZoomImageView: UIImageView = UIImageView()
     fileprivate var mLoadingActivity: UIActivityIndicatorView = UIActivityIndicatorView(style: .whiteLarge)
@@ -52,29 +52,33 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
     fileprivate var bIsShowImage: Bool = true
     fileprivate var iLoadImageCount: Int = 0
     fileprivate var bIsShowShareActivity: Bool = false
-
+    
     fileprivate var fStartpointY: CGFloat = 0.0
     fileprivate var fEndpointY: CGFloat = 0.0
     fileprivate var fStartpointX: CGFloat = 0.0
     fileprivate var fEndpointX: CGFloat = 0.0
     fileprivate var bIsOut: Bool = false
-
+    
+    override open var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return .all
+    }
+    
     var work: DispatchWorkItem = DispatchWorkItem(block: {})
-
+    
     override open func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .black
         if self.oRetrieveImageTask != nil {
             self.oRetrieveImageTask.cancel()
         }
-
+        
         if self.bIsPagingEnabled {
             self.clearCacheImage()
         }
         self.animateImageView()
         if self.bIsShowImage {
             self.mScrollView.setZoomScale(self.mScrollView.minimumZoomScale, animated: true)
-
+            
             if let startingFrame = self.mImageView.superview?.convert(self.mImageView.frame, to: nil) {
                 self.mZoomImageView.frame = startingFrame
                 if self.sImageUrl != "" {
@@ -84,7 +88,7 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
                 self.panGesture.delegate = self
                 self.mScrollView.isUserInteractionEnabled = true
                 self.mScrollView.addGestureRecognizer(self.panGesture)
-
+                
                 if self.bDoAnimate {
                     UIView.animate(withDuration: 0.75, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0.5, options: .curveEaseOut, animations: { () -> Void in
                         self.setZoomImageFrame(imageSize: (self.mImageView.image?.size)!)
@@ -104,7 +108,7 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
             }
         }
     }
-
+    
     override open func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         //UIApplication.shared.statusBarStyle = self.oldStatusbarColor
@@ -112,16 +116,16 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
             self.resetZoomScaleToMinimum()
         }
     }
-
+    
     override open func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         self.delegate?.getVisiableViewController(self)
     }
-
+    
     deinit {
         NotificationCenter.default.removeObserver(self, name: UIApplication.didChangeStatusBarOrientationNotification, object: nil);
     }
-
+    
     public func loadImage() {
         self.iLoadImageCount = self.iLoadImageCount + 1
         if self.sImageUrl != "" {
@@ -135,7 +139,7 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
                     self.bIsShowImage = false
                     return
             }
-
+            
             let resource = ImageResource(downloadURL: bundleURL, cacheKey: "overImage")
             
             self.oRetrieveImageTask = self.mZoomImageView.kf.setImage(with: resource, placeholder: self.mImageView.image, options: [.transition(.fade(0.15)), .cacheMemoryOnly], progressBlock: nil) { (result) in
@@ -157,34 +161,34 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
                         self.bIsShowImage = false
                     }
                 }
-                 self.mScrollView.isUserInteractionEnabled = true
+                self.mScrollView.isUserInteractionEnabled = true
             }
             
             
-//            self.oRetrieveImageTask = self.mZoomImageView.kf.setImage(with: resource, placeholder: self.mImageView.image, options: [.transition(.fade(0.15))], progressBlock: nil, completionHandler: { (image, error, cacheType, Url) in
-//                if error == nil {
-//                    self.setZoomImageFrame(imageSize: (self.mZoomImageView.image?.size)!)
-//                    self.mLoadingActivity.stopAnimating()
-//                    self.faceOutBlurEffect()
-//                    self.clearCacheImage()
-//                    self.bIsShowImage = false
-//                } else {
-//                    self.setZoomImageFrame(imageSize: (self.mImageView.image?.size)!)
-//                    if self.iLoadImageCount < 3 {
-//                        self.loadImage()
-//                    } else {
-//                        self.faceOutBlurEffect()
-//                        self.mLoadingActivity.stopAnimating()
-//                        self.bIsShowImage = false
-//                    }
-//                }
-//                self.mScrollView.isUserInteractionEnabled = true
-//            })
+            //            self.oRetrieveImageTask = self.mZoomImageView.kf.setImage(with: resource, placeholder: self.mImageView.image, options: [.transition(.fade(0.15))], progressBlock: nil, completionHandler: { (image, error, cacheType, Url) in
+            //                if error == nil {
+            //                    self.setZoomImageFrame(imageSize: (self.mZoomImageView.image?.size)!)
+            //                    self.mLoadingActivity.stopAnimating()
+            //                    self.faceOutBlurEffect()
+            //                    self.clearCacheImage()
+            //                    self.bIsShowImage = false
+            //                } else {
+            //                    self.setZoomImageFrame(imageSize: (self.mImageView.image?.size)!)
+            //                    if self.iLoadImageCount < 3 {
+            //                        self.loadImage()
+            //                    } else {
+            //                        self.faceOutBlurEffect()
+            //                        self.mLoadingActivity.stopAnimating()
+            //                        self.bIsShowImage = false
+            //                    }
+            //                }
+            //                self.mScrollView.isUserInteractionEnabled = true
+            //            })
         } else {
             self.bIsShowImage = false
         }
     }
-
+    
     private func faceOutBlurEffect() {
         UIView.animate(withDuration: 0.5, animations: {
             self.mZoomImageView.subviews.last?.alpha = 0.0
@@ -192,22 +196,22 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
             self.mZoomImageView.subviews.last?.removeFromSuperview()
         }
     }
-
+    
     private func clearCacheImage () {
         ImageCache.default.removeImage(forKey: "overImage")
     }
-
+    
     @objc public func animateImageView() {
         NotificationCenter.default.addObserver(self, selector: #selector(self.rotationView(notification:)), name: UIApplication.didChangeStatusBarOrientationNotification, object: nil)
         self.setUpScrollView()
         self.setUpIndicatorView()
     }
-
+    
     private func setUpIndicatorView() {
         self.mLoadingActivity.center = self.view.center
         self.view.addSubview(self.mLoadingActivity)
     }
-
+    
     private func setUpScrollView() {
         self.setUpmZoomImageView()
         self.mScrollView.delegate = self
@@ -220,21 +224,21 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
         self.mScrollView.translatesAutoresizingMaskIntoConstraints = false
         self.mScrollView.addSubview(self.mZoomImageView)
         self.view.addSubview(self.mScrollView)
-
+        
         self.mScrollView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
         self.mScrollView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
         self.mScrollView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true
         self.mScrollView.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true
         self.setMaxMinZoomScalesForCurrentBounds()
         self.mScrollView.setZoomScale(self.mScrollView.minimumZoomScale, animated: true)
-
+        
         let longTapGest = UILongPressGestureRecognizer(target: self, action: #selector(self.pressLongShare))
         let doubleTapGest = UITapGestureRecognizer(target: self, action: #selector(self.handleDoubleTapScrollView(recognizer:)))
         doubleTapGest.numberOfTapsRequired = 2
         self.mScrollView.addGestureRecognizer(longTapGest)
         self.mZoomImageView.addGestureRecognizer(doubleTapGest)
     }
-
+    
     private func setUpmZoomImageView() {
         self.mZoomImageView.isUserInteractionEnabled = true
         self.mZoomImageView.image = self.mImageView.image
@@ -243,7 +247,7 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
         self.mZoomImageView.alpha = 0
         self.setZoomImageFrame(imageSize: (self.mImageView.image?.size)!)
     }
-
+    
     private func setZoomImageFrame(imageSize: CGSize) {
         if let keyWindow = UIApplication.shared.keyWindow {
             var height: CGFloat = 0.0
@@ -254,7 +258,7 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
                 width = (keyWindow.frame.width)
                 height  = ((keyWindow.frame.width) / imageSize.width) * imageSize.height
                 y = (keyWindow.frame.height) / 2 - height / 2
-
+                
                 if height > keyWindow.frame.height {
                     width = (keyWindow.frame.height / imageSize.height) * imageSize.width
                     height = keyWindow.frame.height
@@ -265,7 +269,7 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
                 width  = ((keyWindow.frame.height) / imageSize.height) * imageSize.width
                 height = (keyWindow.frame.height)
                 x = (keyWindow.frame.width) / 2 - width / 2
-
+                
                 if width > keyWindow.frame.width {
                     height = (keyWindow.frame.width / imageSize.width) * imageSize.height
                     width = keyWindow.frame.width
@@ -276,16 +280,16 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
             self.mZoomImageView.frame = CGRect(x: x, y: y, width: width, height: height)
         }
     }
-
+    
     @objc private func handleDoubleTapScrollView(recognizer: UITapGestureRecognizer) {
         if self.mScrollView.zoomScale == self.mScrollView.minimumZoomScale {
             self.mScrollView.zoom(to: zoomRectForScale(scale: self.mScrollView.maximumZoomScale, center: recognizer.location(in: recognizer.view)), animated: true)
-
+            
         } else {
             self.mScrollView.setZoomScale(self.mScrollView.minimumZoomScale, animated: true)
         }
     }
-
+    
     private func zoomRectForScale(scale: CGFloat, center: CGPoint) -> CGRect {
         var zoomRect = CGRect.zero
         zoomRect.size.height = self.mZoomImageView.frame.size.height / scale
@@ -295,24 +299,73 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
         zoomRect.origin.y = newCenter.y - (zoomRect.size.height / 2.0)
         return zoomRect
     }
-
+    
     @objc public func zoomOut() {
         self.work.cancel()
         if self.oRetrieveImageTask != nil {
             self.oRetrieveImageTask.cancel()
         }
-
+        
         if self.mLoadingActivity.isAnimating {
             self.mLoadingActivity.stopAnimating()
         }
-
+        
         if !(UIDevice.current.userInterfaceIdiom == .pad) {
             UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
         }
-        self.mScrollView.setZoomScale(self.mScrollView.minimumZoomScale, animated: true)
-
+        //        self.mZoomImageView.alpha = 0
+        self.mImageView.alpha = 0
+        self.mScrollView.setZoomScale(self.mScrollView.minimumZoomScale, animated: false)
+        
         if let startingFrame = self.mImageView.superview?.convert(self.mImageView.frame, to: nil) {
-            self.mImageView.alpha = 0
+            self.mZoomImageView.frame = startingFrame
+            if let oViewController = self.delegate as? BNImagePageGridView {
+                oViewController.mButtonClose.alpha = 0.0
+                oViewController.mButtonShare.alpha = oViewController.mButtonClose.alpha
+                oViewController.mPageTitle.alpha = oViewController.mButtonClose.alpha
+            }
+            self.mZoomImageView.image = self.mImageView.image
+            UIView.animate(withDuration: 0.3, animations: { () -> Void in
+                
+                self.mLoadingActivity.center = self.mZoomImageView.center
+                self.view.backgroundColor = UIColor.black.withAlphaComponent(0.0)
+            }, completion: { (didComplete) -> Void in
+                self.mLoadingActivity.removeFromSuperview()
+                self.mZoomImageView.subviews.last?.removeFromSuperview()
+                self.mZoomImageView.removeFromSuperview()
+                self.mScrollView.removeFromSuperview()
+                self.clearCacheImage()
+                
+                self.dismiss(animated: false, completion: {
+                    self.mImageView.alpha = 1
+                })
+                if let oViewController = self.delegate as? UIViewController {
+                    oViewController.dismiss(animated: false, completion: nil)
+                }
+            })
+        }
+    }
+    
+    @objc public func zoomOut2() {
+        self.work.cancel()
+        if self.oRetrieveImageTask != nil {
+            self.oRetrieveImageTask.cancel()
+        }
+        
+        if self.mLoadingActivity.isAnimating {
+            self.mLoadingActivity.stopAnimating()
+        }
+        
+        if !(UIDevice.current.userInterfaceIdiom == .pad) {
+            UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
+        }
+        //        self.mZoomImageView.alpha = 0
+        self.mScrollView.setZoomScale(self.mScrollView.minimumZoomScale, animated: false)
+        
+        self.mImageView.alpha = 0
+        self.view.backgroundColor = UIColor.black.withAlphaComponent(0.0)
+        if let startingFrame = self.mImageView.superview?.convert(self.mImageView.frame, to: nil) {
+            
             if let oViewController = self.delegate as? BNImagePageGridView {
                 oViewController.mButtonClose.alpha = 0.0
                 oViewController.mButtonShare.alpha = oViewController.mButtonClose.alpha
@@ -322,48 +375,50 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
             UIView.animate(withDuration: 0.3, animations: { () -> Void in
                 self.mZoomImageView.frame = startingFrame
                 self.mLoadingActivity.center = self.mZoomImageView.center
-                self.view.backgroundColor = UIColor.black.withAlphaComponent(0.0)
+                
             }, completion: { (didComplete) -> Void in
                 self.mLoadingActivity.removeFromSuperview()
                 self.mZoomImageView.subviews.last?.removeFromSuperview()
                 self.mZoomImageView.removeFromSuperview()
                 self.mScrollView.removeFromSuperview()
                 self.clearCacheImage()
-                self.mImageView.alpha = 1
-                self.dismiss(animated: false, completion: nil)
+                
+                self.dismiss(animated: false, completion: {
+                    self.mImageView.alpha = 1
+                })
                 if let oViewController = self.delegate as? UIViewController {
                     oViewController.dismiss(animated: false, completion: nil)
                 }
             })
         }
     }
-
+    
     override open func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
         UIView.animate(withDuration: 0.2, animations: { () -> Void in
             self.view.backgroundColor = self.view.backgroundColor?.withAlphaComponent(1.0)
         }, completion:nil)
     }
-
+    
     @objc private func rotationView(notification: NSNotification) {
         self.mLoadingActivity.center = self.view.center
         self.mScrollView.setZoomScale(self.mScrollView.minimumZoomScale, animated: true)
         self.setZoomImageFrame(imageSize: (self.mZoomImageView.image?.size)!)
         self.mScrollView.contentSize = self.mZoomImageView.frame.size
         self.setMaxMinZoomScalesForCurrentBounds()
-
+        
         //ซ่อนปุ่มเมื่อ Rotation ตามเงื่อนไข
         self.mShareActivity.dismiss(animated: true) {
             self.bIsShowShareActivity = false
         }
     }
-
+    
     @objc func pressShare(_ sender: UIButton) {
         if !self.bIsShowImage && (self.mZoomImageView.subviews.count <= 0) {
             self.fShareSourceRect = self.mButtonShare.frame
             self.requestAuthorizationIfNeeded()
         }
     }
-
+    
     @objc func pressLongShare(_ gestureRecognizer: UIGestureRecognizer) {
         if self.presentedViewController == nil {
             if !self.bIsShowImage && (self.mZoomImageView.subviews.count <= 0) {
@@ -376,7 +431,7 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
             }
         }
     }
-
+    
     private func okAuthorized(){
         DispatchQueue.global(qos: .userInitiated).async {
             DispatchQueue.main.async {
@@ -389,26 +444,26 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
                     }
                     self.mShareActivity.popoverPresentationController?.sourceView = self.mScrollView
                     self.mShareActivity.popoverPresentationController?.delegate = self
-
+                    
                     // เมื่อปิด popOver เปลี่ยนค่า bIsShowShareActivity = false
                     self.mShareActivity.completionWithItemsHandler = { activity, success, items, error in
                         self.bIsShowShareActivity = false
                     }
-
-
+                    
+                    
                     if UIDevice.current.userInterfaceIdiom == .pad {
                         self.mShareActivity.popoverPresentationController?.sourceRect = self.fShareSourceRect
                     }
-
+                    
                     self.present(self.mShareActivity, animated: true, completion:{
                         self.bIsShowShareActivity = true
                     })
                 }
-
+                
             }
         }
     }
-
+    
     private func requestAuthorizationIfNeeded() {
         let authorizationStatus = AVCaptureDevice.authorizationStatus(for: AVMediaType.audio)
         switch authorizationStatus {
@@ -430,34 +485,34 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
             break
         }
     }
-
+    
     private func alertPhotoPermission() {
-//        DispatchQueue.main.async {
-//            Util.dialog.multiNotice(
-//                sTitle: "ALERT".stringLocalized(),
-//                sMessage: "PHOTO_PERMISSION".stringLocalized(),
-//                iMessageAlignMent: .center,
-//                axAlertAction: [
-//                    .decline : .red,
-//                    .setting :  UIColor(sColor: PTConfig.customColor.ButtonColor.uiColorBgBlue)
-//                ],
-//                target: self,
-//                callbackHandler:{ (action,_) in
-//                    switch action {
-//                    case .decline: break
-//                    case .setting:
-//                        let settingsUrl = NSURL(string: UIApplication.openSettingsURLString)
-//                        if let url = settingsUrl as URL? {
-//                            UIApplication.shared.openURL(url)
-//                        }
-//                        break
-//                    default:
-//                        break
-//                    }
-//            })
-//        }
+        //        DispatchQueue.main.async {
+        //            Util.dialog.multiNotice(
+        //                sTitle: "ALERT".stringLocalized(),
+        //                sMessage: "PHOTO_PERMISSION".stringLocalized(),
+        //                iMessageAlignMent: .center,
+        //                axAlertAction: [
+        //                    .decline : .red,
+        //                    .setting :  UIColor(sColor: PTConfig.customColor.ButtonColor.uiColorBgBlue)
+        //                ],
+        //                target: self,
+        //                callbackHandler:{ (action,_) in
+        //                    switch action {
+        //                    case .decline: break
+        //                    case .setting:
+        //                        let settingsUrl = NSURL(string: UIApplication.openSettingsURLString)
+        //                        if let url = settingsUrl as URL? {
+        //                            UIApplication.shared.openURL(url)
+        //                        }
+        //                        break
+        //                    default:
+        //                        break
+        //                    }
+        //            })
+        //        }
     }
-
+    
     override  open func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         ImageCache.default.clearDiskCache()
@@ -470,7 +525,7 @@ extension BNImagePageViewController: UIScrollViewDelegate {
     public func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return self.mZoomImageView
     }
-
+    
     public func scrollViewDidZoom(_ scrollView: UIScrollView){
         let scrollViewSize: CGSize = self.scrollViewVisibleSize();
         var imageCenter: CGPoint = CGPoint(x: self.mScrollView.contentSize.width/2.0, y:
@@ -479,20 +534,20 @@ extension BNImagePageViewController: UIScrollViewDelegate {
         if (self.mScrollView.contentSize.width < scrollViewSize.width) {
             imageCenter.x = scrollViewCenter.x
         }
-
+        
         if (self.mScrollView.contentSize.height < scrollViewSize.height) {
             imageCenter.y = scrollViewCenter.y
         }
-
+        
         self.mZoomImageView.center = imageCenter
     }
-
+    
     //return the scroll view center
     func scrollViewCenter() -> CGPoint {
         let scrollViewSize:CGSize = self.scrollViewVisibleSize()
         return CGPoint(x: scrollViewSize.width/2.0, y: scrollViewSize.height/2.0)
     }
-
+    
     // Return scrollview size without the area overlapping with tab and nav bar.
     func scrollViewVisibleSize() -> CGSize{
         let contentInset:UIEdgeInsets = self.mScrollView.contentInset;
@@ -501,7 +556,7 @@ extension BNImagePageViewController: UIScrollViewDelegate {
         let height:CGFloat = scrollViewSize.height - contentInset.top - contentInset.bottom;
         return CGSize(width:width, height:height)
     }
-
+    
     func setMaxMinZoomScalesForCurrentBounds() {
         if let keyWindow = UIApplication.shared.keyWindow {
             let scrollViewFrame = keyWindow.bounds
@@ -519,7 +574,7 @@ extension BNImagePageViewController: UIScrollViewDelegate {
 }
 
 extension BNImagePageViewController: UIGestureRecognizerDelegate {
-     public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+    public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         if let oPanGestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer {
             let translation = oPanGestureRecognizer.translation(in: self.view)
             if (fabsf(Float(translation.y)) > fabsf(Float(translation.x)))  {
@@ -530,8 +585,8 @@ extension BNImagePageViewController: UIGestureRecognizerDelegate {
         }
         return true
     }
-
-     public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+    
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         if let oPanGestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer {
             let translation = oPanGestureRecognizer.translation(in: self.view)
             if (fabsf(Float(translation.y)) > fabsf(Float(translation.x)))  {
@@ -542,34 +597,34 @@ extension BNImagePageViewController: UIGestureRecognizerDelegate {
         }
         return true
     }
-
+    
     @objc func draggedView(_ sender:UIPanGestureRecognizer){
         if self.mScrollView.zoomScale <= self.mScrollView.minimumZoomScale {
             var topMostWindowController : UIViewController? {
                 var topController: UIViewController? = UIApplication.shared.keyWindow?.rootViewController
-
+                
                 //  Getting topMost ViewController
                 while ((topController?.presentedViewController) != nil) {
                     topController = topController?.presentedViewController
                 }
-
+                
                 //  Returning topMost ViewController
                 return topController
             }
-
+            
             let oWindow = topMostWindowController
             oWindow?.view.bringSubviewToFront(self.mZoomImageView)
             let velocity = sender.velocity(in: self.mZoomImageView)
             let translation = sender.translation(in: oWindow?.view)
             self.mZoomImageView.center = CGPoint(x: self.mZoomImageView.center.x + translation.x, y: self.mZoomImageView.center.y + translation.y )
-
+            
             self.mLoadingActivity.center = self.mZoomImageView.center
             sender.setTranslation(CGPoint.zero, in: oWindow?.view)
-
+            
             var progressYPositionAfterShortTime = abs(translation.y + velocity.y * 0.2) / self.mScrollView.frame.height
             progressYPositionAfterShortTime = min(1, max(0, progressYPositionAfterShortTime))
             let point = sender.location(in: oWindow?.view)
-
+            
             //set ZoomImage background alpha
             let fZoomImageCenterPositionOnScreen = ((self.mZoomImageView.frame.origin.y + (self.mZoomImageView.frame.height / 2 )) / UIScreen.main.bounds.height)
             if fZoomImageCenterPositionOnScreen >= 0.5 {
@@ -605,7 +660,7 @@ extension BNImagePageViewController: UIGestureRecognizerDelegate {
                     oViewController.mPageTitle.alpha = oViewController.mButtonClose.alpha
                 }
             }
-
+            
             switch sender.state {
             case .began:
                 //จับจุดเริ่มต้นของการลากรูป
@@ -615,7 +670,7 @@ extension BNImagePageViewController: UIGestureRecognizerDelegate {
                 //เมื่อจบการลากรูป หากเข้าเงื่อไขปิดดูรูปก็จะปิดดูรูป ถ้ามไม่เข้าเงื่อไขการปิด รูปจะเด้งกลับไปตำแหน่งเดิม
                 self.fEndpointY = point.y//จุดสิ้นสุดของการลากรูป แกน Y
                 self.fEndpointX = point.x//จุดสิ้นสุดของการลากรูป แกน X
-
+                
                 if ( progressYPositionAfterShortTime > 0.4) {
                     //การลากรูปบวกกับความแรงของการลากมากกว่า 40%
                     //ปิดดูรูป
@@ -629,7 +684,7 @@ extension BNImagePageViewController: UIGestureRecognizerDelegate {
                     } else if self.fStartpointY < self.fEndpointY {
                         self.bIsOut = ((self.fEndpointY - self.fStartpointY) > ((UIScreen.main.bounds.height / 10)*2)) ? true : false
                     }
-
+                    
                     //ตรวจสอบความเป็นไปได้ที่จะปิดดูรูป
                     if self.bIsOut {
                         //ปิดดูรูป
@@ -643,7 +698,7 @@ extension BNImagePageViewController: UIGestureRecognizerDelegate {
             }
         }
     }
-
+    
     func resetZoomScaleToMinimum() {
         UIView.animate(withDuration: 0.2, animations: { () -> Void in
             self.view.backgroundColor = self.view.backgroundColor?.withAlphaComponent(1)

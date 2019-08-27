@@ -1,5 +1,5 @@
 PODS:
-  - BNImagePageView (0.1.25):
+  - BNImagePageView (0.1.26):
     - Kingfisher (= 5.7.0)
   - Kingfisher (5.7.0)
 
@@ -16,7 +16,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  BNImagePageView: 84f5512c3ba1a4d1341643a17d4850fcea35207a
+  BNImagePageView: 9f1149f5190f93c3eafbf29dd45854e01d717c9d
   Kingfisher: c7d211b54f1f30d8060aadab177d52b4349c825b
 
 PODFILE CHECKSUM: 60b1b928241cb7dee69322b6f2b6413028443e4e
