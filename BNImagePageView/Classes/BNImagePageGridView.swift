@@ -179,7 +179,8 @@ open class BNImagePageGridView: UIPageViewController {
     }
     
     private func setUpButtonShare() {
-        self.mButtonShare.setImage(UIImage(named:"icon-share"), for: .normal)
+        self.mButtonShare.setImage(UIImage(named:"icon-share").withRenderingMode(.alwaysTemplate), for: .normal)
+        self.mButtonShare.tintColor = .white
         self.mButtonShare.clipsToBounds = true
         self.mButtonShare.backgroundColor = UIColor.black.withAlphaComponent(0.6)
         self.mButtonShare.translatesAutoresizingMaskIntoConstraints = false
