@@ -126,7 +126,7 @@ open class BNImagePageGridView: UIPageViewController {
     }
     
     private func setUpButtonClose() {
-        self.mButtonClose.setImage(UIImage(named:"ic-topbar-closeimage")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        self.mButtonClose.setImage(UIImage(named:"icon-close")?.withRenderingMode(.alwaysTemplate), for: .normal)
         self.mButtonClose.tintColor = .white
         self.mButtonClose.backgroundColor = UIColor.black.withAlphaComponent(0.6)
         self.mButtonClose.clipsToBounds = true
@@ -179,7 +179,7 @@ open class BNImagePageGridView: UIPageViewController {
     }
     
     private func setUpButtonShare() {
-        self.mButtonShare.setImage(UIImage(named:"ic-topbar-safeimage"), for: .normal)
+        self.mButtonShare.setImage(UIImage(named:"icon-share"), for: .normal)
         self.mButtonShare.clipsToBounds = true
         self.mButtonShare.backgroundColor = UIColor.black.withAlphaComponent(0.6)
         self.mButtonShare.translatesAutoresizingMaskIntoConstraints = false
