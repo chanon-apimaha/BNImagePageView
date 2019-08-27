@@ -3,7 +3,7 @@ use_frameworks!
 
 target 'BNImagePageView_Example' do
   pod 'BNImagePageView', :path => '../'
-  pod 'Kingfisher', '5.7.0', :inhibit_warnings => true
+  #pod 'Kingfisher', '5.7.0', :inhibit_warnings => true
   target 'BNImagePageView_Tests' do
     inherit! :search_paths
     
