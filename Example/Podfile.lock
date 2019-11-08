@@ -1,5 +1,5 @@
 PODS:
-  - BNImagePageView (0.1.29):
+  - BNImagePageView (0.1.31):
     - Kingfisher (= 5.7.0)
   - Kingfisher (5.7.0)
 
@@ -7,7 +7,7 @@ DEPENDENCIES:
   - BNImagePageView (from `../`)
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
+  https://github.com/CocoaPods/Specs.git:
     - Kingfisher
 
 EXTERNAL SOURCES:
@@ -15,9 +15,9 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  BNImagePageView: 3cba9a4a3663c37ec53cc7c15fab6f47aa1fc53b
+  BNImagePageView: 0c3da30eb5c50a22860738ccbf082052991df20e
   Kingfisher: c7d211b54f1f30d8060aadab177d52b4349c825b
 
 PODFILE CHECKSUM: 994a5f2b269588d90e60f3d0999a730e78eddb7d
 
-COCOAPODS: 1.7.5
+COCOAPODS: 1.8.0

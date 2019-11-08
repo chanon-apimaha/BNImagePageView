@@ -10,6 +10,9 @@ import UIKit
 import BNImagePageView
 
 class ViewController: UIViewController {
+    override open var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return .portrait
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,6 +27,7 @@ class ViewController: UIViewController {
         mImageView.centerYAnchor.constraint(equalTo: self.view.centerYAnchor).isActive = true
         let doubleTapGest = UITapGestureRecognizer(target: self, action: #selector(self.handleDoubleTapScrollView(recognizer:)))
         mImageView.addGestureRecognizer(doubleTapGest)
+        BNSetting.titlefont = .systemFont(ofSize: 100)
         
         // mImageView.image = UIImage(
         // Do any additional setup after loading the view, typically from a nib.
@@ -36,7 +40,7 @@ class ViewController: UIViewController {
     
     @objc private func handleDoubleTapScrollView(recognizer: UITapGestureRecognizer) {
         if let mImageView = recognizer.view as? UIImageView {
-        self.navigationController?.BNImagePage(mImageViewShowFirst: mImageView, sImageUrl: "https://homepages.cae.wisc.edu/~ece533/images/airplane.png")
+        self.navigationController?.BNImagePageHideShare(mImageViewShowFirst: mImageView, sImageUrl: "https://homepages.cae.wisc.edu/~ece533/images/airplane.png")
         }
     }
     

@@ -22,6 +22,12 @@
 
 import UIKit
 
+open class BNSetting {
+    public static var titlefont: UIFont = .systemFont(ofSize: 16)
+    public static var mButtonClose: UIButton = UIButton()
+    public static var closeImage : UIImage? = UIImage(named:"icon-close")?.withRenderingMode(.alwaysTemplate)
+}
+
 open class BNImagePageGridView: UIPageViewController {
     private var mImageView: UIImageView!//Require
     private var axImgaePageData: [ImgaePageData]!
@@ -52,7 +58,7 @@ open class BNImagePageGridView: UIPageViewController {
     
     fileprivate var iCurrentIndex: Int = 0
     
-    internal var mButtonClose: UIButton = UIButton()
+    open var mButtonClose: UIButton = BNSetting.mButtonClose
     fileprivate var mConsRightClose: NSLayoutConstraint = NSLayoutConstraint()
     fileprivate var mConsTopClose: NSLayoutConstraint = NSLayoutConstraint()
     fileprivate var mConsWidthClose: NSLayoutConstraint = NSLayoutConstraint()
@@ -64,7 +70,7 @@ open class BNImagePageGridView: UIPageViewController {
     fileprivate var mConsWidthShare: NSLayoutConstraint = NSLayoutConstraint()
     fileprivate var mConsHeightShare: NSLayoutConstraint = NSLayoutConstraint()
     
-    internal var mPageTitle: UIButton = UIButton()
+    open var mPageTitle: UIButton = UIButton()
     fileprivate var mConsLeftPageTitle: NSLayoutConstraint = NSLayoutConstraint()
     fileprivate var mConsTopPageTitle: NSLayoutConstraint = NSLayoutConstraint()
     fileprivate var mConsWidthPageTitle: NSLayoutConstraint = NSLayoutConstraint()
@@ -128,6 +134,7 @@ open class BNImagePageGridView: UIPageViewController {
     private func setUpButtonClose() {
         self.mButtonClose.setImage(UIImage(named:"icon-close")?.withRenderingMode(.alwaysTemplate), for: .normal)
         self.mButtonClose.tintColor = .white
+        self.mButtonClose.contentEdgeInsets = UIEdgeInsets(top: 5,left: 5,bottom: 5,right: 5) 
         self.mButtonClose.backgroundColor = UIColor.black.withAlphaComponent(0.6)
         self.mButtonClose.clipsToBounds = true
         self.mButtonClose.translatesAutoresizingMaskIntoConstraints = false
@@ -239,6 +246,7 @@ open class BNImagePageGridView: UIPageViewController {
     }
     
     func setPageTitle() {
+        self.mPageTitle.titleLabel?.font = BNSetting.titlefont
         self.mPageTitle.backgroundColor = UIColor.black.withAlphaComponent(0.6)
         self.mPageTitle.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(self.mPageTitle)
@@ -270,7 +278,7 @@ open class BNImagePageGridView: UIPageViewController {
         self.mPageTitle.contentEdgeInsets = UIEdgeInsets(top: 4, left: 8, bottom: 4, right: 8)
     }
     
-    @objc private func handleOneTapScrollView(recognizer: UITapGestureRecognizer) {
+    @objc func handleOneTapScrollView(recognizer: UITapGestureRecognizer) {
         self.toggleBuutonCloseAndShare()
     }
     
@@ -286,7 +294,41 @@ open class BNImagePageGridView: UIPageViewController {
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(iSecoundDelay), execute: self.work)
     }
     
+    func toggleBuutonCloseAndShareFinFIn(iSecoundDelay: Int = 0) {
+        self.work.cancel()
+        self.work = DispatchWorkItem(block: {
+            if !self.mButtonClose.isHidden && !self.mPageTitle.isHidden {
+                self.buttonFinFinHide()
+            } else {
+                self.buttonFinFInShow()
+            }
+        })
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(iSecoundDelay), execute: self.work)
+    }
+    
     private func buttonHide() {
+        self.mConsTopPageTitle.constant = self.mConsTopPageTitle.constant * 0.5
+        self.mConsTopClose.constant = self.mConsTopClose.constant * 0.5
+        self.mConsBottomShare.constant =  self.mConsBottomShare.constant * 0.5
+        
+        UIView.animate(withDuration: 0.25) {
+            self.view.layoutIfNeeded()
+        }
+        
+        UIView.animate(withDuration: 0.2, delay: 0, options: [], animations: {
+            self.mPageTitle.alpha = 0
+            self.mButtonClose.alpha = 0
+            self.mButtonShare.alpha = 0
+        }, completion: { _ in
+            self.mPageTitle.isHidden = true
+            self.mButtonShare.isHidden = true
+            self.mButtonClose.isHidden = true
+        })
+        
+        
+    }
+    
+    private func buttonFinFinHide() {
         self.mConsTopPageTitle.constant = self.mConsTopPageTitle.constant * 0.5
         self.mConsTopClose.constant = self.mConsTopClose.constant * 0.5
         self.mConsBottomShare.constant =  self.mConsBottomShare.constant * 0.5
@@ -328,6 +370,30 @@ open class BNImagePageGridView: UIPageViewController {
             self.mPageTitle.alpha = 1
             self.mButtonClose.alpha = 1
             self.mButtonShare.alpha = 1
+        }, completion: { (didComplete) -> Void in
+        })
+    }
+    
+    private func buttonFinFInShow() {
+        self.mConsTopPageTitle.constant = 34.0
+        self.mConsTopClose.constant = 34.0
+        
+        
+        if #available(iOS 11.0, *) {
+            self.mConsBottomShare.constant =  (UIDevice.current.userInterfaceIdiom == .pad) ? -32 : -24
+        } else {
+            self.mConsBottomShare.constant =  (UIDevice.current.userInterfaceIdiom == .pad) ? -16 : -8
+        }
+        UIView.animate(withDuration: 0.25) {
+            self.view.layoutIfNeeded()
+        }
+        UIView.animate(withDuration: 0.2, delay: 0, options: [], animations: {
+            self.mPageTitle.isHidden = false
+            self.mButtonClose.isHidden = false
+            self.mButtonShare.isHidden = false
+            self.mPageTitle.alpha = 1
+            self.mButtonClose.alpha = 1
+            self.mButtonShare.alpha = 0
         }, completion: { (didComplete) -> Void in
         })
     }
@@ -424,6 +490,34 @@ public extension UINavigationController {
     func BNImagePage(mImageViewShowFirst mImageView: UIImageView, axImgaePageData: [ImgaePageData] , atIndexPath: IndexPath, PageSpacing: Int = 20, transitionStyle: UIPageViewController.TransitionStyle = .scroll) {
         let optionsDict = [convertFromUIPageViewControllerOptionsKey(UIPageViewController.OptionsKey.interPageSpacing) : PageSpacing]
         let oPantipImagePageController = BNImagePageGridView(
+            mImageView:  mImageView,
+            axImgaePageData: axImgaePageData,
+            atIndexPath: atIndexPath,
+            transitionStyle: transitionStyle,
+            navigationOrientation: .horizontal,
+            options: optionsDict)
+        
+        oPantipImagePageController.modalPresentationStyle = .overFullScreen
+        self.present(oPantipImagePageController, animated: false, completion: nil)
+    }
+    
+    func BNImagePageHideShare(mImageViewShowFirst mImageView: UIImageView, sImageUrl: String, PageSpacing: Int = 20, transitionStyle: UIPageViewController.TransitionStyle = .scroll) {
+        let atIndexPath = IndexPath(row: 0, section: 0)
+        var axImgaePageData: [ImgaePageData] = []
+        let axInfomation = NSMutableAttributedString()
+        axInfomation.append(NSAttributedString(string:""))
+        axImgaePageData.append(ImgaePageData(
+            atIndex: atIndexPath,
+            sImageUrl: sImageUrl,
+            fWidth: (mImageView.image?.size.width)!,
+            fHeight: (mImageView.image?.size.height)!))
+        self.BNImagePageHideShare(mImageViewShowFirst: mImageView, axImgaePageData: axImgaePageData, atIndexPath: atIndexPath,PageSpacing: PageSpacing, transitionStyle: transitionStyle)
+    }
+    
+    //แสดงรูป สำหรับแบ่งแสดงเป็นหน้าต่อหนึ่งรูป
+    func BNImagePageHideShare(mImageViewShowFirst mImageView: UIImageView, axImgaePageData: [ImgaePageData] , atIndexPath: IndexPath, PageSpacing: Int = 20, transitionStyle: UIPageViewController.TransitionStyle = .scroll) {
+        let optionsDict = [convertFromUIPageViewControllerOptionsKey(UIPageViewController.OptionsKey.interPageSpacing) : PageSpacing]
+        let oPantipImagePageController = BNImagePageGridHideShareView(
             mImageView:  mImageView,
             axImgaePageData: axImgaePageData,
             atIndexPath: atIndexPath,

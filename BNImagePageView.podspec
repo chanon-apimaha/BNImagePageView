@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'BNImagePageView'
-  s.version          = '0.1.30'
+  s.version          = '0.1.32'
   s.summary          = 'Present PicturesView as a page  and Ready to show animate in and out Screen'
 
 # This description is used to generate tags and improve search results.
@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
 #   * Write the description between the DESC delimiters below.
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
-  s.description      = 'Present PicturesView as a page  and Ready to show animate in and out fullScreen'
+  s.description      = 'Present PicturesView as a page  and Ready to show animate in and out fullScreen '
 
   s.homepage         = 'https://github.com/chanon-apimaha/BNImagePageView'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
