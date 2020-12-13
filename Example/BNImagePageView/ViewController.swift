@@ -27,7 +27,8 @@ class ViewController: UIViewController {
         mImageView.centerYAnchor.constraint(equalTo: self.view.centerYAnchor).isActive = true
         let doubleTapGest = UITapGestureRecognizer(target: self, action: #selector(self.handleDoubleTapScrollView(recognizer:)))
         mImageView.addGestureRecognizer(doubleTapGest)
-        BNSetting.titlefont = .systemFont(ofSize: 100)
+//        BNSetting.titlefont = .systemFont(ofSize: 100)
+        BNSetting.closeImage =  UIImage(named:"icon-home")?.withRenderingMode(.alwaysTemplate)
         
         // mImageView.image = UIImage(
         // Do any additional setup after loading the view, typically from a nib.

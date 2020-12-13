@@ -8,6 +8,7 @@
 
 import UIKit
 
+
 class BNImagePageGridHideShareView: BNImagePageGridView {
     override func viewDidLoad() {
         super.viewDidLoad()
