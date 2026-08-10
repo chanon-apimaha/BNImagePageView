@@ -14,15 +14,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
         var topController = window?.rootViewController
+        var allControllers: [UIViewController] = []
         while let presented = topController?.presentedViewController {
+            allControllers.append(presented)
             topController = presented
         }
-        switch topController {
-        case is BNImagePageGridView, is BNImagePageGridHideShareView, is BNImagePageViewController:
-            return .all
-        default:
-            return .portrait
+        let isBNPresent = allControllers.contains {
+            $0 is BNImagePageGridView || $0 is BNImagePageGridHideShareView || $0 is BNImagePageViewController
         }
+        if isBNPresent { return .all }
+        let isBNDismissing = allControllers.contains { $0.isBeingDismissed &&
+            ($0 is BNImagePageGridView || $0 is BNImagePageGridHideShareView || $0 is BNImagePageViewController)
+        }
+        if isBNDismissing { return .all }
+        return .portrait
     }
 }
 

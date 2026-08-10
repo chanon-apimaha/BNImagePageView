@@ -381,6 +381,10 @@ blur ครอบทั้งภาพ                    blur + dim overlay (bl
 | Feature | ปัจจุบัน | ปรับปรุง | Priority |
 |---|---|---|---|
 | Safe area buttons | ~~fixed 34pt~~ | safeAreaLayoutGuide | ✅ Done |
+| Share sheet on rotation | ~~ปิดทุกครั้งที่หมุน~~ | ยังอยู่ขณะหมุน | ✅ Done |
+| Popover position on rotation | ~~ค้างตำแหน่งเดิม~~ | track ปุ่ม share อัตโนมัติ | ✅ Done |
+| Button blink on rotation | ~~hide/show ทุกครั้ง~~ | ไม่กระพริบ (safeArea จัดการ) | ✅ Done |
+| Force portrait on dismiss | ~~กลับ portrait ทุกครั้ง~~ | คงค้าง orientation เดิม | ✅ Done |
 | Page counter position | top-left | top-center | 🟡 Medium |
 | Auto-hide buttons | ไม่มี | 3s timer | 🟡 Medium |
 | Haptic feedback | ไม่มี | light/medium | 🟡 Medium |

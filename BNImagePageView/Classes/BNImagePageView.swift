@@ -51,7 +51,7 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
     fileprivate var panGesture: UIPanGestureRecognizer = UIPanGestureRecognizer()
     fileprivate var bIsShowImage: Bool = true
     fileprivate var iLoadImageCount: Int = 0
-    fileprivate var bIsShowShareActivity: Bool = false
+    var bIsShowShareActivity: Bool = false
     
     fileprivate var fStartpointY: CGFloat = 0.0
     fileprivate var fEndpointY: CGFloat = 0.0
@@ -309,9 +309,6 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
         self.work.cancel()
         if self.oRetrieveImageTask != nil { self.oRetrieveImageTask.cancel() }
         if self.mLoadingActivity.isAnimating { self.mLoadingActivity.stopAnimating() }
-        if !(UIDevice.current.userInterfaceIdiom == .pad) {
-            UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
-        }
         self.mImageView.alpha = 0
         self.mScrollView.setZoomScale(self.mScrollView.minimumZoomScale, animated: false)
         if let oViewController = self.delegate as? BNImagePageGridView {
@@ -343,9 +340,6 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
         self.work.cancel()
         if self.oRetrieveImageTask != nil { self.oRetrieveImageTask.cancel() }
         if self.mLoadingActivity.isAnimating { self.mLoadingActivity.stopAnimating() }
-        if !(UIDevice.current.userInterfaceIdiom == .pad) {
-            UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
-        }
         self.mScrollView.setZoomScale(self.mScrollView.minimumZoomScale, animated: false)
         self.mImageView.alpha = 0
         if let oViewController = self.delegate as? BNImagePageGridView {
@@ -386,10 +380,7 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
         self.mScrollView.contentSize = self.mZoomImageView.frame.size
         self.setMaxMinZoomScalesForCurrentBounds()
         
-        //ซ่อนปุ่มเมื่อ Rotation ตามเงื่อนไข
-        self.mShareActivity.dismiss(animated: true) {
-            self.bIsShowShareActivity = false
-        }
+
     }
     
     @objc func pressShare(_ sender: UIButton) {
@@ -418,17 +409,11 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
                 if let mZoomView = self.mZoomImageView.image {
                     self.mShareActivity = UIActivityViewController(activityItems: [mZoomView], applicationActivities: nil)
                     self.mShareActivity.excludedActivityTypes = [.addToReadingList, .airDrop, .assignToContact, .copyToPasteboard, .mail, .markupAsPDF, .message, .openInIBooks, .print, .postToWeibo, .postToTencentWeibo, .postToFlickr, .postToVimeo, .postToFacebook]
-                    self.mShareActivity.popoverPresentationController?.sourceView = self.mScrollView
+                    self.mShareActivity.popoverPresentationController?.sourceView = self.mButtonShare
+                    self.mShareActivity.popoverPresentationController?.sourceRect = self.mButtonShare.bounds
                     self.mShareActivity.popoverPresentationController?.delegate = self
-                    
-                    // เมื่อปิด popOver เปลี่ยนค่า bIsShowShareActivity = false
-                    self.mShareActivity.completionWithItemsHandler = { activity, success, items, error in
+                    self.mShareActivity.completionWithItemsHandler = { _, _, _, _ in
                         self.bIsShowShareActivity = false
-                    }
-                    
-                    
-                    if UIDevice.current.userInterfaceIdiom == .pad {
-                        self.mShareActivity.popoverPresentationController?.sourceRect = self.fShareSourceRect
                     }
                     
                     self.present(self.mShareActivity, animated: true, completion:{

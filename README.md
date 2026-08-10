@@ -17,6 +17,19 @@ Swift 5.0, iOS 10.0+
 SwiftUI support requires iOS 13.0+
 ```
 
+## Privacy
+
+If your app uses the share button, add the following to your app's `Info.plist`:
+
+```xml
+<key>NSPhotoLibraryUsageDescription</key>
+<string>Used to save images to your photo library</string>
+<key>NSPhotoLibraryAddUsageDescription</key>
+<string>Used to save images to your photo library</string>
+```
+
+> **Note:** Without this, the app will crash when the user attempts to save an image.
+
 ## Installation
 
 ### Swift Package Manager
@@ -83,15 +96,20 @@ If your app is locked to portrait only, add this to your `AppDelegate` to allow 
 ```swift
 func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
     var topController = window?.rootViewController
+    var allControllers: [UIViewController] = []
     while let presented = topController?.presentedViewController {
+        allControllers.append(presented)
         topController = presented
     }
-    switch topController {
-    case is BNImagePageGridView, is BNImagePageGridHideShareView, is BNImagePageViewController:
-        return .all
-    default:
-        return .portrait
+    let isBNPresent = allControllers.contains {
+        $0 is BNImagePageGridView || $0 is BNImagePageGridHideShareView || $0 is BNImagePageViewController
     }
+    if isBNPresent { return .all }
+    let isBNDismissing = allControllers.contains { $0.isBeingDismissed &&
+        ($0 is BNImagePageGridView || $0 is BNImagePageGridHideShareView || $0 is BNImagePageViewController)
+    }
+    if isBNDismissing { return .all }
+    return .portrait
 }
 ```
 

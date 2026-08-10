@@ -281,17 +281,24 @@ BNImagePageView รองรับทุก orientation รวมถึง portr
 ```swift
 func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
     var topController = window?.rootViewController
+    var allControllers: [UIViewController] = []
     while let presented = topController?.presentedViewController {
+        allControllers.append(presented)
         topController = presented
     }
-    switch topController {
-    case is BNImagePageGridView, is BNImagePageGridHideShareView, is BNImagePageViewController:
-        return .all
-    default:
-        return .portrait
+    let isBNPresent = allControllers.contains {
+        $0 is BNImagePageGridView || $0 is BNImagePageGridHideShareView || $0 is BNImagePageViewController
     }
+    if isBNPresent { return .all }
+    let isBNDismissing = allControllers.contains { $0.isBeingDismissed &&
+        ($0 is BNImagePageGridView || $0 is BNImagePageGridHideShareView || $0 is BNImagePageViewController)
+    }
+    if isBNDismissing { return .all }
+    return .portrait
 }
 ```
+
+> **Note:** ต้องเก็บ VC ทุกตัวใน chain ไว้ใน array เพราะตอน dismiss `presentedViewController` กลายเป็น `nil` ก่อนที่ iOS จะ re-evaluate orientation — ถ้าดูแค่ top VC จะกลับ portrait ทันที
 
 ---
 

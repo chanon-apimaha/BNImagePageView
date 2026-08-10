@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/chanon-apimaha/BNImagePageView.git",
       "state" : {
-        "branch" : "fix/spm-swiftui-support",
-        "revision" : "118f46b7a916731de061a332de78628ad2543a6f"
+        "branch" : "fix/share-button-safe-area",
+        "revision" : "8a46dc58854b3b87aa7f96b9eaa8d453a39f0c83"
       }
     },
     {
