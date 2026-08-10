@@ -14,35 +14,50 @@ class ViewController: UIViewController {
         return .portrait
     }
     
+    private let imageURLs = [
+        "https://picsum.photos/id/237/400/300.jpg",
+        "https://picsum.photos/id/10/400/300.jpg",
+        "https://picsum.photos/id/20/400/300.jpg",
+        "https://picsum.photos/id/30/400/300.jpg"
+    ]
+    private var pageData: [ImgaePageData] = []
+    private var imageViews: [UIImageView] = []
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        let mImageView: UIImageView = UIImageView(URL: NSURL(string: "https://picsum.photos/id/237/400/300.jpg")!)
-        mImageView.isUserInteractionEnabled = true
-        self.view.addSubview(mImageView)
-        mImageView.translatesAutoresizingMaskIntoConstraints = false
-        
-        mImageView.widthAnchor.constraint(equalToConstant: 200.0).isActive = true
-        mImageView.heightAnchor.constraint(equalToConstant: 100.0).isActive = true
-        mImageView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
-        mImageView.centerYAnchor.constraint(equalTo: self.view.centerYAnchor).isActive = true
-        let doubleTapGest = UITapGestureRecognizer(target: self, action: #selector(self.handleDoubleTapScrollView(recognizer:)))
-        mImageView.addGestureRecognizer(doubleTapGest)
-//        BNSetting.titlefont = .systemFont(ofSize: 100)
-        BNSetting.closeImage =  UIImage(named:"icon-home")?.withRenderingMode(.alwaysTemplate)
-        
-        // mImageView.image = UIImage(
-        // Do any additional setup after loading the view, typically from a nib.
-    }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
-    @objc private func handleDoubleTapScrollView(recognizer: UITapGestureRecognizer) {
-        if let mImageView = recognizer.view as? UIImageView {
-        self.navigationController?.BNImagePageHideShare(mImageViewShowFirst: mImageView, sImageUrl: "https://picsum.photos/id/237/400/300.jpg")
+        view.backgroundColor = .white
+
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.spacing = 12
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(stack)
+        NSLayoutConstraint.activate([
+            stack.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            stack.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+
+        for (i, url) in imageURLs.enumerated() {
+            let iv = UIImageView(URL: NSURL(string: url)!)
+            iv.isUserInteractionEnabled = true
+            iv.contentMode = .scaleAspectFill
+            iv.clipsToBounds = true
+            iv.translatesAutoresizingMaskIntoConstraints = false
+            iv.widthAnchor.constraint(equalToConstant: 200).isActive = true
+            iv.heightAnchor.constraint(equalToConstant: 120).isActive = true
+            iv.tag = i
+            let tap = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
+            iv.addGestureRecognizer(tap)
+            stack.addArrangedSubview(iv)
+            imageViews.append(iv)
+            pageData.append(ImgaePageData(atIndex: IndexPath(row: i, section: 0), sImageUrl: url, fWidth: 400, fHeight: 300))
         }
+    }
+
+    @objc private func handleTap(_ recognizer: UITapGestureRecognizer) {
+        guard let iv = recognizer.view as? UIImageView else { return }
+        let indexPath = IndexPath(row: iv.tag, section: 0)
+        self.navigationController?.BNImagePage(mImageViewShowFirst: iv, axImgaePageData: pageData, atIndexPath: indexPath)
     }
     
 }
