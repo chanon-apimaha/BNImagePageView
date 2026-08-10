@@ -380,12 +380,7 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
         self.mScrollView.contentSize = self.mZoomImageView.frame.size
         self.setMaxMinZoomScalesForCurrentBounds()
         
-        //ซ่อนปุ่มเมื่อ Rotation ตามเงื่อนไข
-        if bIsShowShareActivity {
-            self.mShareActivity.dismiss(animated: true) {
-                self.bIsShowShareActivity = false
-            }
-        }
+
     }
     
     @objc func pressShare(_ sender: UIButton) {
