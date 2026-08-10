@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/chanon-apimaha/BNImagePageView.git",
       "state" : {
-        "branch" : "fix/spm-swiftui-support",
-        "revision" : "5357af13d4b318e1e8ebd14dbf205d648bbdf937"
+        "branch" : "fix/close-button-dynamic-island",
+        "revision" : "83fdb3186e1b5f35de9b3ec6a8ea5ff93a8ab2fb"
       }
     },
     {
