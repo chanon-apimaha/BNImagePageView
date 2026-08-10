@@ -159,7 +159,7 @@ open class BNImagePageGridView: UIPageViewController {
             item: self.mButtonClose,
             attribute: .right,
             relatedBy: .equal,
-            toItem: self.view,
+            toItem: self.view.safeAreaLayoutGuide,
             attribute: .right,
             multiplier: 1,
             constant: 0)
@@ -196,7 +196,7 @@ open class BNImagePageGridView: UIPageViewController {
         self.mConsWidthClose.constant = 40.0
         self.mConsHeightClose.constant = 40.0
         self.mConsTopClose.constant = 8
-        self.mConsRightClose.constant =  (UIDevice.current.userInterfaceIdiom == .pad ) ? -16 : -8
+        self.mConsRightClose.constant = -8
         self.mButtonClose.layer.cornerRadius = self.mConsWidthClose.constant / 2.0
     }
     
@@ -265,7 +265,7 @@ open class BNImagePageGridView: UIPageViewController {
             item: self.mPageTitle,
             attribute: .left,
             relatedBy: .equal,
-            toItem: self.view,
+            toItem: self.view.safeAreaLayoutGuide,
             attribute: .left,
             multiplier: 1,
             constant: 0)
@@ -282,7 +282,7 @@ open class BNImagePageGridView: UIPageViewController {
         NSLayoutConstraint.activate([self.mConsLeftPageTitle, self.mConsTopPageTitle])
         
         self.mConsTopPageTitle.constant = 8
-        self.mConsLeftPageTitle.constant =  (UIDevice.current.userInterfaceIdiom == .pad ) ? 16 : 8
+        self.mConsLeftPageTitle.constant = 8
         self.mPageTitle.isHidden = false
         self.mPageTitle.layer.cornerRadius = 4.0//PTConfig.layerStyle.fCornerRadius
         self.mPageTitle.contentEdgeInsets = UIEdgeInsets(top: 4, left: 8, bottom: 4, right: 8)
@@ -396,6 +396,9 @@ open class BNImagePageGridView: UIPageViewController {
     
     @objc private func rotationView(notification: NSNotification) {
         self.buttonHide()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+            self.buttonShow()
+        }
     }
 }
 
