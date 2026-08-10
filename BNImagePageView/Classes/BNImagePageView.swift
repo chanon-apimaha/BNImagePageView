@@ -139,7 +139,6 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
                     return
             }
             
-            let resource = KF.url(bundleURL).cacheKey("overImage")
             self.oRetrieveImageTask = self.mZoomImageView.kf.setImage(with: bundleURL, placeholder: self.mImageView.image, options: [.transition(.fade(0.15)), .cacheMemoryOnly], progressBlock: nil) { (result) in
                 switch result {
                 case .success(_):
@@ -195,8 +194,8 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
         }
     }
     
-    private func clearCacheImage () {
-        ImageCache.default.removeImage(forKey: "overImage")
+    private func clearCacheImage() {
+        ImageCache.default.clearMemoryCache()
     }
     
     @objc public func animateImageView() {
