@@ -90,7 +90,8 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
                 
                 if self.bDoAnimate {
                     UIView.animate(withDuration: 0.75, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0.5, options: .curveEaseOut, animations: { () -> Void in
-                        if let size = self.mImageView.image?.size { self.setZoomImageFrame(imageSize: size) }
+                        let size = self.mImageView.image?.size ?? UIScreen.main.bounds.size
+                        self.setZoomImageFrame(imageSize: size)
                         self.mImageView.alpha = 0
                         self.mZoomImageView.alpha = 1
                         self.view.backgroundColor = UIColor.black.withAlphaComponent(1.0)
@@ -98,7 +99,8 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
                         self.loadImage()
                     })
                 } else {
-                    if let size = self.mImageView.image?.size { self.setZoomImageFrame(imageSize: size) }
+                    let size = self.mImageView.image?.size ?? UIScreen.main.bounds.size
+                    self.setZoomImageFrame(imageSize: size)
                     self.mImageView.alpha = 0
                     self.mZoomImageView.alpha = 1
                     self.view.backgroundColor = UIColor.black.withAlphaComponent(1.0)
@@ -242,9 +244,8 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
         self.mZoomImageView.contentMode = .scaleAspectFill
         self.mZoomImageView.clipsToBounds = true
         self.mZoomImageView.alpha = 0
-        if let size = self.mImageView.image?.size {
-            self.setZoomImageFrame(imageSize: size)
-        }
+        let size = self.mImageView.image?.size ?? UIScreen.main.bounds.size
+        self.setZoomImageFrame(imageSize: size)
     }
     
     private var keyWindow: UIWindow? {
