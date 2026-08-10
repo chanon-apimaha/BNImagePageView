@@ -23,8 +23,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         switch topController {
         case is BNImagePageGridView, is BNImagePageGridHideShareView, is BNImagePageViewController:
+            print("[BNOrientation] \(type(of: topController!)) → .all")
             return .all
         default:
+            print("[BNOrientation] \(type(of: topController as AnyObject)) → .portrait")
             return .portrait
         }
     }
