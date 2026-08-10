@@ -98,9 +98,9 @@ class ViewController: UIViewController {
             layout.minimumInteritemSpacing = 2
             layout.minimumLineSpacing = 2
         case .paging:
-            layout.itemSize = CGSize(width: width - 64, height: 260)
+            layout.itemSize = CGSize(width: width - 48, height: 280)
             layout.minimumLineSpacing = 16
-            layout.sectionInset = UIEdgeInsets(top: 8, left: 32, bottom: 8, right: 32)
+            layout.sectionInset = UIEdgeInsets(top: 8, left: 24, bottom: 8, right: 24)
             layout.scrollDirection = .horizontal
         }
         return layout
@@ -108,6 +108,9 @@ class ViewController: UIViewController {
 
     @objc private func segmentChanged(_ sender: UISegmentedControl) {
         currentLayout = LayoutType(rawValue: sender.selectedSegmentIndex) ?? .list
+        let isPaging = currentLayout == .paging
+        collectionView.isPagingEnabled = false
+        collectionView.decelerationRate = isPaging ? .fast : .normal
         UIView.animate(withDuration: 0.3) {
             self.collectionView.setCollectionViewLayout(self.makeLayout(for: self.currentLayout), animated: false)
         }
@@ -115,7 +118,16 @@ class ViewController: UIViewController {
     }
 }
 
-extension ViewController: UICollectionViewDataSource, UICollectionViewDelegate {
+extension ViewController: UICollectionViewDataSource, UICollectionViewDelegate, UIScrollViewDelegate {
+    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+        guard currentLayout == .paging else { return }
+        let width = UIScreen.main.bounds.width
+        let itemWidth = width - 48 + 16
+        let offset = targetContentOffset.pointee.x
+        let index = (offset + scrollView.contentInset.left) / itemWidth
+        let roundedIndex = velocity.x > 0 ? ceil(index) : (velocity.x < 0 ? floor(index) : round(index))
+        targetContentOffset.pointee.x = roundedIndex * itemWidth - scrollView.contentInset.left
+    }
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         uniqueURLs.count
     }
