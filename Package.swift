@@ -8,7 +8,7 @@ let package = Package(
         .library(name: "BNImagePageView", targets: ["BNImagePageView"])
     ],
     dependencies: [
-        .package(url: "https://github.com/onevcat/Kingfisher.git", from: "7.0.0")
+        .package(url: "https://github.com/onevcat/Kingfisher.git", from: "8.0.0")
     ],
     targets: [
         .target(
