@@ -78,6 +78,26 @@ BNImagePageViewRepresentable(
 
 Banchai Nangpang, pong.np1@gmail.com
 
+## Documentation
+
+ดู [docs/README.md](docs/README.md) สำหรับรายละเอียดทุก feature
+
+| | |
+|---|---|
+| [Overview](docs/OVERVIEW.md) | ภาพรวมทุก feature |
+| [Open Animation](docs/OPEN_ANIMATION.md) | flow ตั้งแต่ tap จนภาพ expand |
+| [Drag Dismiss](docs/DRAG_DISMISS.md) | ทุกทิศทาง drag dismiss |
+| [Zoom & Pan](docs/ZOOM_PAN.md) | pinch, double tap, pan |
+| [Paging](docs/PAGING.md) | page cache, prefetch, counter |
+| [Share](docs/SHARE.md) | share sheet, popover, permission |
+| [Customization](docs/CUSTOMIZATION.md) | BNSetting |
+| [SwiftUI](docs/SWIFTUI.md) | BNImagePageViewRepresentable |
+| [Architecture](docs/ARCHITECTURE.md) | class diagram, data flow |
+
+## Author
+
+Banchai Nangpang, pong.np1@gmail.com
+
 ## License
 
 BNImagePageView is available under the MIT license. See the [LICENSE](https://github.com/chanon-apimaha/BNImagePageView/blob/master/LICENSE) file for more info.
