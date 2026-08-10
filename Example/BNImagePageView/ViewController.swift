@@ -2,114 +2,176 @@
 //  ViewController.swift
 //  BNImagePageView
 //
-//  Created by ban nan on 02/18/2019.
-//  Copyright (c) 2019 ban nan. All rights reserved.
-//
 
 import UIKit
 import BNImagePageView
 
 class ViewController: UIViewController {
-    override open var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return .portrait
-    }
-    
+
+    override open var supportedInterfaceOrientations: UIInterfaceOrientationMask { .portrait }
+
     private let imageURLs = [
         "https://picsum.photos/id/237/400/300.jpg",
         "https://picsum.photos/id/10/400/300.jpg",
         "https://picsum.photos/id/20/400/300.jpg",
-        "https://picsum.photos/id/30/400/300.jpg"
+        "https://picsum.photos/id/30/400/300.jpg",
+        "https://picsum.photos/id/40/400/300.jpg",
+        "https://picsum.photos/id/50/400/300.jpg"
     ]
+
     private var pageData: [ImgaePageData] = []
-    private var imageViews: [UIImageView] = []
+    private var collectionView: UICollectionView!
+    private var currentLayout: LayoutType = .list
+
+    enum LayoutType: Int { case list, grid, paging }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
 
-        let stack = UIStackView()
-        stack.axis = .vertical
-        stack.spacing = 12
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(stack)
-        NSLayoutConstraint.activate([
-            stack.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            stack.centerYAnchor.constraint(equalTo: view.centerYAnchor)
-        ])
-
-        for (i, url) in imageURLs.enumerated() {
-            let iv = UIImageView(URL: NSURL(string: url)!)
-            iv.isUserInteractionEnabled = true
-            iv.contentMode = .scaleAspectFill
-            iv.clipsToBounds = true
-            iv.translatesAutoresizingMaskIntoConstraints = false
-            iv.widthAnchor.constraint(equalToConstant: 200).isActive = true
-            iv.heightAnchor.constraint(equalToConstant: 120).isActive = true
-            iv.tag = i
-            let tap = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
-            iv.addGestureRecognizer(tap)
-            stack.addArrangedSubview(iv)
-            imageViews.append(iv)
-            pageData.append(ImgaePageData(atIndex: IndexPath(row: i, section: 0), sImageUrl: url, fWidth: 400, fHeight: 300))
+        pageData = imageURLs.enumerated().map {
+            ImgaePageData(atIndex: IndexPath(row: $0.offset, section: 0), sImageUrl: $0.element, fWidth: 400, fHeight: 300)
         }
+
+        setupSegment()
+        setupCollectionView()
     }
 
-    @objc private func handleTap(_ recognizer: UITapGestureRecognizer) {
-        guard let iv = recognizer.view as? UIImageView else { return }
-        let indexPath = IndexPath(row: iv.tag, section: 0)
-        self.navigationController?.BNImagePage(mImageViewShowFirst: iv, axImgaePageData: pageData, atIndexPath: indexPath)
+    private func setupSegment() {
+        let segment = UISegmentedControl(items: ["List", "Grid", "Paging"])
+        segment.selectedSegmentIndex = 0
+        segment.translatesAutoresizingMaskIntoConstraints = false
+        segment.addTarget(self, action: #selector(segmentChanged(_:)), for: .valueChanged)
+        view.addSubview(segment)
+        NSLayoutConstraint.activate([
+            segment.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 12),
+            segment.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            segment.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8)
+        ])
     }
-    
+
+    private func setupCollectionView() {
+        collectionView = UICollectionView(frame: .zero, collectionViewLayout: makeLayout(for: .list))
+        collectionView.backgroundColor = .systemBackground
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.register(ImageCell.self, forCellWithReuseIdentifier: "cell")
+        view.addSubview(collectionView)
+        NSLayoutConstraint.activate([
+            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 56),
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+    }
+
+    private func makeLayout(for type: LayoutType) -> UICollectionViewFlowLayout {
+        let layout = UICollectionViewFlowLayout()
+        let width = UIScreen.main.bounds.width
+        switch type {
+        case .list:
+            layout.itemSize = CGSize(width: width, height: 200)
+            layout.minimumLineSpacing = 1
+        case .grid:
+            let size = (width - 4) / 3
+            layout.itemSize = CGSize(width: size, height: size)
+            layout.minimumInteritemSpacing = 2
+            layout.minimumLineSpacing = 2
+        case .paging:
+            layout.itemSize = CGSize(width: width - 32, height: 240)
+            layout.minimumLineSpacing = 16
+            layout.sectionInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+            layout.scrollDirection = .horizontal
+        }
+        return layout
+    }
+
+    @objc private func segmentChanged(_ sender: UISegmentedControl) {
+        currentLayout = LayoutType(rawValue: sender.selectedSegmentIndex) ?? .list
+        collectionView.setCollectionViewLayout(makeLayout(for: currentLayout), animated: true)
+        collectionView.reloadData()
+    }
 }
 
-import Foundation
-import UIKit
-import ObjectiveC
+extension ViewController: UICollectionViewDataSource, UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        imageURLs.count
+    }
+
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! ImageCell
+        cell.configure(url: imageURLs[indexPath.row])
+        return cell
+    }
+
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let cell = collectionView.cellForItem(at: indexPath) as? ImageCell else { return }
+        self.navigationController?.BNImagePage(mImageViewShowFirst: cell.imageView, axImgaePageData: pageData, atIndexPath: indexPath)
+    }
+}
+
+class ImageCell: UICollectionViewCell {
+    let imageView = UIImageView()
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(imageView)
+        NSLayoutConstraint.activate([
+            imageView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor)
+        ])
+    }
+
+    required init?(coder: NSCoder) { fatalError() }
+
+    func configure(url: String) {
+        imageView.image = nil
+        guard let nsurl = NSURL(string: url) else { return }
+        imageView.setImageFromURL(URL: nsurl)
+    }
+}
+
+// MARK: - UIImageView URL Extension
 
 private var activityIndicatorAssociationKey: UInt8 = 0
 
 extension UIImageView {
-    
+
     var activityIndicator: UIActivityIndicatorView! {
-        get {
-            return objc_getAssociatedObject(self, &activityIndicatorAssociationKey) as? UIActivityIndicatorView
-        }
-        set(newValue) {//OBJC_ASSOCIATION_RETAIN
-            objc_setAssociatedObject(self, &activityIndicatorAssociationKey, newValue, .OBJC_ASSOCIATION_RETAIN)
-        }
+        get { objc_getAssociatedObject(self, &activityIndicatorAssociationKey) as? UIActivityIndicatorView }
+        set { objc_setAssociatedObject(self, &activityIndicatorAssociationKey, newValue, .OBJC_ASSOCIATION_RETAIN) }
     }
-    
-    private func ensureActivityIndicatorIsAnimating() {
-        if (self.activityIndicator == nil) {
-            self.activityIndicator = UIActivityIndicatorView(style: .medium)
-            self.activityIndicator.hidesWhenStopped = true
-            let size = self.frame.size;
-            self.activityIndicator.center = CGPoint(x: size.width/2, y: size.height/2);
-            OperationQueue.main.addOperation({ () -> Void in
-                self.addSubview(self.activityIndicator)
-                self.activityIndicator.startAnimating()
-            })
-        }
-    }
-    
+
     convenience init(URL: NSURL, errorImage: UIImage? = nil) {
         self.init()
         self.setImageFromURL(URL: URL)
     }
-    
+
     func setImageFromURL(URL: NSURL, errorImage: UIImage? = nil) {
-        self.ensureActivityIndicatorIsAnimating()
-        let downloadTask = URLSession.shared.dataTask(with: URL as URL) {(data, response, error) in
-            if (error == nil) {
-                OperationQueue.main.addOperation({ () -> Void in
-                    self.activityIndicator.stopAnimating()
-                    self.image = UIImage(data: data!)
-                })
-            }
-            else {
-                self.image = errorImage
+        if activityIndicator == nil {
+            activityIndicator = UIActivityIndicatorView(style: .medium)
+            activityIndicator.hidesWhenStopped = true
+            activityIndicator.center = CGPoint(x: frame.size.width / 2, y: frame.size.height / 2)
+            OperationQueue.main.addOperation {
+                self.addSubview(self.activityIndicator)
+                self.activityIndicator.startAnimating()
             }
         }
-        downloadTask.resume()
+        URLSession.shared.dataTask(with: URL as URL) { data, _, error in
+            OperationQueue.main.addOperation {
+                self.activityIndicator.stopAnimating()
+                if let data = data, error == nil {
+                    self.image = UIImage(data: data)
+                } else {
+                    self.image = errorImage
+                }
+            }
+        }.resume()
     }
 }
