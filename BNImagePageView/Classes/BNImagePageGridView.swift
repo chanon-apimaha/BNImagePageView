@@ -168,7 +168,7 @@ open class BNImagePageGridView: UIPageViewController {
             item: self.mButtonClose,
             attribute: NSLayoutConstraint.Attribute.top,
             relatedBy: NSLayoutConstraint.Relation.equal,
-            toItem: self.view,
+            toItem: self.view.safeAreaLayoutGuide,
             attribute: NSLayoutConstraint.Attribute.top,
             multiplier: 1,
             constant: 0)
@@ -195,7 +195,7 @@ open class BNImagePageGridView: UIPageViewController {
         
         self.mConsWidthClose.constant = 40.0
         self.mConsHeightClose.constant = 40.0
-        self.mConsTopClose.constant = 34
+        self.mConsTopClose.constant = 8
         self.mConsRightClose.constant =  (UIDevice.current.userInterfaceIdiom == .pad ) ? -16 : -8
         self.mButtonClose.layer.cornerRadius = self.mConsWidthClose.constant / 2.0
     }
@@ -274,14 +274,14 @@ open class BNImagePageGridView: UIPageViewController {
             item: self.mPageTitle,
             attribute: NSLayoutConstraint.Attribute.top,
             relatedBy: NSLayoutConstraint.Relation.equal,
-            toItem: self.view,
+            toItem: self.view.safeAreaLayoutGuide,
             attribute: NSLayoutConstraint.Attribute.top,
             multiplier: 1,
             constant: 0)
         
         NSLayoutConstraint.activate([self.mConsLeftPageTitle, self.mConsTopPageTitle])
         
-        self.mConsTopPageTitle.constant = 34
+        self.mConsTopPageTitle.constant = 8
         self.mConsLeftPageTitle.constant =  (UIDevice.current.userInterfaceIdiom == .pad ) ? 16 : 8
         self.mPageTitle.isHidden = false
         self.mPageTitle.layer.cornerRadius = 4.0//PTConfig.layerStyle.fCornerRadius
@@ -361,8 +361,8 @@ open class BNImagePageGridView: UIPageViewController {
     }
     
     private func buttonShow() {
-        self.mConsTopPageTitle.constant = 34.0
-        self.mConsTopClose.constant = 34.0
+        self.mConsTopPageTitle.constant = 8.0
+        self.mConsTopClose.constant = 8.0
         self.mConsBottomShare.constant = (UIDevice.current.userInterfaceIdiom == .pad) ? -32 : -24
         UIView.animate(withDuration: 0.25) {
             self.view.layoutIfNeeded()
@@ -378,8 +378,8 @@ open class BNImagePageGridView: UIPageViewController {
     }
 
     private func buttonFinFInShow() {
-        self.mConsTopPageTitle.constant = 34.0
-        self.mConsTopClose.constant = 34.0
+        self.mConsTopPageTitle.constant = 8.0
+        self.mConsTopClose.constant = 8.0
         self.mConsBottomShare.constant = (UIDevice.current.userInterfaceIdiom == .pad) ? -32 : -24
         UIView.animate(withDuration: 0.25) {
             self.view.layoutIfNeeded()
