@@ -13,18 +13,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
-        let keyWindow = UIApplication.shared.connectedScenes
-            .compactMap { $0 as? UIWindowScene }
-            .flatMap { $0.windows }
-            .first { $0.isKeyWindow }
-        var topController = keyWindow?.rootViewController
+        var topController = window?.rootViewController
         while let presented = topController?.presentedViewController {
             topController = presented
         }
         switch topController {
-        case is BNImagePageGridView, is BNImagePageViewController:
+        case is BNImagePageGridView, is BNImagePageGridHideShareView, is BNImagePageViewController:
+            print("[BNOrientation] \(type(of: topController!)) → .all")
             return .all
         default:
+            print("[BNOrientation] \(type(of: topController as AnyObject)) → .portrait")
             return .portrait
         }
     }

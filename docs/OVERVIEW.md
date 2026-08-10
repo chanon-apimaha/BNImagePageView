@@ -272,6 +272,29 @@ ImgaePageData(
 
 ---
 
+## Orientation Support
+
+BNImagePageView รองรับทุก orientation รวมถึง portrait upside-down
+
+ถ้า app ล็อคแนวตั้ง ให้เพิ่มใน `AppDelegate`:
+
+```swift
+func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
+    var topController = window?.rootViewController
+    while let presented = topController?.presentedViewController {
+        topController = presented
+    }
+    switch topController {
+    case is BNImagePageGridView, is BNImagePageGridHideShareView, is BNImagePageViewController:
+        return .all
+    default:
+        return .portrait
+    }
+}
+```
+
+---
+
 ## Installation
 
 ### Swift Package Manager

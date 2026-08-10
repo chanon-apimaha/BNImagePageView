@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -212,7 +212,7 @@
 				};
 			};
 			buildConfigurationList = 607FACCB1AFB9204008FA782 /* Build configuration list for PBXProject "BNImagePageView" */;
-			compatibilityVersion = "Xcode 3.2";
+			compatibilityVersion = "Xcode 15.0";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -541,8 +541,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/chanon-apimaha/BNImagePageView.git";
 			requirement = {
-				kind = revision;
-				revision = 5d571cca4f27aedb99d47c2f0623970c08f480f5;
+				branch = "fix/close-button-dynamic-island";
+				kind = branch;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

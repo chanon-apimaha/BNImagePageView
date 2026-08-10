@@ -26,7 +26,7 @@
 │                                       │ inherits                  │
 │                        ┌──────────────▼───────────────────────┐  │
 │                        │    BNImagePageGridHideShareView       │  │
-│                        │    (class)                            │  │
+│                        │    (open class)                       │  │
 │                        │                                       │  │
 │                        │ override viewDidLoad()                │  │
 │                        │ override handleOneTapScrollView()     │  │
@@ -143,7 +143,7 @@ UIViewController
 UIPageViewController
     └── BNImagePageGridView
             (multi-page container)
-            └── BNImagePageGridHideShareView
+            └── BNImagePageGridHideShareView (open class)
                     (hide share variant)
 
 UIViewControllerRepresentable
@@ -176,7 +176,7 @@ BNImagePageView/Classes/
 │       └── BNImagePageHideShare(axImgaePageData:)
 │
 ├── BNImagePageGridHideShareView.swift
-│   └── class BNImagePageGridHideShareView: BNImagePageGridView
+│   └── open class BNImagePageGridHideShareView: BNImagePageGridView
 │
 ├── BNImagePageViewRepresentable.swift
 │   └── public struct BNImagePageViewRepresentable

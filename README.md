@@ -74,6 +74,29 @@ BNImagePageViewRepresentable(
 )
 ```
 
+## Orientation Support
+
+BNImagePageView supports all orientations including landscape and portrait upside-down.
+
+If your app is locked to portrait only, add this to your `AppDelegate` to allow BNImagePageView to rotate freely while keeping the rest of your app in portrait:
+
+```swift
+func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
+    var topController = window?.rootViewController
+    while let presented = topController?.presentedViewController {
+        topController = presented
+    }
+    switch topController {
+    case is BNImagePageGridView, is BNImagePageGridHideShareView, is BNImagePageViewController:
+        return .all
+    default:
+        return .portrait
+    }
+}
+```
+
+> **Note:** Without this, iOS will ignore the library's orientation support and the viewer will stay locked to your app's orientation setting.
+
 ## Author
 
 Banchai Nangpang, pong.np1@gmail.com
