@@ -32,8 +32,8 @@
 
 | Element | Position | Size | Style |
 |---|---|---|---|
-| pageTitle | top-left, 34pt from top, 8pt from left | auto width, auto height | black 60%, radius 4pt |
-| close button | top-right, 34pt from top, 8pt from right | 40×40pt | black 60%, radius 20pt (วงกลม) |
+| pageTitle | top-left, safeArea.top + 8pt, safeArea.left + 8pt | auto width, auto height | black 60%, radius 4pt |
+| close button | top-right, safeArea.top + 8pt, safeArea.right - 8pt | 40×40pt | black 60%, radius 20pt (วงกลม) |
 | share button | bottom-right, 24pt from bottom, 8pt from right | 40×40pt | black 60%, radius 20pt (วงกลม) |
 | image | center | aspect fit to screen | scaleAspectFill |
 
@@ -139,14 +139,13 @@ Grid mode:                        Paging mode:
 ### 1. Close button ชนกับ Dynamic Island / Notch
 
 ```
-ปัจจุบัน:                          ปัญหา:
-┌─────────────────────────┐        ┌─────────────────────────┐
-│    [Dynamic Island]     │        │    [Dynamic Island]     │
-│                   [×]   │        │               ┌──┐      │
-│  top: 34pt (fixed)      │        │               │× │ ← ชน │
-└─────────────────────────┘        └───────────────└──┘──────┘
-                                     iPhone 14 Pro: island = 54pt
-                                     34pt ไม่พอ
+แก้แล้ว (fix/close-button-dynamic-island):
+┌─────────────────────────┐
+│    [Dynamic Island]     │
+│                         │
+│               [×]       │  ← safeAreaLayoutGuide.top + 8pt
+└─────────────────────────┘
+  รองรับทุก device อัตโนมัติ
 ```
 
 ### 2. Share button ไม่ safe area aware
@@ -381,7 +380,7 @@ blur ครอบทั้งภาพ                    blur + dim overlay (bl
 
 | Feature | ปัจจุบัน | ปรับปรุง | Priority |
 |---|---|---|---|
-| Safe area buttons | fixed 34pt | safeAreaLayoutGuide | 🔴 High |
+| Safe area buttons | ~~fixed 34pt~~ | safeAreaLayoutGuide | ✅ Done |
 | Page counter position | top-left | top-center | 🟡 Medium |
 | Auto-hide buttons | ไม่มี | 3s timer | 🟡 Medium |
 | Haptic feedback | ไม่มี | light/medium | 🟡 Medium |

@@ -173,16 +173,15 @@ navigationController?.BNImagePageHideShare(
 
 ```
 ┌─────────────────────────────┐
-│ [pageTitle]        [close]  │  ← top: 34pt from top
-│  left: 8/16pt      right: 8/16pt
+│ [pageTitle]        [close]  │  ← safeAreaLayoutGuide.top + 8pt
+│  left: 8pt          right: 8pt
 │                             │
 │                             │
 │                             │
 │                   [share]   │  ← bottom: 24/32pt from bottom
-│                    right: 8/16pt
+│                    right: 8pt
 └─────────────────────────────┘
-  iPhone: 8pt margin
-  iPad:   16pt margin
+  iPhone/iPad: 8pt margin (anchor กับ safeAreaLayoutGuide)
 ```
 
 ขนาด button: **40×40pt**, corner radius: **20pt** (วงกลม)
