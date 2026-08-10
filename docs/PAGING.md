@@ -268,3 +268,9 @@ viewDidAppear(VC4) → dismissTargetFrame = cell[4].frame
 didFinishAnimating → iCurrentIndex = 4
 mPageTitle = "5/10"
 ```
+
+---
+
+## Navigation
+
+[← Zoom & Pan](ZOOM_PAN.md) | [Back to Index](README.md) | [Share →](SHARE.md)

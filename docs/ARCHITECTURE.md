@@ -288,3 +288,9 @@ navigationController?.BNImagePageHideShare(
 
 **หมายเหตุ**: methods เหล่านี้ไม่รองรับ `imageViewForIndex` callback  
 ถ้าต้องการ dismiss animation ที่สมบูรณ์ ให้ใช้ `BNImagePageGridViewBuilder.build()`
+
+---
+
+## Navigation
+
+[← SwiftUI](SWIFTUI.md) | [Back to Index](README.md)

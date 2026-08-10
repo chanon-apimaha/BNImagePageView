@@ -225,3 +225,9 @@ override func didReceiveMemoryWarning() {
 | Pan (1 finger) | Scroll image | zoomScale > min |
 | Pan (1 finger, Y > X) | Drag to dismiss | zoomScale = min |
 | Long press | Share sheet | image loaded |
+
+---
+
+## Navigation
+
+[← Drag Dismiss](DRAG_DISMISS.md) | [Back to Index](README.md) | [Paging →](PAGING.md)

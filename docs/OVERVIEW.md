@@ -299,3 +299,9 @@ pod 'BNImagePageView'
 | SwiftUI | iOS 13.0+ |
 | Swift | 5.0+ |
 | Kingfisher | 8.x |
+
+---
+
+## Navigation
+
+[← Back to Index](README.md) | [Open Animation →](OPEN_ANIMATION.md)

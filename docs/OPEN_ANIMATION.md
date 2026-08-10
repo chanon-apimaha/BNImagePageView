@@ -253,3 +253,9 @@ t=0.90  Kingfisher โหลดเสร็จ — fade in full image (0.15s)
 t=0.90  blur effect fade out (0.5s)
 t=1.40  blur หายหมด — พร้อมใช้งาน
 ```
+
+---
+
+## Navigation
+
+[← Overview](OVERVIEW.md) | [Back to Index](README.md) | [Drag Dismiss →](DRAG_DISMISS.md)

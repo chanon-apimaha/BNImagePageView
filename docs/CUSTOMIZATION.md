@@ -186,3 +186,9 @@ navigationController?.BNImagePageHideShare(
 ```
 
 ขนาด button: **40×40pt**, corner radius: **20pt** (วงกลม)
+
+---
+
+## Navigation
+
+[← Share](SHARE.md) | [Back to Index](README.md) | [SwiftUI →](SWIFTUI.md)

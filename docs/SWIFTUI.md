@@ -280,3 +280,9 @@ pageSpacing: 20 (default):        pageSpacing: 40:
 │      │20│      │                │      │ 40 │      │
 └──────┴──┴──────┘                └──────┴────┴──────┘
 ```
+
+---
+
+## Navigation
+
+[← Customization](CUSTOMIZATION.md) | [Back to Index](README.md) | [Architecture →](ARCHITECTURE.md)

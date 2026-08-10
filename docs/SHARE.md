@@ -278,3 +278,9 @@ user action
    bottom       popover
    sheet        at sourceRect
 ```
+
+---
+
+## Navigation
+
+[← Paging](PAGING.md) | [Back to Index](README.md) | [Customization →](CUSTOMIZATION.md)

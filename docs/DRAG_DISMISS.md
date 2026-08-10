@@ -283,3 +283,9 @@ swipe         │
                      │          │
                  DISMISS    SNAP BACK
 ```
+
+---
+
+## Navigation
+
+[← Open Animation](OPEN_ANIMATION.md) | [Back to Index](README.md) | [Zoom & Pan →](ZOOM_PAN.md)
