@@ -10,17 +10,21 @@ class ViewController: UIViewController {
 
     override open var supportedInterfaceOrientations: UIInterfaceOrientationMask { .portrait }
 
-    private let imageURLs = [
-        "https://picsum.photos/id/237/400/300.jpg",
-        "https://picsum.photos/id/10/400/300.jpg",
-        "https://picsum.photos/id/20/400/300.jpg",
-        "https://picsum.photos/id/30/400/300.jpg",
-        "https://picsum.photos/id/40/400/300.jpg",
-        "https://picsum.photos/id/50/400/300.jpg"
-    ]
+    private let imageURLs = (1...20).map { _ in
+        let ids = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100,
+                   110, 120, 130, 140, 150, 160, 170, 180, 190, 200]
+        return "https://picsum.photos/id/\(ids.randomElement()!)/400/300.jpg"
+    }
+
+    private lazy var uniqueURLs: [String] = {
+        let ids = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100,
+                   110, 120, 130, 140, 150, 160, 170, 180, 190, 200]
+        return ids.map { "https://picsum.photos/id/\($0)/400/300.jpg" }
+    }()
 
     private var pageData: [ImgaePageData] = []
     private var collectionView: UICollectionView!
+    private var headerLabel: UILabel!
     private var currentLayout: LayoutType = .list
 
     enum LayoutType: Int { case list, grid, paging }
@@ -29,12 +33,26 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
 
-        pageData = imageURLs.enumerated().map {
+        pageData = uniqueURLs.enumerated().map {
             ImgaePageData(atIndex: IndexPath(row: $0.offset, section: 0), sImageUrl: $0.element, fWidth: 400, fHeight: 300)
         }
 
+        setupHeader()
         setupSegment()
         setupCollectionView()
+    }
+
+    private func setupHeader() {
+        headerLabel = UILabel()
+        headerLabel.text = "\(uniqueURLs.count) Photos"
+        headerLabel.font = .systemFont(ofSize: 13, weight: .medium)
+        headerLabel.textColor = .secondaryLabel
+        headerLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(headerLabel)
+        NSLayoutConstraint.activate([
+            headerLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
+            headerLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16)
+        ])
     }
 
     private func setupSegment() {
@@ -44,7 +62,7 @@ class ViewController: UIViewController {
         segment.addTarget(self, action: #selector(segmentChanged(_:)), for: .valueChanged)
         view.addSubview(segment)
         NSLayoutConstraint.activate([
-            segment.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 12),
+            segment.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 36),
             segment.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             segment.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8)
         ])
@@ -59,7 +77,7 @@ class ViewController: UIViewController {
         collectionView.register(ImageCell.self, forCellWithReuseIdentifier: "cell")
         view.addSubview(collectionView)
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 56),
+            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 84),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
@@ -71,17 +89,18 @@ class ViewController: UIViewController {
         let width = UIScreen.main.bounds.width
         switch type {
         case .list:
-            layout.itemSize = CGSize(width: width, height: 200)
-            layout.minimumLineSpacing = 1
+            layout.itemSize = CGSize(width: width - 32, height: 200)
+            layout.minimumLineSpacing = 12
+            layout.sectionInset = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
         case .grid:
             let size = (width - 4) / 3
             layout.itemSize = CGSize(width: size, height: size)
             layout.minimumInteritemSpacing = 2
             layout.minimumLineSpacing = 2
         case .paging:
-            layout.itemSize = CGSize(width: width - 32, height: 240)
+            layout.itemSize = CGSize(width: width - 64, height: 260)
             layout.minimumLineSpacing = 16
-            layout.sectionInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+            layout.sectionInset = UIEdgeInsets(top: 8, left: 32, bottom: 8, right: 32)
             layout.scrollDirection = .horizontal
         }
         return layout
@@ -89,19 +108,22 @@ class ViewController: UIViewController {
 
     @objc private func segmentChanged(_ sender: UISegmentedControl) {
         currentLayout = LayoutType(rawValue: sender.selectedSegmentIndex) ?? .list
-        collectionView.setCollectionViewLayout(makeLayout(for: currentLayout), animated: true)
+        UIView.animate(withDuration: 0.3) {
+            self.collectionView.setCollectionViewLayout(self.makeLayout(for: self.currentLayout), animated: false)
+        }
         collectionView.reloadData()
     }
 }
 
 extension ViewController: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        imageURLs.count
+        uniqueURLs.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! ImageCell
-        cell.configure(url: imageURLs[indexPath.row])
+        let isGrid = currentLayout == .grid
+        cell.configure(url: uniqueURLs[indexPath.row], showShadow: !isGrid, index: indexPath.row + 1, showIndex: currentLayout == .list)
         return cell
     }
 
@@ -111,29 +133,116 @@ extension ViewController: UICollectionViewDataSource, UICollectionViewDelegate {
     }
 }
 
+// MARK: - ImageCell
+
 class ImageCell: UICollectionViewCell {
+
     let imageView = UIImageView()
+    private let skeletonView = UIView()
+    private let shimmerLayer = CAGradientLayer()
+    private let indexLabel = UILabel()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+
+        // Skeleton
+        skeletonView.backgroundColor = .systemGray5
+        skeletonView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(skeletonView)
+
+        // ImageView
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.alpha = 0
         contentView.addSubview(imageView)
+
+        // Index label
+        indexLabel.font = .systemFont(ofSize: 12, weight: .semibold)
+        indexLabel.textColor = .white
+        indexLabel.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        indexLabel.textAlignment = .center
+        indexLabel.layer.cornerRadius = 10
+        indexLabel.clipsToBounds = true
+        indexLabel.translatesAutoresizingMaskIntoConstraints = false
+        indexLabel.isHidden = true
+        contentView.addSubview(indexLabel)
+
         NSLayoutConstraint.activate([
+            skeletonView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            skeletonView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            skeletonView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            skeletonView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+
             imageView.topAnchor.constraint(equalTo: contentView.topAnchor),
             imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor)
+            imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+
+            indexLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
+            indexLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
+            indexLabel.widthAnchor.constraint(equalToConstant: 28),
+            indexLabel.heightAnchor.constraint(equalToConstant: 20)
         ])
+
+        startShimmer()
     }
 
     required init?(coder: NSCoder) { fatalError() }
 
-    func configure(url: String) {
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        shimmerLayer.frame = skeletonView.bounds
+    }
+
+    func configure(url: String, showShadow: Bool, index: Int, showIndex: Bool) {
         imageView.image = nil
+        imageView.alpha = 0
+        skeletonView.isHidden = false
+        indexLabel.isHidden = !showIndex
+        indexLabel.text = "\(index)"
+
+        // Shadow
+        if showShadow {
+            layer.shadowColor = UIColor.black.cgColor
+            layer.shadowOpacity = 0.15
+            layer.shadowOffset = CGSize(width: 0, height: 4)
+            layer.shadowRadius = 8
+            layer.cornerRadius = 12
+            contentView.layer.cornerRadius = 12
+            contentView.clipsToBounds = true
+        } else {
+            layer.shadowOpacity = 0
+            layer.cornerRadius = 0
+            contentView.layer.cornerRadius = 0
+        }
+
         guard let nsurl = NSURL(string: url) else { return }
-        imageView.setImageFromURL(URL: nsurl)
+        imageView.setImageFromURL(URL: nsurl) { [weak self] in
+            UIView.animate(withDuration: 0.3) {
+                self?.imageView.alpha = 1
+                self?.skeletonView.isHidden = true
+            }
+        }
+    }
+
+    private func startShimmer() {
+        shimmerLayer.colors = [
+            UIColor.systemGray5.cgColor,
+            UIColor.systemGray4.cgColor,
+            UIColor.systemGray5.cgColor
+        ]
+        shimmerLayer.startPoint = CGPoint(x: 0, y: 0.5)
+        shimmerLayer.endPoint = CGPoint(x: 1, y: 0.5)
+        shimmerLayer.locations = [0, 0.5, 1]
+        skeletonView.layer.addSublayer(shimmerLayer)
+
+        let animation = CABasicAnimation(keyPath: "locations")
+        animation.fromValue = [-1, -0.5, 0]
+        animation.toValue = [1, 1.5, 2]
+        animation.duration = 1.2
+        animation.repeatCount = .infinity
+        shimmerLayer.add(animation, forKey: "shimmer")
     }
 }
 
@@ -153,24 +262,15 @@ extension UIImageView {
         self.setImageFromURL(URL: URL)
     }
 
-    func setImageFromURL(URL: NSURL, errorImage: UIImage? = nil) {
-        if activityIndicator == nil {
-            activityIndicator = UIActivityIndicatorView(style: .medium)
-            activityIndicator.hidesWhenStopped = true
-            activityIndicator.center = CGPoint(x: frame.size.width / 2, y: frame.size.height / 2)
-            OperationQueue.main.addOperation {
-                self.addSubview(self.activityIndicator)
-                self.activityIndicator.startAnimating()
-            }
-        }
+    func setImageFromURL(URL: NSURL, errorImage: UIImage? = nil, completion: (() -> Void)? = nil) {
         URLSession.shared.dataTask(with: URL as URL) { data, _, error in
             OperationQueue.main.addOperation {
-                self.activityIndicator.stopAnimating()
                 if let data = data, error == nil {
                     self.image = UIImage(data: data)
                 } else {
                     self.image = errorImage
                 }
+                completion?()
             }
         }.resume()
     }
