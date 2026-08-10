@@ -45,6 +45,10 @@
 	<array>
 		<string>armv7</string>
 	</array>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Used to save images to your photo library</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Used to save images to your photo library</string>
 	<key>UIRequiresFullScreen</key>
 	<true/>
 	<key>UISupportedInterfaceOrientations</key>
