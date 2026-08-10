@@ -17,6 +17,19 @@ Swift 5.0, iOS 10.0+
 SwiftUI support requires iOS 13.0+
 ```
 
+## Privacy
+
+If your app uses the share button, add the following to your app's `Info.plist`:
+
+```xml
+<key>NSPhotoLibraryUsageDescription</key>
+<string>Used to save images to your photo library</string>
+<key>NSPhotoLibraryAddUsageDescription</key>
+<string>Used to save images to your photo library</string>
+```
+
+> **Note:** Without this, the app will crash when the user attempts to save an image.
+
 ## Installation
 
 ### Swift Package Manager
