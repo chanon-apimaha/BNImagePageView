@@ -51,7 +51,7 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
     fileprivate var panGesture: UIPanGestureRecognizer = UIPanGestureRecognizer()
     fileprivate var bIsShowImage: Bool = true
     fileprivate var iLoadImageCount: Int = 0
-    fileprivate var bIsShowShareActivity: Bool = false
+    var bIsShowShareActivity: Bool = false
     
     fileprivate var fStartpointY: CGFloat = 0.0
     fileprivate var fEndpointY: CGFloat = 0.0
@@ -387,8 +387,10 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
         self.setMaxMinZoomScalesForCurrentBounds()
         
         //ซ่อนปุ่มเมื่อ Rotation ตามเงื่อนไข
-        self.mShareActivity.dismiss(animated: true) {
-            self.bIsShowShareActivity = false
+        if bIsShowShareActivity {
+            self.mShareActivity.dismiss(animated: true) {
+                self.bIsShowShareActivity = false
+            }
         }
     }
     

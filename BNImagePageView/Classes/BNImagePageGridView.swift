@@ -395,6 +395,8 @@ open class BNImagePageGridView: UIPageViewController {
     }
     
     @objc private func rotationView(notification: NSNotification) {
+        guard let vc = viewControllers?.first as? BNImagePageViewController,
+              !vc.bIsShowShareActivity else { return }
         self.buttonHide()
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
             self.buttonShow()
