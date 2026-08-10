@@ -73,7 +73,7 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
         }
         
         if self.bIsPagingEnabled {
-            self.clearCacheImage()
+            // cache managed by BNImagePageGridView
         }
         self.animateImageView()
         if self.bIsShowImage {
@@ -149,7 +149,6 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
                     self.setZoomImageFrame(imageSize: self.mZoomImageView.image?.size ?? self.mImageView.image?.size ?? CGSize(width: 1, height: 1))
                     self.mLoadingActivity.stopAnimating()
                     self.faceOutBlurEffect()
-                    self.clearCacheImage()
                     self.bIsShowImage = false
                     break
                 case .failure(_):
