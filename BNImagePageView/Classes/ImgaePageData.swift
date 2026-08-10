@@ -23,10 +23,10 @@
 import UIKit
 
 public class ImgaePageData {
-     var atIndex: IndexPath = []
-     var sImageUrl: String = ""
-     var fWidth: CGFloat = 0.0
-     var fHeight: CGFloat = 0.0
+    public var atIndex: IndexPath = []
+    public var sImageUrl: String = ""
+    public var fWidth: CGFloat = 0.0
+    public var fHeight: CGFloat = 0.0
 
     public init(atIndex: IndexPath, sImageUrl: String, fWidth: CGFloat, fHeight: CGFloat) {
         self.atIndex = atIndex

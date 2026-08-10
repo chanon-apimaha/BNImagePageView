@@ -141,7 +141,7 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
                     return
             }
             
-            self.oRetrieveImageTask = self.mZoomImageView.kf.setImage(with: bundleURL, placeholder: self.mImageView.image, options: [.transition(.fade(0.15)), .cacheMemoryOnly], progressBlock: nil) { (result) in
+            self.oRetrieveImageTask = self.mZoomImageView.kf.setImage(with: bundleURL, placeholder: self.mImageView.image, options: [.transition(.fade(0.15)), .diskCacheExpiration(.never), .memoryCacheExpiration(.never)], progressBlock: nil) { (result) in
                 switch result {
                 case .success(_):
                     self.setZoomImageFrame(imageSize: self.mZoomImageView.image?.size ?? self.mImageView.image?.size ?? CGSize(width: 1, height: 1))

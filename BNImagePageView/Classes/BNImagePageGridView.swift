@@ -21,8 +21,7 @@
 //
 
 import UIKit
-
-open class BNSetting {
+import Kingfisher
     public static var titlefont: UIFont = .systemFont(ofSize: 16)
     public static var mButtonClose: UIButton = UIButton()
     public static var closeImage : UIImage? = UIImage(named:"icon-close")?.withRenderingMode(.alwaysTemplate)
@@ -76,15 +75,10 @@ open class BNImagePageGridView: UIPageViewController {
     fileprivate var mConsWidthPageTitle: NSLayoutConstraint = NSLayoutConstraint()
     fileprivate var mConsHeightPageTitle: NSLayoutConstraint = NSLayoutConstraint()
     
-    fileprivate lazy var pages: [UIViewController] = {
-        var axViewController: [UIViewController] = []
-        for index in 0 ..< self.axImgaePageData.endIndex {
-            axViewController.append(self.getViewController(index: index))
-        }
-        return axViewController
-    }()
-    
-    fileprivate func getViewController(index: Int) -> UIViewController {
+    fileprivate var pageCache: [Int: BNImagePageViewController] = [:]
+
+    fileprivate func getViewController(index: Int) -> BNImagePageViewController {
+        if let cached = pageCache[index] { return cached }
         let oViewController = BNImagePageViewController()
         let thumbImageView = UIImageView()
         thumbImageView.image = (index == atIndexPath.row) ? mImageView.image : nil
@@ -95,7 +89,16 @@ open class BNImagePageGridView: UIPageViewController {
         oViewController.delegate = self
         oViewController.bIsPagingEnabled = true
         oViewController.bDoAnimate = false
+        pageCache[index] = oViewController
+        prefetchAdjacent(to: index)
         return oViewController
+    }
+
+    private func prefetchAdjacent(to index: Int) {
+        let urls = [index - 1, index + 1]
+            .filter { $0 >= 0 && $0 < axImgaePageData.count }
+            .compactMap { URL(string: axImgaePageData[$0].sImageUrl) }
+        ImagePrefetcher(urls: urls).start()
     }
     
     deinit {
@@ -115,10 +118,8 @@ open class BNImagePageGridView: UIPageViewController {
         }
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.rotationView(notification:)), name: UIApplication.didChangeStatusBarOrientationNotification, object: nil)
-        if let index = self.axImgaePageData.firstIndex(where: { (item) -> Bool in
-            item.atIndex == self.atIndexPath
-        }) {
-            let firstVC = pages[index] as UIViewController
+        if let index = self.axImgaePageData.firstIndex(where: { $0.atIndex == self.atIndexPath }) {
+            let firstVC = getViewController(index: index)
             self.iCurrentIndex = index
             setViewControllers([firstVC], direction: .forward, animated: false, completion: nil)
             self.mPageTitle.setTitle("\(index + 1)/\(self.iNumOfPage)", for: .normal)
@@ -389,50 +390,25 @@ open class BNImagePageGridView: UIPageViewController {
 
 extension BNImagePageGridView: UIPageViewControllerDataSource, UIPageViewControllerDelegate{
     public func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
-        if completed {
-            if let axChildVC = pageViewController.viewControllers,
-                let oCurrentVC = axChildVC.first as? BNImagePageViewController, let index = self.pages.firstIndex(of: oCurrentVC) {
-                self.iCurrentIndex = index
-                self.mPageTitle.setTitle("\(index + 1)/\(self.iNumOfPage)", for: .normal)
-            }
+        if completed, let oCurrentVC = pageViewController.viewControllers?.first as? BNImagePageViewController,
+           let index = pageCache.first(where: { $0.value === oCurrentVC })?.key {
+            self.iCurrentIndex = index
+            self.mPageTitle.setTitle("\(index + 1)/\(self.iNumOfPage)", for: .normal)
         }
     }
-    
+
     public func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
-        guard let viewControllerIndex = pages.firstIndex(of: viewController) else {
-            return nil
-        }
-        
-        let previousIndex = viewControllerIndex - 1
-        
-        guard previousIndex >= 0 else {
-            return nil
-        }
-        
-        guard pages.count > previousIndex else {
-            return nil
-        }
-        
-        return pages[previousIndex]
+        guard let vc = viewController as? BNImagePageViewController,
+              let index = pageCache.first(where: { $0.value === vc })?.key,
+              index - 1 >= 0 else { return nil }
+        return getViewController(index: index - 1)
     }
-    
+
     public func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
-        guard let viewControllerIndex = pages.firstIndex(of: viewController) else {
-            return nil
-        }
-        
-        let nextIndex = viewControllerIndex + 1
-        let pagesCount = pages.count
-        
-        guard pagesCount != nextIndex else {
-            return nil
-        }
-        
-        guard pagesCount > nextIndex else {
-            return nil
-        }
-        
-        return pages[nextIndex]
+        guard let vc = viewController as? BNImagePageViewController,
+              let index = pageCache.first(where: { $0.value === vc })?.key,
+              index + 1 < iNumOfPage else { return nil }
+        return getViewController(index: index + 1)
     }
 }
 
