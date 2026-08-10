@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'BNImagePageView'
-  s.version          = '0.1.32'
+  s.version          = '0.1.33'
   s.summary          = 'Present PicturesView as a page  and Ready to show animate in and out Screen'
 
 # This description is used to generate tags and improve search results.
@@ -30,6 +30,9 @@ Pod::Spec.new do |s|
 
   s.source_files = 'BNImagePageView/Classes/**/*'
   s.swift_version = '5'
+  s.resource_bundles = {
+      'BNImagePageView' => ['BNImagePageView/Assets/**/*']
+  }
 
   # s.resource_bundles = {
   #   'BNImagePageView' => ['BNImagePageView/Assets/*.png']
