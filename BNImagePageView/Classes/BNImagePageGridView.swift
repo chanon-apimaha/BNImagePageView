@@ -84,7 +84,7 @@ open class BNImagePageGridView: UIPageViewController {
         if let cached = pageCache[index] { return cached }
         let oViewController = BNImagePageViewController()
         let thumbImageView = UIImageView()
-        thumbImageView.image = (index == atIndexPath.row) ? mImageView.image : nil
+        thumbImageView.image = imageViewForIndex?(index)?.image ?? ((index == atIndexPath.row) ? mImageView.image : nil)
         thumbImageView.contentMode = mImageView.contentMode
         thumbImageView.frame = mImageView.frame
         oViewController.mImageView = thumbImageView
