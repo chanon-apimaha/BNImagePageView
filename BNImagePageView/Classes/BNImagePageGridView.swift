@@ -84,10 +84,13 @@ open class BNImagePageGridView: UIPageViewController {
         return axViewController
     }()
     
-    fileprivate func getViewController(index: Int) -> UIViewController
-    {
+    fileprivate func getViewController(index: Int) -> UIViewController {
         let oViewController = BNImagePageViewController()
-        oViewController.mImageView = mImageView
+        let thumbImageView = UIImageView()
+        thumbImageView.image = (index == atIndexPath.row) ? mImageView.image : nil
+        thumbImageView.contentMode = mImageView.contentMode
+        thumbImageView.frame = mImageView.frame
+        oViewController.mImageView = thumbImageView
         oViewController.sImageUrl = self.axImgaePageData[index].sImageUrl
         oViewController.delegate = self
         oViewController.bIsPagingEnabled = true
@@ -302,9 +305,9 @@ open class BNImagePageGridView: UIPageViewController {
     }
     
     private func buttonHide() {
-        self.mConsTopPageTitle.constant = self.mConsTopPageTitle.constant * 0.5
-        self.mConsTopClose.constant = self.mConsTopClose.constant * 0.5
-        self.mConsBottomShare.constant =  self.mConsBottomShare.constant * 0.5
+        self.mConsTopPageTitle.constant = 0
+        self.mConsTopClose.constant = 0
+        self.mConsBottomShare.constant = 0
         
         UIView.animate(withDuration: 0.25) {
             self.view.layoutIfNeeded()
@@ -324,9 +327,9 @@ open class BNImagePageGridView: UIPageViewController {
     }
     
     private func buttonFinFinHide() {
-        self.mConsTopPageTitle.constant = self.mConsTopPageTitle.constant * 0.5
-        self.mConsTopClose.constant = self.mConsTopClose.constant * 0.5
-        self.mConsBottomShare.constant =  self.mConsBottomShare.constant * 0.5
+        self.mConsTopPageTitle.constant = 0
+        self.mConsTopClose.constant = 0
+        self.mConsBottomShare.constant = 0
         
         UIView.animate(withDuration: 0.25) {
             self.view.layoutIfNeeded()
@@ -456,15 +459,9 @@ public extension UINavigationController {
     //แสดงรูป สำหรับรูปเดียว  ไม่เกี่ยวกับหน้าอ่านกระทุ้
     func BNImagePage(mImageViewShowFirst mImageView: UIImageView, sImageUrl: String, PageSpacing: Int = 20, transitionStyle: UIPageViewController.TransitionStyle = .scroll) {
         let atIndexPath = IndexPath(row: 0, section: 0)
-        var axImgaePageData: [ImgaePageData] = []
-        let axInfomation = NSMutableAttributedString()
-        axInfomation.append(NSAttributedString(string:""))
-        axImgaePageData.append(ImgaePageData(
-            atIndex: atIndexPath,
-            sImageUrl: sImageUrl,
-            fWidth: (mImageView.image?.size.width)!,
-            fHeight: (mImageView.image?.size.height)!))
-        self.BNImagePage(mImageViewShowFirst: mImageView, axImgaePageData: axImgaePageData, atIndexPath: atIndexPath,PageSpacing: PageSpacing, transitionStyle: transitionStyle)
+        let size = mImageView.image?.size ?? .zero
+        let axImgaePageData = [ImgaePageData(atIndex: atIndexPath, sImageUrl: sImageUrl, fWidth: size.width, fHeight: size.height)]
+        self.BNImagePage(mImageViewShowFirst: mImageView, axImgaePageData: axImgaePageData, atIndexPath: atIndexPath, PageSpacing: PageSpacing, transitionStyle: transitionStyle)
     }
     
     //แสดงรูป สำหรับแบ่งแสดงเป็นหน้าต่อหนึ่งรูป
@@ -484,15 +481,9 @@ public extension UINavigationController {
     
     func BNImagePageHideShare(mImageViewShowFirst mImageView: UIImageView, sImageUrl: String, PageSpacing: Int = 20, transitionStyle: UIPageViewController.TransitionStyle = .scroll) {
         let atIndexPath = IndexPath(row: 0, section: 0)
-        var axImgaePageData: [ImgaePageData] = []
-        let axInfomation = NSMutableAttributedString()
-        axInfomation.append(NSAttributedString(string:""))
-        axImgaePageData.append(ImgaePageData(
-            atIndex: atIndexPath,
-            sImageUrl: sImageUrl,
-            fWidth: (mImageView.image?.size.width)!,
-            fHeight: (mImageView.image?.size.height)!))
-        self.BNImagePageHideShare(mImageViewShowFirst: mImageView, axImgaePageData: axImgaePageData, atIndexPath: atIndexPath,PageSpacing: PageSpacing, transitionStyle: transitionStyle)
+        let size = mImageView.image?.size ?? .zero
+        let axImgaePageData = [ImgaePageData(atIndex: atIndexPath, sImageUrl: sImageUrl, fWidth: size.width, fHeight: size.height)]
+        self.BNImagePageHideShare(mImageViewShowFirst: mImageView, axImgaePageData: axImgaePageData, atIndexPath: atIndexPath, PageSpacing: PageSpacing, transitionStyle: transitionStyle)
     }
     
     //แสดงรูป สำหรับแบ่งแสดงเป็นหน้าต่อหนึ่งรูป
