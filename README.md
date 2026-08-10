@@ -93,6 +93,7 @@ Banchai Nangpang, pong.np1@gmail.com
 | [Customization](docs/CUSTOMIZATION.md) | BNSetting |
 | [SwiftUI](docs/SWIFTUI.md) | BNImagePageViewRepresentable |
 | [Architecture](docs/ARCHITECTURE.md) | class diagram, data flow |
+| [UI/UX](docs/UI_UX.md) | layout ปัจจุบัน และแนวทางปรับปรุง |
 
 ## Author
 
