@@ -315,17 +315,16 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
         }
         self.mImageView.alpha = 0
         self.mScrollView.setZoomScale(self.mScrollView.minimumZoomScale, animated: false)
-        let targetFrame = dismissTargetFrame ?? self.mImageView.superview?.convert(self.mImageView.frame, to: nil)
-        if let startingFrame = targetFrame {
-            self.mZoomImageView.frame = startingFrame
-        }
         if let oViewController = self.delegate as? BNImagePageGridView {
             oViewController.mButtonClose.alpha = 0.0
             oViewController.mButtonShare.alpha = 0.0
             oViewController.mPageTitle.alpha = 0.0
         }
         self.mZoomImageView.image = self.mImageView.image
-        UIView.animate(withDuration: 0.3, animations: {
+        let targetFrame = dismissTargetFrame ?? self.mImageView.superview?.convert(self.mImageView.frame, to: nil)
+        if let frame = targetFrame { self.mZoomImageView.frame = frame }
+        UIView.animate(withDuration: 0.35, delay: 0, usingSpringWithDamping: 0.85, initialSpringVelocity: 0.5, options: .curveEaseInOut, animations: {
+            self.mZoomImageView.alpha = targetFrame != nil ? 1 : 0
             self.mLoadingActivity.center = self.mZoomImageView.center
             self.view.backgroundColor = UIColor.black.withAlphaComponent(0.0)
         }, completion: { _ in
@@ -350,17 +349,20 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
         }
         self.mScrollView.setZoomScale(self.mScrollView.minimumZoomScale, animated: false)
         self.mImageView.alpha = 0
-        self.view.backgroundColor = UIColor.black.withAlphaComponent(0.0)
-        let targetFrame = dismissTargetFrame ?? self.mImageView.superview?.convert(self.mImageView.frame, to: nil)
         if let oViewController = self.delegate as? BNImagePageGridView {
             oViewController.mButtonClose.alpha = 0.0
             oViewController.mButtonShare.alpha = 0.0
             oViewController.mPageTitle.alpha = 0.0
         }
         self.mZoomImageView.image = self.mImageView.image
-        UIView.animate(withDuration: 0.3, animations: {
-            if let frame = targetFrame { self.mZoomImageView.frame = frame }
+        let targetFrame = dismissTargetFrame ?? self.mImageView.superview?.convert(self.mImageView.frame, to: nil)
+        UIView.animate(withDuration: 0.35, delay: 0, usingSpringWithDamping: 0.85, initialSpringVelocity: 0.5, options: .curveEaseInOut, animations: {
+            if let frame = targetFrame {
+                self.mZoomImageView.frame = frame
+            }
+            self.mZoomImageView.alpha = targetFrame != nil ? 1 : 0
             self.mLoadingActivity.center = self.mZoomImageView.center
+            self.view.backgroundColor = UIColor.black.withAlphaComponent(0.0)
         }, completion: { _ in
             self.mLoadingActivity.removeFromSuperview()
             self.mZoomImageView.subviews.last?.removeFromSuperview()
