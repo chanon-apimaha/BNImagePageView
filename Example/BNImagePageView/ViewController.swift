@@ -16,7 +16,7 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        let mImageView: UIImageView = UIImageView(URL: NSURL(string: "https://homepages.cae.wisc.edu/~ece533/images/airplane.png")!)
+        let mImageView: UIImageView = UIImageView(URL: NSURL(string: "https://picsum.photos/id/237/400/300.jpg")!)
         mImageView.isUserInteractionEnabled = true
         self.view.addSubview(mImageView)
         mImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -41,7 +41,7 @@ class ViewController: UIViewController {
     
     @objc private func handleDoubleTapScrollView(recognizer: UITapGestureRecognizer) {
         if let mImageView = recognizer.view as? UIImageView {
-        self.navigationController?.BNImagePageHideShare(mImageViewShowFirst: mImageView, sImageUrl: "https://homepages.cae.wisc.edu/~ece533/images/airplane.png")
+        self.navigationController?.BNImagePageHideShare(mImageViewShowFirst: mImageView, sImageUrl: "https://picsum.photos/id/237/400/300.jpg")
         }
     }
     

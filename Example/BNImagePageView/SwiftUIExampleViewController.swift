@@ -12,7 +12,7 @@ struct BNImagePageSwiftUIExample: View {
     @State private var showSingle = false
     @State private var showMultiple = false
 
-    private let imageURL = "https://homepages.cae.wisc.edu/~ece533/images/airplane.png"
+    private let imageURL = "https://picsum.photos/id/237/400/300.jpg"
     private let imageView: UIImageView = {
         let iv = UIImageView()
         iv.contentMode = .scaleAspectFill
@@ -40,8 +40,8 @@ struct BNImagePageSwiftUIExample: View {
             BNImagePageViewRepresentable(
                 imageView: imageView,
                 pageData: [
-                    ImgaePageData(atIndex: IndexPath(row: 0, section: 0), sImageUrl: imageURL, fWidth: 800, fHeight: 600),
-                    ImgaePageData(atIndex: IndexPath(row: 1, section: 0), sImageUrl: "https://homepages.cae.wisc.edu/~ece533/images/baboon.png", fWidth: 512, fHeight: 512)
+                    ImgaePageData(atIndex: IndexPath(row: 0, section: 0), sImageUrl: "https://picsum.photos/id/237/400/300.jpg", fWidth: 400, fHeight: 300),
+                    ImgaePageData(atIndex: IndexPath(row: 1, section: 0), sImageUrl: "https://picsum.photos/id/10/400/300.jpg", fWidth: 400, fHeight: 300)
                 ],
                 atIndexPath: IndexPath(row: 0, section: 0)
             )
@@ -51,19 +51,12 @@ struct BNImagePageSwiftUIExample: View {
 }
 
 @available(iOS 15.0, *)
-class SwiftUIExampleViewController: UIViewController {
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        let hostingVC = UIHostingController(rootView: BNImagePageSwiftUIExample())
-        addChild(hostingVC)
-        view.addSubview(hostingVC.view)
-        hostingVC.view.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            hostingVC.view.topAnchor.constraint(equalTo: view.topAnchor),
-            hostingVC.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            hostingVC.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            hostingVC.view.trailingAnchor.constraint(equalTo: view.trailingAnchor)
-        ])
-        hostingVC.didMove(toParent: self)
+class SwiftUIExampleViewController: UIHostingController<BNImagePageSwiftUIExample> {
+    init() {
+        super.init(rootView: BNImagePageSwiftUIExample())
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder, rootView: BNImagePageSwiftUIExample())
     }
 }
