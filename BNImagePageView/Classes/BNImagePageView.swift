@@ -320,11 +320,11 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
             oViewController.mButtonShare.alpha = 0.0
             oViewController.mPageTitle.alpha = 0.0
         }
-        self.mZoomImageView.image = self.mImageView.image
+        // ไม่ replace image — ใช้ภาพที่แสดงอยู่แล้วใน mZoomImageView
         let targetFrame = dismissTargetFrame ?? self.mImageView.superview?.convert(self.mImageView.frame, to: nil)
         UIView.animate(withDuration: 0.55, delay: 0, usingSpringWithDamping: 0.75, initialSpringVelocity: 0.3, options: .curveEaseInOut, animations: {
             if let frame = targetFrame { self.mZoomImageView.frame = frame }
-            self.mZoomImageView.alpha = targetFrame != nil ? 1 : 0
+            self.mZoomImageView.alpha = 0
             self.mLoadingActivity.center = self.mZoomImageView.center
             self.view.backgroundColor = UIColor.black.withAlphaComponent(0.0)
         }, completion: { _ in
@@ -354,13 +354,11 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
             oViewController.mButtonShare.alpha = 0.0
             oViewController.mPageTitle.alpha = 0.0
         }
-        self.mZoomImageView.image = self.mImageView.image
+        // ไม่ replace image — ใช้ภาพที่แสดงอยู่แล้วใน mZoomImageView
         let targetFrame = dismissTargetFrame ?? self.mImageView.superview?.convert(self.mImageView.frame, to: nil)
         UIView.animate(withDuration: 0.55, delay: 0, usingSpringWithDamping: 0.75, initialSpringVelocity: 0.3, options: .curveEaseInOut, animations: {
-            if let frame = targetFrame {
-                self.mZoomImageView.frame = frame
-            }
-            self.mZoomImageView.alpha = targetFrame != nil ? 1 : 0
+            if let frame = targetFrame { self.mZoomImageView.frame = frame }
+            self.mZoomImageView.alpha = 0
             self.mLoadingActivity.center = self.mZoomImageView.center
             self.view.backgroundColor = UIColor.black.withAlphaComponent(0.0)
         }, completion: { _ in
