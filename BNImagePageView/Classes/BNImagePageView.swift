@@ -309,9 +309,6 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
         self.work.cancel()
         if self.oRetrieveImageTask != nil { self.oRetrieveImageTask.cancel() }
         if self.mLoadingActivity.isAnimating { self.mLoadingActivity.stopAnimating() }
-        if !(UIDevice.current.userInterfaceIdiom == .pad) {
-            UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
-        }
         self.mImageView.alpha = 0
         self.mScrollView.setZoomScale(self.mScrollView.minimumZoomScale, animated: false)
         if let oViewController = self.delegate as? BNImagePageGridView {
@@ -343,9 +340,6 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
         self.work.cancel()
         if self.oRetrieveImageTask != nil { self.oRetrieveImageTask.cancel() }
         if self.mLoadingActivity.isAnimating { self.mLoadingActivity.stopAnimating() }
-        if !(UIDevice.current.userInterfaceIdiom == .pad) {
-            UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
-        }
         self.mScrollView.setZoomScale(self.mScrollView.minimumZoomScale, animated: false)
         self.mImageView.alpha = 0
         if let oViewController = self.delegate as? BNImagePageGridView {
