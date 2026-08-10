@@ -212,7 +212,7 @@ open class BNImagePageGridView: UIPageViewController {
             item: self.mButtonShare,
             attribute: .right,
             relatedBy: .equal,
-            toItem: self.view,
+            toItem: self.view.safeAreaLayoutGuide,
             attribute: .right,
             multiplier: 1,
             constant: 0)
@@ -221,7 +221,7 @@ open class BNImagePageGridView: UIPageViewController {
             item: self.mButtonShare,
             attribute: NSLayoutConstraint.Attribute.bottom,
             relatedBy: NSLayoutConstraint.Relation.equal,
-            toItem: self.view,
+            toItem: self.view.safeAreaLayoutGuide,
             attribute: NSLayoutConstraint.Attribute.bottom,
             multiplier: 1,
             constant: 0)
@@ -246,8 +246,8 @@ open class BNImagePageGridView: UIPageViewController {
         
         NSLayoutConstraint.activate([self.mConsRightShare, self.mConsBottomShare, self.mConsWidthShare, self.mConsHeightShare])
         
-        self.mConsRightShare.constant = (UIDevice.current.userInterfaceIdiom == .pad) ? -16 : -8
-        self.mConsBottomShare.constant = (UIDevice.current.userInterfaceIdiom == .pad) ? -32 : -24
+        self.mConsRightShare.constant = -8
+        self.mConsBottomShare.constant = -8
         
         self.mConsWidthShare.constant = 40
         self.mConsHeightShare.constant = 40
@@ -363,7 +363,7 @@ open class BNImagePageGridView: UIPageViewController {
     private func buttonShow() {
         self.mConsTopPageTitle.constant = 8.0
         self.mConsTopClose.constant = 8.0
-        self.mConsBottomShare.constant = (UIDevice.current.userInterfaceIdiom == .pad) ? -32 : -24
+        self.mConsBottomShare.constant = -8
         UIView.animate(withDuration: 0.25) {
             self.view.layoutIfNeeded()
         }
@@ -380,7 +380,7 @@ open class BNImagePageGridView: UIPageViewController {
     private func buttonFinFInShow() {
         self.mConsTopPageTitle.constant = 8.0
         self.mConsTopClose.constant = 8.0
-        self.mConsBottomShare.constant = (UIDevice.current.userInterfaceIdiom == .pad) ? -32 : -24
+        self.mConsBottomShare.constant = -8
         UIView.animate(withDuration: 0.25) {
             self.view.layoutIfNeeded()
         }
