@@ -145,7 +145,8 @@ extension ViewController: UICollectionViewDataSource, UICollectionViewDelegate, 
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let cell = collectionView.cellForItem(at: indexPath) as? ImageCell else { return }
+        guard let cell = collectionView.cellForItem(at: indexPath) as? ImageCell,
+              cell.imageView.image != nil else { return }
         feedbackGenerator.impactOccurred()
         self.navigationController?.BNImagePage(mImageViewShowFirst: cell.imageView, axImgaePageData: pageData, atIndexPath: indexPath)
     }
@@ -331,12 +332,12 @@ extension UIImageView {
     func setImageFromURL(URL: NSURL, errorImage: UIImage? = nil, completion: (() -> Void)? = nil) {
         URLSession.shared.dataTask(with: URL as URL) { data, _, error in
             OperationQueue.main.addOperation {
-                if let data = data, error == nil {
-                    self.image = UIImage(data: data)
+                if let data = data, let image = UIImage(data: data), error == nil {
+                    self.image = image
+                    completion?()
                 } else {
                     self.image = errorImage
                 }
-                completion?()
             }
         }.resume()
     }
