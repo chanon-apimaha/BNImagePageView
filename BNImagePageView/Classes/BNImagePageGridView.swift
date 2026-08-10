@@ -32,6 +32,7 @@ open class BNImagePageGridView: UIPageViewController {
     private var axImgaePageData: [ImgaePageData]!
     private var atIndexPath: IndexPath!
     private var iNumOfPage: Int = 0
+    public var imageViewForIndex: ((Int) -> UIImageView?)?
     
     init(mImageView: UIImageView, axImgaePageData: [ImgaePageData], atIndexPath: IndexPath, transitionStyle: UIPageViewController.TransitionStyle, navigationOrientation: UIPageViewController.NavigationOrientation, options: [String : Any]?) {
         super.init(
@@ -415,12 +416,38 @@ extension BNImagePageGridView: UIPageViewControllerDataSource, UIPageViewControl
 extension BNImagePageGridView : BNImagePageDelegate {
     func getVisiableViewController(_ viewController: UIViewController) {
         if let oViewController = viewController as? BNImagePageViewController {
+            if let realImageView = imageViewForIndex?(iCurrentIndex) {
+                oViewController.mImageView = realImageView
+            }
             oViewController.mButtonShare = self.mButtonShare
             self.mButtonClose.removeTarget(nil, action: nil, for: .allEvents)
             self.mButtonShare.removeTarget(nil, action: nil, for: .allEvents)
             self.mButtonClose.addTarget(oViewController, action: #selector(oViewController.zoomOut2), for: .touchUpInside)
             self.mButtonShare.addTarget(oViewController, action: #selector(oViewController.pressShare), for: .touchUpInside)
         }
+    }
+}
+
+public struct BNImagePageGridViewBuilder {
+    public static func build(
+        mImageView: UIImageView,
+        pageData: [ImgaePageData],
+        indexPath: IndexPath,
+        pageSpacing: Int = 20,
+        transitionStyle: UIPageViewController.TransitionStyle = .scroll,
+        imageViewForIndex: ((Int) -> UIImageView?)? = nil
+    ) -> BNImagePageGridView {
+        let optionsDict = [convertFromUIPageViewControllerOptionsKey(UIPageViewController.OptionsKey.interPageSpacing): pageSpacing]
+        let vc = BNImagePageGridView(
+            mImageView: mImageView,
+            axImgaePageData: pageData,
+            atIndexPath: indexPath,
+            transitionStyle: transitionStyle,
+            navigationOrientation: .horizontal,
+            options: optionsDict)
+        vc.imageViewForIndex = imageViewForIndex
+        vc.modalPresentationStyle = .overFullScreen
+        return vc
     }
 }
 

@@ -151,7 +151,15 @@ extension ViewController: UICollectionViewDataSource, UICollectionViewDelegate, 
         guard let cell = collectionView.cellForItem(at: indexPath) as? ImageCell,
               cell.imageView.image != nil else { return }
         feedbackGenerator.impactOccurred()
-        self.navigationController?.BNImagePage(mImageViewShowFirst: cell.imageView, axImgaePageData: pageData, atIndexPath: indexPath)
+        let gridVC = BNImagePageGridViewBuilder.build(
+            mImageView: cell.imageView,
+            pageData: pageData,
+            indexPath: indexPath
+        ) { [weak self] index in
+            let ip = IndexPath(row: index, section: 0)
+            return (self?.collectionView.cellForItem(at: ip) as? ImageCell)?.imageView
+        }
+        navigationController?.present(gridVC, animated: false)
     }
 
     // Snap paging
