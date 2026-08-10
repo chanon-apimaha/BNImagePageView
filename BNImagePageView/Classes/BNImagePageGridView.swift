@@ -231,13 +231,8 @@ open class BNImagePageGridView: UIPageViewController {
         
         NSLayoutConstraint.activate([self.mConsRightShare, self.mConsBottomShare, self.mConsWidthShare, self.mConsHeightShare])
         
-        self.mConsRightShare.constant =  (UIDevice.current.userInterfaceIdiom == .pad) ? -16 : -8
-        
-        if #available(iOS 11.0, *) {
-            self.mConsBottomShare.constant =  (UIDevice.current.userInterfaceIdiom == .pad ) ? -32 : -24
-        } else {
-            self.mConsBottomShare.constant =  (UIDevice.current.userInterfaceIdiom == .pad ) ? -16 : -8
-        }
+        self.mConsRightShare.constant = (UIDevice.current.userInterfaceIdiom == .pad) ? -16 : -8
+        self.mConsBottomShare.constant = (UIDevice.current.userInterfaceIdiom == .pad) ? -32 : -24
         
         self.mConsWidthShare.constant = 40
         self.mConsHeightShare.constant = 40
@@ -353,13 +348,7 @@ open class BNImagePageGridView: UIPageViewController {
     private func buttonShow() {
         self.mConsTopPageTitle.constant = 34.0
         self.mConsTopClose.constant = 34.0
-        
-        
-        if #available(iOS 11.0, *) {
-            self.mConsBottomShare.constant =  (UIDevice.current.userInterfaceIdiom == .pad) ? -32 : -24
-        } else {
-            self.mConsBottomShare.constant =  (UIDevice.current.userInterfaceIdiom == .pad) ? -16 : -8
-        }
+        self.mConsBottomShare.constant = (UIDevice.current.userInterfaceIdiom == .pad) ? -32 : -24
         UIView.animate(withDuration: 0.25) {
             self.view.layoutIfNeeded()
         }
@@ -370,20 +359,13 @@ open class BNImagePageGridView: UIPageViewController {
             self.mPageTitle.alpha = 1
             self.mButtonClose.alpha = 1
             self.mButtonShare.alpha = 1
-        }, completion: { (didComplete) -> Void in
-        })
+        }, completion: { _ in })
     }
-    
+
     private func buttonFinFInShow() {
         self.mConsTopPageTitle.constant = 34.0
         self.mConsTopClose.constant = 34.0
-        
-        
-        if #available(iOS 11.0, *) {
-            self.mConsBottomShare.constant =  (UIDevice.current.userInterfaceIdiom == .pad) ? -32 : -24
-        } else {
-            self.mConsBottomShare.constant =  (UIDevice.current.userInterfaceIdiom == .pad) ? -16 : -8
-        }
+        self.mConsBottomShare.constant = (UIDevice.current.userInterfaceIdiom == .pad) ? -32 : -24
         UIView.animate(withDuration: 0.25) {
             self.view.layoutIfNeeded()
         }
@@ -394,8 +376,7 @@ open class BNImagePageGridView: UIPageViewController {
             self.mPageTitle.alpha = 1
             self.mButtonClose.alpha = 1
             self.mButtonShare.alpha = 0
-        }, completion: { (didComplete) -> Void in
-        })
+        }, completion: { _ in })
     }
     
     @objc private func rotationView(notification: NSNotification) {

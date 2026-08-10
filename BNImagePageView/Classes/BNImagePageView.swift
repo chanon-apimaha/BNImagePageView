@@ -44,10 +44,9 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
     
     public var mScrollView: UIScrollView = UIScrollView()
     public var mZoomImageView: UIImageView = UIImageView()
-    fileprivate var mLoadingActivity: UIActivityIndicatorView = UIActivityIndicatorView(style: .whiteLarge)
+    fileprivate var mLoadingActivity: UIActivityIndicatorView = UIActivityIndicatorView(style: .large)
     fileprivate var mShareActivity: UIActivityViewController = UIActivityViewController(activityItems: [], applicationActivities: nil)
     fileprivate var oRetrieveImageTask: DownloadTask!
-    fileprivate var oldStatusbarColor: UIStatusBarStyle = UIApplication.shared.statusBarStyle
     fileprivate var panGesture: UIPanGestureRecognizer = UIPanGestureRecognizer()
     fileprivate var bIsShowImage: Bool = true
     fileprivate var iLoadImageCount: Int = 0
@@ -248,37 +247,41 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
         self.setZoomImageFrame(imageSize: (self.mImageView.image?.size)!)
     }
     
+    private var keyWindow: UIWindow? {
+        UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap { $0.windows }
+            .first { $0.isKeyWindow }
+    }
+
     private func setZoomImageFrame(imageSize: CGSize) {
-        if let keyWindow = UIApplication.shared.keyWindow {
-            var height: CGFloat = 0.0
-            var width: CGFloat = 0.0
-            var y: CGFloat = 0.0
-            var x: CGFloat = 0.0
-            if (keyWindow.frame.width) < (keyWindow.frame.height) {
-                width = (keyWindow.frame.width)
-                height  = ((keyWindow.frame.width) / imageSize.width) * imageSize.height
-                y = (keyWindow.frame.height) / 2 - height / 2
-                
-                if height > keyWindow.frame.height {
-                    width = (keyWindow.frame.height / imageSize.height) * imageSize.width
-                    height = keyWindow.frame.height
-                    x = (keyWindow.frame.width) / 2 - width / 2
-                    y = 0.0
-                }
-            } else if (keyWindow.frame.width) > (keyWindow.frame.height) {
-                width  = ((keyWindow.frame.height) / imageSize.height) * imageSize.width
-                height = (keyWindow.frame.height)
-                x = (keyWindow.frame.width) / 2 - width / 2
-                
-                if width > keyWindow.frame.width {
-                    height = (keyWindow.frame.width / imageSize.width) * imageSize.height
-                    width = keyWindow.frame.width
-                    x = 0.0
-                    y = (keyWindow.frame.height) / 2 - height / 2
-                }
+        guard let keyWindow = keyWindow else { return }
+        var height: CGFloat = 0.0
+        var width: CGFloat = 0.0
+        var y: CGFloat = 0.0
+        var x: CGFloat = 0.0
+        if keyWindow.frame.width < keyWindow.frame.height {
+            width = keyWindow.frame.width
+            height = (keyWindow.frame.width / imageSize.width) * imageSize.height
+            y = keyWindow.frame.height / 2 - height / 2
+            if height > keyWindow.frame.height {
+                width = (keyWindow.frame.height / imageSize.height) * imageSize.width
+                height = keyWindow.frame.height
+                x = keyWindow.frame.width / 2 - width / 2
+                y = 0.0
             }
-            self.mZoomImageView.frame = CGRect(x: x, y: y, width: width, height: height)
+        } else if keyWindow.frame.width > keyWindow.frame.height {
+            width = (keyWindow.frame.height / imageSize.height) * imageSize.width
+            height = keyWindow.frame.height
+            x = keyWindow.frame.width / 2 - width / 2
+            if width > keyWindow.frame.width {
+                height = (keyWindow.frame.width / imageSize.width) * imageSize.height
+                width = keyWindow.frame.width
+                x = 0.0
+                y = keyWindow.frame.height / 2 - height / 2
+            }
         }
+        self.mZoomImageView.frame = CGRect(x: x, y: y, width: width, height: height)
     }
     
     @objc private func handleDoubleTapScrollView(recognizer: UITapGestureRecognizer) {
@@ -437,11 +440,7 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
             DispatchQueue.main.async {
                 if let mZoomView = self.mZoomImageView.image {
                     self.mShareActivity = UIActivityViewController(activityItems: [mZoomView], applicationActivities: nil)
-                    if #available(iOS 11.0, *) {
-                        self.mShareActivity.excludedActivityTypes = [.addToReadingList, .airDrop, .assignToContact, .copyToPasteboard, .mail, .markupAsPDF, .message, .openInIBooks, .print, .postToWeibo, .postToTencentWeibo, .postToFlickr, .postToVimeo, .postToFacebook]
-                    } else {
-                        self.mShareActivity.excludedActivityTypes = [.addToReadingList, .airDrop, .assignToContact, .copyToPasteboard, .mail, .message, .openInIBooks, .print, .postToWeibo, .postToTencentWeibo, .postToFlickr, .postToVimeo, .postToFacebook]
-                    }
+                    self.mShareActivity.excludedActivityTypes = [.addToReadingList, .airDrop, .assignToContact, .copyToPasteboard, .mail, .markupAsPDF, .message, .openInIBooks, .print, .postToWeibo, .postToTencentWeibo, .postToFlickr, .postToVimeo, .postToFacebook]
                     self.mShareActivity.popoverPresentationController?.sourceView = self.mScrollView
                     self.mShareActivity.popoverPresentationController?.delegate = self
                     
@@ -558,18 +557,15 @@ extension BNImagePageViewController: UIScrollViewDelegate {
     }
     
     func setMaxMinZoomScalesForCurrentBounds() {
-        if let keyWindow = UIApplication.shared.keyWindow {
-            let scrollViewFrame = keyWindow.bounds
-            let scaleWidth = scrollViewFrame.size.width / self.mScrollView.contentSize.width
-            let scaleHeight = scrollViewFrame.size.height / self.mScrollView.contentSize.height
-            var minScale = min(scaleWidth, scaleHeight)
-            let maxScale = max(scaleWidth, scaleHeight)
-            if minScale > maxScale {
-                minScale = maxScale
-            }
-            self.mScrollView.maximumZoomScale = (maxScale < 3) ? 3.0 : maxScale
-            self.mScrollView.minimumZoomScale =  (minScale < 1) ? 1.0 : minScale
-        }
+        guard let keyWindow = keyWindow else { return }
+        let scrollViewFrame = keyWindow.bounds
+        let scaleWidth = scrollViewFrame.size.width / self.mScrollView.contentSize.width
+        let scaleHeight = scrollViewFrame.size.height / self.mScrollView.contentSize.height
+        var minScale = min(scaleWidth, scaleHeight)
+        let maxScale = max(scaleWidth, scaleHeight)
+        if minScale > maxScale { minScale = maxScale }
+        self.mScrollView.maximumZoomScale = (maxScale < 3) ? 3.0 : maxScale
+        self.mScrollView.minimumZoomScale = (minScale < 1) ? 1.0 : minScale
     }
 }
 
@@ -600,15 +596,15 @@ extension BNImagePageViewController: UIGestureRecognizerDelegate {
     
     @objc func draggedView(_ sender:UIPanGestureRecognizer){
         if self.mScrollView.zoomScale <= self.mScrollView.minimumZoomScale {
-            var topMostWindowController : UIViewController? {
-                var topController: UIViewController? = UIApplication.shared.keyWindow?.rootViewController
-                
-                //  Getting topMost ViewController
-                while ((topController?.presentedViewController) != nil) {
-                    topController = topController?.presentedViewController
+            var topMostWindowController: UIViewController? {
+                let keyWindow = UIApplication.shared.connectedScenes
+                    .compactMap { $0 as? UIWindowScene }
+                    .flatMap { $0.windows }
+                    .first { $0.isKeyWindow }
+                var topController = keyWindow?.rootViewController
+                while let presented = topController?.presentedViewController {
+                    topController = presented
                 }
-                
-                //  Returning topMost ViewController
                 return topController
             }
             
