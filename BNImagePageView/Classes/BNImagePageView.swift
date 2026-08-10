@@ -322,8 +322,8 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
         }
         self.mZoomImageView.image = self.mImageView.image
         let targetFrame = dismissTargetFrame ?? self.mImageView.superview?.convert(self.mImageView.frame, to: nil)
-        if let frame = targetFrame { self.mZoomImageView.frame = frame }
         UIView.animate(withDuration: 0.55, delay: 0, usingSpringWithDamping: 0.75, initialSpringVelocity: 0.3, options: .curveEaseInOut, animations: {
+            if let frame = targetFrame { self.mZoomImageView.frame = frame }
             self.mZoomImageView.alpha = targetFrame != nil ? 1 : 0
             self.mLoadingActivity.center = self.mZoomImageView.center
             self.view.backgroundColor = UIColor.black.withAlphaComponent(0.0)
