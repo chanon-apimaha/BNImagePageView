@@ -84,9 +84,17 @@ open class BNImagePageGridView: UIPageViewController {
         if let cached = pageCache[index] { return cached }
         let oViewController = BNImagePageViewController()
         let thumbImageView = UIImageView()
-        thumbImageView.image = imageViewForIndex?(index)?.image ?? ((index == atIndexPath.row) ? mImageView.image : nil)
         thumbImageView.contentMode = mImageView.contentMode
         thumbImageView.frame = mImageView.frame
+        // ดึง image จาก cell ที่อยู่บนหน้าจอก่อน ถ้าไม่มีค่อยดึงจาก Kingfisher cache
+        if let liveImage = imageViewForIndex?(index)?.image {
+            thumbImageView.image = liveImage
+        } else if let url = URL(string: axImgaePageData[index].sImageUrl),
+                  let cached = ImageCache.default.retrieveImageInMemoryCache(forKey: url.absoluteString) {
+            thumbImageView.image = cached
+        } else if index == atIndexPath.row {
+            thumbImageView.image = mImageView.image
+        }
         oViewController.mImageView = thumbImageView
         oViewController.sImageUrl = self.axImgaePageData[index].sImageUrl
         oViewController.delegate = self
@@ -420,6 +428,9 @@ extension BNImagePageGridView : BNImagePageDelegate {
         if let oViewController = viewController as? BNImagePageViewController {
             if let realImageView = imageViewForIndex?(iCurrentIndex) {
                 oViewController.mImageView = realImageView
+            } else if let url = URL(string: axImgaePageData[iCurrentIndex].sImageUrl),
+                      let cached = ImageCache.default.retrieveImageInMemoryCache(forKey: url.absoluteString) {
+                oViewController.mImageView.image = cached
             }
             oViewController.mButtonShare = self.mButtonShare
             self.mButtonClose.removeTarget(nil, action: nil, for: .allEvents)
