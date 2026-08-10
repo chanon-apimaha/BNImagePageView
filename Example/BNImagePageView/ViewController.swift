@@ -36,6 +36,7 @@ class ViewController: UIViewController {
         setupSegment()
         setupCollectionView()
         setupPageIndicator()
+        ImagePrefetcher(urls: imageURLs.compactMap { URL(string: $0) }).start()
     }
 
     private func setupHeader() {
@@ -70,6 +71,7 @@ class ViewController: UIViewController {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.dataSource = self
         collectionView.delegate = self
+        collectionView.prefetchDataSource = self
         collectionView.register(ImageCell.self, forCellWithReuseIdentifier: "cell")
         collectionView.showsHorizontalScrollIndicator = false
         view.addSubview(collectionView)
@@ -178,6 +180,20 @@ extension ViewController: UICollectionViewDataSource, UICollectionViewDelegate, 
 
         let page = Int(round(scrollView.contentOffset.x / width))
         pageIndicator.currentPage = max(0, min(page, imageURLs.count - 1))
+    }
+}
+
+// MARK: - Prefetch
+
+extension ViewController: UICollectionViewDataSourcePrefetching {
+    func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+        let urls = indexPaths.compactMap { URL(string: imageURLs[$0.row]) }
+        ImagePrefetcher(urls: urls).start()
+    }
+
+    func collectionView(_ collectionView: UICollectionView, cancelPrefetchingForItemsAt indexPaths: [IndexPath]) {
+        let urls = indexPaths.compactMap { URL(string: imageURLs[$0.row]) }
+        ImagePrefetcher(urls: urls).stop()
     }
 }
 
