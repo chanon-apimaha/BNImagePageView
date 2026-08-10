@@ -22,6 +22,8 @@
 
 import UIKit
 import Kingfisher
+
+open class BNSetting {
     public static var titlefont: UIFont = .systemFont(ofSize: 16)
     public static var mButtonClose: UIButton = UIButton()
     public static var closeImage : UIImage? = UIImage(named:"icon-close")?.withRenderingMode(.alwaysTemplate)

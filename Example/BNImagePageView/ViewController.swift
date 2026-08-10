@@ -155,7 +155,7 @@ extension ViewController: UICollectionViewDataSource, UICollectionViewDelegate, 
             mImageView: cell.imageView,
             pageData: pageData,
             indexPath: indexPath
-        ) { [weak self] index in
+        ) { [weak self] (index: Int) -> UIImageView? in
             let ip = IndexPath(row: index, section: 0)
             return (self?.collectionView.cellForItem(at: ip) as? ImageCell)?.imageView
         }
