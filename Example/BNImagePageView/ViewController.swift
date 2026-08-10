@@ -10,41 +10,36 @@ class ViewController: UIViewController {
 
     override open var supportedInterfaceOrientations: UIInterfaceOrientationMask { .portrait }
 
-    private let imageURLs = (1...20).map { _ in
-        let ids = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100,
-                   110, 120, 130, 140, 150, 160, 170, 180, 190, 200]
-        return "https://picsum.photos/id/\(ids.randomElement()!)/400/300.jpg"
-    }
-
-    private lazy var uniqueURLs: [String] = {
-        let ids = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100,
-                   110, 120, 130, 140, 150, 160, 170, 180, 190, 200]
-        return ids.map { "https://picsum.photos/id/\($0)/400/300.jpg" }
-    }()
+    private let imageURLs: [String] = [10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200]
+        .map { "https://picsum.photos/id/\($0)/400/300.jpg" }
 
     private var pageData: [ImgaePageData] = []
     private var collectionView: UICollectionView!
+    private var pageIndicator: UIPageControl!
     private var headerLabel: UILabel!
     private var currentLayout: LayoutType = .list
+    private let feedbackGenerator = UIImpactFeedbackGenerator(style: .light)
 
     enum LayoutType: Int { case list, grid, paging }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+        feedbackGenerator.prepare()
 
-        pageData = uniqueURLs.enumerated().map {
+        pageData = imageURLs.enumerated().map {
             ImgaePageData(atIndex: IndexPath(row: $0.offset, section: 0), sImageUrl: $0.element, fWidth: 400, fHeight: 300)
         }
 
         setupHeader()
         setupSegment()
         setupCollectionView()
+        setupPageIndicator()
     }
 
     private func setupHeader() {
         headerLabel = UILabel()
-        headerLabel.text = "\(uniqueURLs.count) Photos"
+        headerLabel.text = "\(imageURLs.count) Photos"
         headerLabel.font = .systemFont(ofSize: 13, weight: .medium)
         headerLabel.textColor = .secondaryLabel
         headerLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -75,12 +70,28 @@ class ViewController: UIViewController {
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.register(ImageCell.self, forCellWithReuseIdentifier: "cell")
+        collectionView.showsHorizontalScrollIndicator = false
         view.addSubview(collectionView)
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 84),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -60)
+        ])
+    }
+
+    private func setupPageIndicator() {
+        pageIndicator = UIPageControl()
+        pageIndicator.numberOfPages = imageURLs.count
+        pageIndicator.currentPage = 0
+        pageIndicator.pageIndicatorTintColor = .systemGray4
+        pageIndicator.currentPageIndicatorTintColor = .label
+        pageIndicator.isHidden = true
+        pageIndicator.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(pageIndicator)
+        NSLayoutConstraint.activate([
+            pageIndicator.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -8),
+            pageIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
     }
 
@@ -109,8 +120,8 @@ class ViewController: UIViewController {
     @objc private func segmentChanged(_ sender: UISegmentedControl) {
         currentLayout = LayoutType(rawValue: sender.selectedSegmentIndex) ?? .list
         let isPaging = currentLayout == .paging
-        collectionView.isPagingEnabled = false
         collectionView.decelerationRate = isPaging ? .fast : .normal
+        pageIndicator.isHidden = !isPaging
         UIView.animate(withDuration: 0.3) {
             self.collectionView.setCollectionViewLayout(self.makeLayout(for: self.currentLayout), animated: false)
         }
@@ -118,30 +129,53 @@ class ViewController: UIViewController {
     }
 }
 
+// MARK: - UICollectionView
+
 extension ViewController: UICollectionViewDataSource, UICollectionViewDelegate, UIScrollViewDelegate {
-    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
-        guard currentLayout == .paging else { return }
-        let width = UIScreen.main.bounds.width
-        let itemWidth = width - 48 + 16
-        let offset = targetContentOffset.pointee.x
-        let index = (offset + scrollView.contentInset.left) / itemWidth
-        let roundedIndex = velocity.x > 0 ? ceil(index) : (velocity.x < 0 ? floor(index) : round(index))
-        targetContentOffset.pointee.x = roundedIndex * itemWidth - scrollView.contentInset.left
-    }
+
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        uniqueURLs.count
+        imageURLs.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! ImageCell
         let isGrid = currentLayout == .grid
-        cell.configure(url: uniqueURLs[indexPath.row], showShadow: !isGrid, index: indexPath.row + 1, showIndex: currentLayout == .list)
+        cell.configure(url: imageURLs[indexPath.row], showShadow: !isGrid, index: indexPath.row + 1, showIndex: currentLayout == .list)
         return cell
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let cell = collectionView.cellForItem(at: indexPath) as? ImageCell else { return }
+        feedbackGenerator.impactOccurred()
         self.navigationController?.BNImagePage(mImageViewShowFirst: cell.imageView, axImgaePageData: pageData, atIndexPath: indexPath)
+    }
+
+    // Snap paging
+    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+        guard currentLayout == .paging else { return }
+        let itemWidth = UIScreen.main.bounds.width - 48 + 16
+        let offset = targetContentOffset.pointee.x
+        let index = (offset + scrollView.contentInset.left) / itemWidth
+        let rounded = velocity.x > 0 ? ceil(index) : (velocity.x < 0 ? floor(index) : round(index))
+        targetContentOffset.pointee.x = rounded * itemWidth - scrollView.contentInset.left
+    }
+
+    // Scale effect + page indicator
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        guard currentLayout == .paging else { return }
+        let width = UIScreen.main.bounds.width - 48 + 16
+        let centerX = scrollView.contentOffset.x + scrollView.bounds.width / 2
+
+        for cell in collectionView.visibleCells {
+            let offsetX = abs(cell.center.x - centerX)
+            let scale = max(0.9, 1 - offsetX / scrollView.bounds.width * 0.3)
+            UIView.animate(withDuration: 0.15) {
+                cell.transform = CGAffineTransform(scaleX: scale, y: scale)
+            }
+        }
+
+        let page = Int(round(scrollView.contentOffset.x / width))
+        pageIndicator.currentPage = max(0, min(page, imageURLs.count - 1))
     }
 }
 
@@ -157,19 +191,16 @@ class ImageCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        // Skeleton
         skeletonView.backgroundColor = .systemGray5
         skeletonView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(skeletonView)
 
-        // ImageView
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.alpha = 0
         contentView.addSubview(imageView)
 
-        // Index label
         indexLabel.font = .systemFont(ofSize: 12, weight: .semibold)
         indexLabel.textColor = .white
         indexLabel.backgroundColor = UIColor.black.withAlphaComponent(0.5)
@@ -198,6 +229,7 @@ class ImageCell: UICollectionViewCell {
         ])
 
         startShimmer()
+        setupLongPress()
     }
 
     required init?(coder: NSCoder) { fatalError() }
@@ -214,7 +246,6 @@ class ImageCell: UICollectionViewCell {
         indexLabel.isHidden = !showIndex
         indexLabel.text = "\(index)"
 
-        // Shadow
         if showShadow {
             layer.shadowColor = UIColor.black.cgColor
             layer.shadowOpacity = 0.15
@@ -235,6 +266,29 @@ class ImageCell: UICollectionViewCell {
                 self?.imageView.alpha = 1
                 self?.skeletonView.isHidden = true
             }
+        }
+    }
+
+    private func setupLongPress() {
+        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(_:)))
+        longPress.minimumPressDuration = 0.4
+        addGestureRecognizer(longPress)
+    }
+
+    @objc private func handleLongPress(_ gesture: UILongPressGestureRecognizer) {
+        switch gesture.state {
+        case .began:
+            UIView.animate(withDuration: 0.15, animations: {
+                self.transform = CGAffineTransform(scaleX: 1.05, y: 1.05)
+                self.layer.shadowOpacity = 0.3
+            })
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        case .ended, .cancelled:
+            UIView.animate(withDuration: 0.15) {
+                self.transform = .identity
+                self.layer.shadowOpacity = 0.15
+            }
+        default: break
         }
     }
 
