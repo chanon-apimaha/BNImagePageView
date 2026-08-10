@@ -541,7 +541,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/chanon-apimaha/BNImagePageView.git";
 			requirement = {
-				branch = "fix/close-button-dynamic-island";
+				branch = "fix/spm-swiftui-support";
 				kind = branch;
 			};
 		};
