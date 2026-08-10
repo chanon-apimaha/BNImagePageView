@@ -425,11 +425,12 @@ extension BNImagePageGridView: UIPageViewControllerDataSource, UIPageViewControl
 
 extension BNImagePageGridView : BNImagePageDelegate {
     func getVisiableViewController(_ viewController: UIViewController) {
-        if let oViewController = viewController as? BNImagePageViewController {
-            if let realImageView = imageViewForIndex?(iCurrentIndex) {
+        if let oViewController = viewController as? BNImagePageViewController,
+           let index = pageCache.first(where: { $0.value === oViewController })?.key {
+            if let realImageView = imageViewForIndex?(index) {
                 oViewController.mImageView = realImageView
                 oViewController.dismissTargetFrame = realImageView.superview?.convert(realImageView.frame, to: nil)
-            } else if let url = URL(string: axImgaePageData[iCurrentIndex].sImageUrl),
+            } else if let url = URL(string: axImgaePageData[index].sImageUrl),
                       let cached = ImageCache.default.retrieveImageInMemoryCache(forKey: url.absoluteString) {
                 oViewController.mImageView.image = cached
                 oViewController.dismissTargetFrame = nil
