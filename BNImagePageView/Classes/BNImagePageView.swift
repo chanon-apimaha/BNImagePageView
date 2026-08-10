@@ -90,7 +90,7 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
                 
                 if self.bDoAnimate {
                     UIView.animate(withDuration: 0.75, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0.5, options: .curveEaseOut, animations: { () -> Void in
-                        self.setZoomImageFrame(imageSize: (self.mImageView.image?.size)!)
+                        self.setZoomImageFrame(imageSize: self.mImageView.image?.size ?? CGSize(width: 1, height: 1))
                         self.mImageView.alpha = 0
                         self.mZoomImageView.alpha = 1
                         self.view.backgroundColor = UIColor.black.withAlphaComponent(1.0)
@@ -98,7 +98,7 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
                         self.loadImage()
                     })
                 } else {
-                    self.setZoomImageFrame(imageSize: (self.mImageView.image?.size)!)
+                    self.setZoomImageFrame(imageSize: self.mImageView.image?.size ?? CGSize(width: 1, height: 1))
                     self.mImageView.alpha = 0
                     self.mZoomImageView.alpha = 1
                     self.view.backgroundColor = UIColor.black.withAlphaComponent(1.0)
@@ -142,14 +142,14 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
             self.oRetrieveImageTask = self.mZoomImageView.kf.setImage(with: bundleURL, placeholder: self.mImageView.image, options: [.transition(.fade(0.15)), .cacheMemoryOnly], progressBlock: nil) { (result) in
                 switch result {
                 case .success(_):
-                    self.setZoomImageFrame(imageSize: (self.mZoomImageView.image?.size)!)
+                    self.setZoomImageFrame(imageSize: self.mZoomImageView.image?.size ?? CGSize(width: 1, height: 1))
                     self.mLoadingActivity.stopAnimating()
                     self.faceOutBlurEffect()
                     self.clearCacheImage()
                     self.bIsShowImage = false
                     break
                 case .failure(_):
-                    self.setZoomImageFrame(imageSize: (self.mImageView.image?.size)!)
+                    self.setZoomImageFrame(imageSize: self.mImageView.image?.size ?? CGSize(width: 1, height: 1))
                     if self.iLoadImageCount < 3 {
                         self.loadImage()
                     } else {
@@ -164,13 +164,13 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
             
             //            self.oRetrieveImageTask = self.mZoomImageView.kf.setImage(with: resource, placeholder: self.mImageView.image, options: [.transition(.fade(0.15))], progressBlock: nil, completionHandler: { (image, error, cacheType, Url) in
             //                if error == nil {
-            //                    self.setZoomImageFrame(imageSize: (self.mZoomImageView.image?.size)!)
+            //                    self.setZoomImageFrame(imageSize: self.mZoomImageView.image?.size ?? CGSize(width: 1, height: 1))
             //                    self.mLoadingActivity.stopAnimating()
             //                    self.faceOutBlurEffect()
             //                    self.clearCacheImage()
             //                    self.bIsShowImage = false
             //                } else {
-            //                    self.setZoomImageFrame(imageSize: (self.mImageView.image?.size)!)
+            //                    self.setZoomImageFrame(imageSize: self.mImageView.image?.size ?? CGSize(width: 1, height: 1))
             //                    if self.iLoadImageCount < 3 {
             //                        self.loadImage()
             //                    } else {
@@ -242,7 +242,7 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
         self.mZoomImageView.contentMode = .scaleAspectFill
         self.mZoomImageView.clipsToBounds = true
         self.mZoomImageView.alpha = 0
-        self.setZoomImageFrame(imageSize: (self.mImageView.image?.size)!)
+        self.setZoomImageFrame(imageSize: self.mImageView.image?.size ?? CGSize(width: 1, height: 1))
     }
     
     private var keyWindow: UIWindow? {
@@ -403,7 +403,7 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
     @objc private func rotationView(notification: NSNotification) {
         self.mLoadingActivity.center = self.view.center
         self.mScrollView.setZoomScale(self.mScrollView.minimumZoomScale, animated: true)
-        self.setZoomImageFrame(imageSize: (self.mZoomImageView.image?.size)!)
+        self.setZoomImageFrame(imageSize: self.mZoomImageView.image?.size ?? CGSize(width: 1, height: 1))
         self.mScrollView.contentSize = self.mZoomImageView.frame.size
         self.setMaxMinZoomScalesForCurrentBounds()
         
