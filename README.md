@@ -82,11 +82,7 @@ If your app is locked to portrait only, add this to your `AppDelegate` to allow 
 
 ```swift
 func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
-    let keyWindow = UIApplication.shared.connectedScenes
-        .compactMap { $0 as? UIWindowScene }
-        .flatMap { $0.windows }
-        .first { $0.isKeyWindow }
-    var topController = keyWindow?.rootViewController
+    var topController = window?.rootViewController
     while let presented = topController?.presentedViewController {
         topController = presented
     }
