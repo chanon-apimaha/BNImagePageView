@@ -428,9 +428,11 @@ extension BNImagePageGridView : BNImagePageDelegate {
         if let oViewController = viewController as? BNImagePageViewController {
             if let realImageView = imageViewForIndex?(iCurrentIndex) {
                 oViewController.mImageView = realImageView
+                oViewController.dismissTargetFrame = realImageView.superview?.convert(realImageView.frame, to: nil)
             } else if let url = URL(string: axImgaePageData[iCurrentIndex].sImageUrl),
                       let cached = ImageCache.default.retrieveImageInMemoryCache(forKey: url.absoluteString) {
                 oViewController.mImageView.image = cached
+                oViewController.dismissTargetFrame = nil
             }
             oViewController.mButtonShare = self.mButtonShare
             self.mButtonClose.removeTarget(nil, action: nil, for: .allEvents)

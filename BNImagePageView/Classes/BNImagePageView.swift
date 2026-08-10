@@ -41,6 +41,7 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
     var bDoAnimate: Bool = true
     weak var delegate: BNImagePageDelegate?
     var bIsPagingEnabled: Bool = false
+    var dismissTargetFrame: CGRect? = nil
     
     public var mScrollView: UIScrollView = UIScrollView()
     public var mZoomImageView: UIImageView = UIImageView()
@@ -307,95 +308,70 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
     
     @objc public func zoomOut() {
         self.work.cancel()
-        if self.oRetrieveImageTask != nil {
-            self.oRetrieveImageTask.cancel()
-        }
-        
-        if self.mLoadingActivity.isAnimating {
-            self.mLoadingActivity.stopAnimating()
-        }
-        
+        if self.oRetrieveImageTask != nil { self.oRetrieveImageTask.cancel() }
+        if self.mLoadingActivity.isAnimating { self.mLoadingActivity.stopAnimating() }
         if !(UIDevice.current.userInterfaceIdiom == .pad) {
             UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
         }
-        //        self.mZoomImageView.alpha = 0
         self.mImageView.alpha = 0
         self.mScrollView.setZoomScale(self.mScrollView.minimumZoomScale, animated: false)
-        
-        if let startingFrame = self.mImageView.superview?.convert(self.mImageView.frame, to: nil) {
+        let targetFrame = dismissTargetFrame ?? self.mImageView.superview?.convert(self.mImageView.frame, to: nil)
+        if let startingFrame = targetFrame {
             self.mZoomImageView.frame = startingFrame
-            if let oViewController = self.delegate as? BNImagePageGridView {
-                oViewController.mButtonClose.alpha = 0.0
-                oViewController.mButtonShare.alpha = oViewController.mButtonClose.alpha
-                oViewController.mPageTitle.alpha = oViewController.mButtonClose.alpha
-            }
-            self.mZoomImageView.image = self.mImageView.image
-            UIView.animate(withDuration: 0.3, animations: { () -> Void in
-                
-                self.mLoadingActivity.center = self.mZoomImageView.center
-                self.view.backgroundColor = UIColor.black.withAlphaComponent(0.0)
-            }, completion: { (didComplete) -> Void in
-                self.mLoadingActivity.removeFromSuperview()
-                self.mZoomImageView.subviews.last?.removeFromSuperview()
-                self.mZoomImageView.removeFromSuperview()
-                self.mScrollView.removeFromSuperview()
-                self.clearCacheImage()
-                
-                self.dismiss(animated: false, completion: {
-                    self.mImageView.alpha = 1
-                })
-                if let oViewController = self.delegate as? UIViewController {
-                    oViewController.dismiss(animated: false, completion: nil)
-                }
-            })
         }
+        if let oViewController = self.delegate as? BNImagePageGridView {
+            oViewController.mButtonClose.alpha = 0.0
+            oViewController.mButtonShare.alpha = 0.0
+            oViewController.mPageTitle.alpha = 0.0
+        }
+        self.mZoomImageView.image = self.mImageView.image
+        UIView.animate(withDuration: 0.3, animations: {
+            self.mLoadingActivity.center = self.mZoomImageView.center
+            self.view.backgroundColor = UIColor.black.withAlphaComponent(0.0)
+        }, completion: { _ in
+            self.mLoadingActivity.removeFromSuperview()
+            self.mZoomImageView.subviews.last?.removeFromSuperview()
+            self.mZoomImageView.removeFromSuperview()
+            self.mScrollView.removeFromSuperview()
+            self.clearCacheImage()
+            self.dismiss(animated: false) { self.mImageView.alpha = 1 }
+            if let oViewController = self.delegate as? UIViewController {
+                oViewController.dismiss(animated: false, completion: nil)
+            }
+        })
     }
     
     @objc public func zoomOut2() {
         self.work.cancel()
-        if self.oRetrieveImageTask != nil {
-            self.oRetrieveImageTask.cancel()
-        }
-        
-        if self.mLoadingActivity.isAnimating {
-            self.mLoadingActivity.stopAnimating()
-        }
-        
+        if self.oRetrieveImageTask != nil { self.oRetrieveImageTask.cancel() }
+        if self.mLoadingActivity.isAnimating { self.mLoadingActivity.stopAnimating() }
         if !(UIDevice.current.userInterfaceIdiom == .pad) {
             UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
         }
-        //        self.mZoomImageView.alpha = 0
         self.mScrollView.setZoomScale(self.mScrollView.minimumZoomScale, animated: false)
-        
         self.mImageView.alpha = 0
         self.view.backgroundColor = UIColor.black.withAlphaComponent(0.0)
-        if let startingFrame = self.mImageView.superview?.convert(self.mImageView.frame, to: nil) {
-            
-            if let oViewController = self.delegate as? BNImagePageGridView {
-                oViewController.mButtonClose.alpha = 0.0
-                oViewController.mButtonShare.alpha = oViewController.mButtonClose.alpha
-                oViewController.mPageTitle.alpha = oViewController.mButtonClose.alpha
-            }
-            self.mZoomImageView.image = self.mImageView.image
-            UIView.animate(withDuration: 0.3, animations: { () -> Void in
-                self.mZoomImageView.frame = startingFrame
-                self.mLoadingActivity.center = self.mZoomImageView.center
-                
-            }, completion: { (didComplete) -> Void in
-                self.mLoadingActivity.removeFromSuperview()
-                self.mZoomImageView.subviews.last?.removeFromSuperview()
-                self.mZoomImageView.removeFromSuperview()
-                self.mScrollView.removeFromSuperview()
-                self.clearCacheImage()
-                
-                self.dismiss(animated: false, completion: {
-                    self.mImageView.alpha = 1
-                })
-                if let oViewController = self.delegate as? UIViewController {
-                    oViewController.dismiss(animated: false, completion: nil)
-                }
-            })
+        let targetFrame = dismissTargetFrame ?? self.mImageView.superview?.convert(self.mImageView.frame, to: nil)
+        if let oViewController = self.delegate as? BNImagePageGridView {
+            oViewController.mButtonClose.alpha = 0.0
+            oViewController.mButtonShare.alpha = 0.0
+            oViewController.mPageTitle.alpha = 0.0
         }
+        self.mZoomImageView.image = self.mImageView.image
+        UIView.animate(withDuration: 0.3, animations: {
+            if let frame = targetFrame { self.mZoomImageView.frame = frame }
+            self.mLoadingActivity.center = self.mZoomImageView.center
+        }, completion: { _ in
+            self.mLoadingActivity.removeFromSuperview()
+            self.mZoomImageView.subviews.last?.removeFromSuperview()
+            self.mZoomImageView.removeFromSuperview()
+            self.mScrollView.removeFromSuperview()
+            self.clearCacheImage()
+            self.dismiss(animated: false) { self.mImageView.alpha = 1 }
+            if let oViewController = self.delegate as? UIViewController {
+                oViewController.dismiss(animated: false, completion: nil)
+            }
+        })
     }
     
     override open func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
