@@ -78,34 +78,35 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
         if self.bIsShowImage {
             self.mScrollView.setZoomScale(self.mScrollView.minimumZoomScale, animated: true)
             
-            if let startingFrame = self.mImageView.superview?.convert(self.mImageView.frame, to: nil) {
+            let startingFrame = self.mImageView.superview?.convert(self.mImageView.frame, to: nil)
+            if let startingFrame = startingFrame {
                 self.mZoomImageView.frame = startingFrame
-                if self.sImageUrl != "" {
-                    self.mZoomImageView.BNaddBlurEffect()
-                }
-                self.panGesture = UIPanGestureRecognizer(target: self, action: #selector(self.draggedView))
-                self.panGesture.delegate = self
-                self.mScrollView.isUserInteractionEnabled = true
-                self.mScrollView.addGestureRecognizer(self.panGesture)
-                
-                if self.bDoAnimate {
-                    UIView.animate(withDuration: 0.75, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0.5, options: .curveEaseOut, animations: { () -> Void in
-                        let size = self.mImageView.image?.size ?? UIScreen.main.bounds.size
-                        self.setZoomImageFrame(imageSize: size)
-                        self.mImageView.alpha = 0
-                        self.mZoomImageView.alpha = 1
-                        self.view.backgroundColor = UIColor.black.withAlphaComponent(1.0)
-                    }, completion: { (didComplete) -> Void in
-                        self.loadImage()
-                    })
-                } else {
+            }
+            if self.sImageUrl != "" {
+                self.mZoomImageView.BNaddBlurEffect()
+            }
+            self.panGesture = UIPanGestureRecognizer(target: self, action: #selector(self.draggedView))
+            self.panGesture.delegate = self
+            self.mScrollView.isUserInteractionEnabled = true
+            self.mScrollView.addGestureRecognizer(self.panGesture)
+            
+            if self.bDoAnimate {
+                UIView.animate(withDuration: 0.75, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0.5, options: .curveEaseOut, animations: { () -> Void in
                     let size = self.mImageView.image?.size ?? UIScreen.main.bounds.size
                     self.setZoomImageFrame(imageSize: size)
                     self.mImageView.alpha = 0
                     self.mZoomImageView.alpha = 1
                     self.view.backgroundColor = UIColor.black.withAlphaComponent(1.0)
+                }, completion: { (didComplete) -> Void in
                     self.loadImage()
-                }
+                })
+            } else {
+                let size = self.mImageView.image?.size ?? UIScreen.main.bounds.size
+                self.setZoomImageFrame(imageSize: size)
+                self.mImageView.alpha = 0
+                self.mZoomImageView.alpha = 1
+                self.view.backgroundColor = UIColor.black.withAlphaComponent(1.0)
+                self.loadImage()
             }
         }
     }
