@@ -7,7 +7,7 @@ import UIKit
 import SwiftUI
 import BNImagePageView
 
-@available(iOS 13.0, *)
+@available(iOS 15.0, *)
 struct BNImagePageSwiftUIExample: View {
     @State private var showSingle = false
     @State private var showMultiple = false
@@ -50,7 +50,7 @@ struct BNImagePageSwiftUIExample: View {
     }
 }
 
-@available(iOS 13.0, *)
+@available(iOS 15.0, *)
 class SwiftUIExampleViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()

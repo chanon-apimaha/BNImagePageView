@@ -1,7 +1,7 @@
 import SwiftUI
 import UIKit
 
-@available(iOS 13.0, *)
+@available(iOS 15.0, *)
 public struct BNImagePageViewRepresentable: UIViewControllerRepresentable {
     let imageView: UIImageView
     let imageURL: String
