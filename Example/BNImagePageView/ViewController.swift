@@ -5,6 +5,7 @@
 
 import UIKit
 import BNImagePageView
+import Kingfisher
 
 class ViewController: UIViewController {
 
@@ -233,6 +234,14 @@ class ImageCell: UICollectionViewCell {
         setupLongPress()
     }
 
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        imageView.kf.cancelDownloadTask()
+        imageView.image = nil
+        imageView.alpha = 0
+        skeletonView.isHidden = false
+    }
+
     required init?(coder: NSCoder) { fatalError() }
 
     override func layoutSubviews() {
@@ -261,9 +270,11 @@ class ImageCell: UICollectionViewCell {
             contentView.layer.cornerRadius = 0
         }
 
-        guard let nsurl = NSURL(string: url) else { return }
-        imageView.setImageFromURL(URL: nsurl) { [weak self] in
-            UIView.animate(withDuration: 0.3) {
+        guard let url = URL(string: url) else { return }
+        imageView.kf.cancelDownloadTask()
+        imageView.kf.setImage(with: url, options: [.transition(.fade(0.2)), .cacheOriginalImage]) { [weak self] result in
+            guard case .success = result else { return }
+            UIView.animate(withDuration: 0.2) {
                 self?.imageView.alpha = 1
                 self?.skeletonView.isHidden = true
             }
@@ -313,32 +324,3 @@ class ImageCell: UICollectionViewCell {
     }
 }
 
-// MARK: - UIImageView URL Extension
-
-private var activityIndicatorAssociationKey: UInt8 = 0
-
-extension UIImageView {
-
-    var activityIndicator: UIActivityIndicatorView! {
-        get { objc_getAssociatedObject(self, &activityIndicatorAssociationKey) as? UIActivityIndicatorView }
-        set { objc_setAssociatedObject(self, &activityIndicatorAssociationKey, newValue, .OBJC_ASSOCIATION_RETAIN) }
-    }
-
-    convenience init(URL: NSURL, errorImage: UIImage? = nil) {
-        self.init()
-        self.setImageFromURL(URL: URL)
-    }
-
-    func setImageFromURL(URL: NSURL, errorImage: UIImage? = nil, completion: (() -> Void)? = nil) {
-        URLSession.shared.dataTask(with: URL as URL) { data, _, error in
-            OperationQueue.main.addOperation {
-                if let data = data, let image = UIImage(data: data), error == nil {
-                    self.image = image
-                    completion?()
-                } else {
-                    self.image = errorImage
-                }
-            }
-        }.resume()
-    }
-}
