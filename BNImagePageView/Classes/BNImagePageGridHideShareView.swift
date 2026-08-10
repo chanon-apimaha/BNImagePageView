@@ -1,7 +1,7 @@
 import UIKit
 
 open class BNImagePageGridHideShareView: BNImagePageGridView {
-    override func viewDidLoad() {
+    override open func viewDidLoad() {
         super.viewDidLoad()
         mButtonClose.setImage(BNSetting.closeImage, for: .normal)
         mButtonClose.tintColor = .white
@@ -10,7 +10,7 @@ open class BNImagePageGridHideShareView: BNImagePageGridView {
         mButtonShare.backgroundColor = .clear
     }
 
-    override func handleOneTapScrollView(recognizer: UITapGestureRecognizer) {
+    override open func handleOneTapScrollView(recognizer: UITapGestureRecognizer) {
         toggleBuutonCloseAndShareFinFIn()
     }
 }

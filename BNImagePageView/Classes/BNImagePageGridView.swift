@@ -288,7 +288,7 @@ open class BNImagePageGridView: UIPageViewController {
         self.mPageTitle.contentEdgeInsets = UIEdgeInsets(top: 4, left: 8, bottom: 4, right: 8)
     }
     
-    @objc func handleOneTapScrollView(recognizer: UITapGestureRecognizer) {
+    @objc open func handleOneTapScrollView(recognizer: UITapGestureRecognizer) {
         self.toggleBuutonCloseAndShare()
     }
     
