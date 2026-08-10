@@ -3,7 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "BNImagePageView",
-    platforms: [.iOS(.v13)],
+    platforms: [.iOS(.v12)],
     products: [
         .library(name: "BNImagePageView", targets: ["BNImagePageView"])
     ],
