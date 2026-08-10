@@ -10,7 +10,7 @@ class ViewController: UIViewController {
 
     override open var supportedInterfaceOrientations: UIInterfaceOrientationMask { .portrait }
 
-    private let imageURLs: [String] = [10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200]
+    private let imageURLs: [String] = [10,20,30,40,50,60,70,80,90,100,110,120,130,140,155,160,170,180,190,200]
         .map { "https://picsum.photos/id/\($0)/400/300.jpg" }
 
     private var pageData: [ImgaePageData] = []
