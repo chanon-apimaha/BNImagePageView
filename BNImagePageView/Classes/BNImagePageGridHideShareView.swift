@@ -1,6 +1,6 @@
 import UIKit
 
-class BNImagePageGridHideShareView: BNImagePageGridView {
+open class BNImagePageGridHideShareView: BNImagePageGridView {
     override func viewDidLoad() {
         super.viewDidLoad()
         mButtonClose.setImage(BNSetting.closeImage, for: .normal)

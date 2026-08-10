@@ -22,7 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             topController = presented
         }
         switch topController {
-        case is BNImagePageGridView, is BNImagePageViewController:
+        case is BNImagePageGridView, is BNImagePageGridHideShareView, is BNImagePageViewController:
             return .all
         default:
             return .portrait
