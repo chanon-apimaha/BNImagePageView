@@ -409,17 +409,11 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
                 if let mZoomView = self.mZoomImageView.image {
                     self.mShareActivity = UIActivityViewController(activityItems: [mZoomView], applicationActivities: nil)
                     self.mShareActivity.excludedActivityTypes = [.addToReadingList, .airDrop, .assignToContact, .copyToPasteboard, .mail, .markupAsPDF, .message, .openInIBooks, .print, .postToWeibo, .postToTencentWeibo, .postToFlickr, .postToVimeo, .postToFacebook]
-                    self.mShareActivity.popoverPresentationController?.sourceView = self.mScrollView
+                    self.mShareActivity.popoverPresentationController?.sourceView = self.mButtonShare
+                    self.mShareActivity.popoverPresentationController?.sourceRect = self.mButtonShare.bounds
                     self.mShareActivity.popoverPresentationController?.delegate = self
-                    
-                    // เมื่อปิด popOver เปลี่ยนค่า bIsShowShareActivity = false
-                    self.mShareActivity.completionWithItemsHandler = { activity, success, items, error in
+                    self.mShareActivity.completionWithItemsHandler = { _, _, _, _ in
                         self.bIsShowShareActivity = false
-                    }
-                    
-                    
-                    if UIDevice.current.userInterfaceIdiom == .pad {
-                        self.mShareActivity.popoverPresentationController?.sourceRect = self.fShareSourceRect
                     }
                     
                     self.present(self.mShareActivity, animated: true, completion:{
