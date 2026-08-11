@@ -71,9 +71,11 @@ struct BNGallerySwiftUIView: View {
                                 .offset(x: frames[index].minX, y: frames[index].minY)
                                 .background(
                                     GeometryReader { itemGeo in
-                                        Color.clear.onAppear {
-                                            globalFrames[index] = itemGeo.frame(in: .global)
-                                        }
+                                        Color.clear
+                                            .onAppear { globalFrames[index] = itemGeo.frame(in: .global) }
+                                            .onChange(of: itemGeo.frame(in: .global)) { newFrame in
+                                                globalFrames[index] = newFrame
+                                            }
                                     }
                                 )
                                 .onTapGesture {
