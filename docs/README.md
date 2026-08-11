@@ -47,7 +47,7 @@ BNImagePageView
 │   ├── UINavigationController.BNImagePage(sImageUrl:)          → OVERVIEW.md
 │   ├── UINavigationController.BNImagePage(axImgaePageData:)    → PAGING.md
 │   ├── UINavigationController.BNImagePageHideShare(...)        → CUSTOMIZATION.md
-│   └── BNImagePageGridViewBuilder.build(...)                   → ARCHITECTURE.md
+│   └── BNImagePageBuilder.build(...)                   → ARCHITECTURE.md
 │
 ├── SwiftUI API
 │   └── BNImagePageViewRepresentable                            → SWIFTUI.md

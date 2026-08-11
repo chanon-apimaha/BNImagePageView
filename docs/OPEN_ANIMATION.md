@@ -27,7 +27,7 @@
 ### Step 2 — สร้าง BNImagePageGridView
 
 ```swift
-BNImagePageGridViewBuilder.build(
+BNImagePageBuilder.build(
     mImageView: cell.imageView,   // ← UIImageView จาก cell จริง
     pageData: pageData,
     indexPath: indexPath

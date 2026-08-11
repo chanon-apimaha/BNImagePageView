@@ -52,7 +52,7 @@
 │  └──────────────────────────────────────────────────────────┘   │
 │                                                                  │
 │  ┌──────────────────────┐   ┌──────────────────────────────┐   │
-│  │    ImgaePageData     │   │  BNImagePageGridViewBuilder   │   │
+│  │    ImgaePageData     │   │  BNImagePageBuilder   │   │
 │  │    (class)           │   │  (public struct)              │   │
 │  │                      │   │                               │   │
 │  │ + atIndex: IndexPath │   │ + build(                      │   │
@@ -105,7 +105,7 @@ ViewController (App)
         │ สร้าง imageViewForIndex callback
         │
         ▼
-BNImagePageGridViewBuilder.build(...)
+BNImagePageBuilder.build(...)
         │
         ▼
 BNImagePageGridView (UIPageViewController)
@@ -168,7 +168,7 @@ BNImagePageView/Classes/
 │   ├── extension BNImagePageGridView: UIPageViewControllerDataSource
 │   ├── extension BNImagePageGridView: UIPageViewControllerDelegate
 │   ├── extension BNImagePageGridView: BNImagePageDelegate
-│   ├── public struct BNImagePageGridViewBuilder
+│   ├── public struct BNImagePageBuilder
 │   └── public extension UINavigationController
 │       ├── BNImagePage(sImageUrl:)
 │       ├── BNImagePage(axImgaePageData:)
@@ -287,7 +287,7 @@ navigationController?.BNImagePageHideShare(
 ```
 
 **หมายเหตุ**: methods เหล่านี้ไม่รองรับ `imageViewForIndex` callback  
-ถ้าต้องการ dismiss animation ที่สมบูรณ์ ให้ใช้ `BNImagePageGridViewBuilder.build()`
+ถ้าต้องการ dismiss animation ที่สมบูรณ์ ให้ใช้ `BNImagePageBuilder.build()`
 
 ---
 

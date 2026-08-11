@@ -234,12 +234,12 @@ BNSetting.mButtonClose = myCustomButton
 
 ---
 
-### 10. BNImagePageGridViewBuilder
+### 10. BNImagePageBuilder
 
 Helper สำหรับสร้าง viewer พร้อม `imageViewForIndex` callback เพื่อให้ dismiss animation ถูกต้อง
 
 ```swift
-let gridVC = BNImagePageGridViewBuilder.build(
+let gridVC = BNImagePageBuilder.build(
     mImageView: cell.imageView,
     pageData: pageData,
     indexPath: indexPath
