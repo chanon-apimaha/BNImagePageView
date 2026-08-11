@@ -239,7 +239,7 @@ struct FullBNImagePageView: UIViewControllerRepresentable {
     let imageViewForIndex: (Int) -> UIImageView?
 
     func makeUIViewController(context: Context) -> BNImagePageGridView {
-        BNImagePageGridViewBuilder.build(
+        BNImageBuilder.build(
             mImageView: imageView,
             pageData: pageData,
             indexPath: indexPath,

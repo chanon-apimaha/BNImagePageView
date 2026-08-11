@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/chanon-apimaha/BNImagePageView.git",
       "state" : {
-        "branch" : "fix/builder-imageURLs-overload",
-        "revision" : "afd7bc6215a419fe943755c2128fa472238e83bd"
+        "branch" : "fix/rename-builder",
+        "revision" : "b2a0f51b2fcb6e9b7be3d4ea61f3fd3f346c3c71"
       }
     },
     {

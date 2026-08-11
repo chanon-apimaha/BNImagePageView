@@ -50,7 +50,7 @@ pod 'BNImagePageView'
 
 ## Usage
 
-### UIKit
+### UIKit — Legacy
 
 ```swift
 // Single image
@@ -59,8 +59,43 @@ navigationController?.BNImagePage(mImageViewShowFirst: imageView, sImageUrl: "ht
 // Multiple images
 navigationController?.BNImagePage(mImageViewShowFirst: imageView, axImgaePageData: pageDataArray, atIndexPath: indexPath)
 
-// Hide share button variant
+// Hide share button
 navigationController?.BNImagePageHideShare(mImageViewShowFirst: imageView, sImageUrl: "https://example.com/image.jpg")
+```
+
+### UIKit — BNImageBuilder + Gallery ทำเอง (แนะนำ)
+
+User สร้าง CollectionView + Cell เอง แล้วใช้ `BNImageBuilder` เปิด viewer:
+
+```swift
+func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    guard let cell = collectionView.cellForItem(at: indexPath) as? MyCell,
+          cell.imageView.image != nil else { return }
+
+    let vc = BNImageBuilder.build(
+        imageURLs: imageURLs,
+        currentIndex: indexPath.row,
+        sourceImageView: cell.imageView
+    ) { [weak self] index in
+        let ip = IndexPath(row: index, section: 0)
+        return (self?.collectionView.cellForItem(at: ip) as? MyCell)?.imageView
+    }
+    present(vc, animated: false)
+}
+```
+
+> **Note:** `sourceImageView` ใช้สำหรับ open animation, `imageViewForIndex` ใช้สำหรับ dismiss animation กลับ cell ที่ถูกต้อง
+
+### UIKit — BNImageBuilder + Built-in Gallery (กำลังทำ)
+
+Library จัดการ gallery render + tap + open viewer ให้ทั้งหมด:
+
+```swift
+// ยังไม่พร้อมใช้งาน — อยู่ใน Roadmap Phase 2
+BNImageBuilder.build(
+    imageURLs: ["https://example.com/1.jpg", "https://example.com/2.jpg"],
+    displayType: .gallery
+)
 ```
 
 ### SwiftUI
