@@ -75,6 +75,7 @@ public class BNImageGalleryView: UIScrollView {
         }
         group.notify(queue: .main) { [weak self] in
             guard let self else { return }
+            print("[BNGallery] preload done loaded=\(self.loadedImages.count)/\(self.imageURLs.count)")
             self.loadingIndicator.stopAnimating()
             self.loadingIndicator.removeFromSuperview()
             self.didLayout = false
@@ -85,6 +86,7 @@ public class BNImageGalleryView: UIScrollView {
     // MARK: - Layout
     public override func layoutSubviews() {
         super.layoutSubviews()
+        print("[BNGallery] layoutSubviews bounds=\(bounds.width) loaded=\(loadedImages.count)/\(imageURLs.count) didLayout=\(didLayout)")
         guard bounds.width > 0,
               loadedImages.count == imageURLs.count,
               !didLayout else { return }
