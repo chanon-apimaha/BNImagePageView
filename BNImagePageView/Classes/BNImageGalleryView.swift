@@ -24,6 +24,16 @@ public class BNImageGalleryView: UIView {
     }
 
     required init?(coder: NSCoder) { fatalError() }
+
+    public func imageView(at index: Int) -> UIImageView? {
+        hostingController?.view.allSubviews.compactMap { $0 as? UIImageView }.first { $0.tag == index }
+    }
+}
+
+private extension UIView {
+    var allSubviews: [UIView] {
+        subviews + subviews.flatMap { $0.allSubviews }
+    }
 }
 
 // MARK: - SwiftUI View
