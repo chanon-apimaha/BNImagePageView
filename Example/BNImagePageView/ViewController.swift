@@ -155,11 +155,12 @@ class ViewController: UIViewController {
 
         if isGallery {
             if galleryView == nil {
-                let gv = BNImageGalleryView(imageURLs: imageURLs) { [weak self] index, _ in
+                let gv = BNImageGalleryView(imageURLs: imageURLs) { [weak self] index, frame in
                     guard let self else { return }
                     let vc = BNImageBuilder.build(
                         imageURLs: self.imageURLs,
-                        currentIndex: index
+                        currentIndex: index,
+                        dismissTargetFrame: frame
                     ) { [weak self] idx in
                         self?.galleryView?.imageView(at: idx)
                     }

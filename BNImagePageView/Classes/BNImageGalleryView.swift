@@ -7,7 +7,7 @@ public class BNImageGalleryView: UIView {
 
     private var hostingController: UIHostingController<BNGallerySwiftUIView>?
 
-    public init(imageURLs: [String], onTap: ((Int, UIImageView) -> Void)? = nil) {
+    public init(imageURLs: [String], onTap: ((Int, CGRect) -> Void)? = nil) {
         super.init(frame: .zero)
         let swiftUIView = BNGallerySwiftUIView(imageURLs: imageURLs, onTap: onTap)
         let hc = UIHostingController(rootView: swiftUIView)
@@ -24,23 +24,13 @@ public class BNImageGalleryView: UIView {
     }
 
     required init?(coder: NSCoder) { fatalError() }
-
-    public func imageView(at index: Int) -> UIImageView? {
-        hostingController?.view.allSubviews.compactMap { $0 as? UIImageView }.first { $0.tag == index }
-    }
-}
-
-private extension UIView {
-    var allSubviews: [UIView] {
-        subviews + subviews.flatMap { $0.allSubviews }
-    }
 }
 
 // MARK: - SwiftUI View
 
 struct BNGallerySwiftUIView: View {
     let imageURLs: [String]
-    let onTap: ((Int, UIImageView) -> Void)?
+    let onTap: ((Int, CGRect) -> Void)?
 
     @State private var aspectRatios: [Int: CGFloat] = [:]
     @State private var isLoaded = false
@@ -68,12 +58,26 @@ struct BNGallerySwiftUIView: View {
                                 .frame(width: frames[index].width, height: frames[index].height)
                                 .clipped()
                                 .offset(x: frames[index].minX, y: frames[index].minY)
+                                .background(
+                                    GeometryReader { itemGeo in
+                                        Color.clear.preference(
+                                            key: FramePreferenceKey.self,
+                                            value: [index: itemGeo.frame(in: .global)]
+                                        )
+                                    }
+                                )
                                 .onTapGesture {
-                                    onTap?(index, UIImageView())
+                                    // ดึง frame ใน window coordinates ผ่าน preference
+                                    let frame = frames[index].offsetBy(
+                                        dx: frames[index].minX,
+                                        dy: frames[index].minY
+                                    )
+                                    onTap?(index, frame)
                                 }
                         }
                     }
                     .frame(width: geo.size.width, height: totalHeight, alignment: .topLeading)
+                    .onPreferenceChange(FramePreferenceKey.self) { _ in }
                 }
             }
         }
@@ -88,7 +92,6 @@ struct BNGallerySwiftUIView: View {
     private func computeFrames(colWidth: CGFloat, columns: Int) -> [CGRect] {
         var colHeights = Array(repeating: CGFloat(0), count: columns)
         var frames: [CGRect] = []
-
         for index in imageURLs.indices {
             let ratio = aspectRatios[index] ?? 1.0
             let minIdx = colHeights.enumerated().min(by: { $0.element < $1.element })!.offset
@@ -121,8 +124,15 @@ struct BNGallerySwiftUIView: View {
                 }
             }
         }
-        group.notify(queue: .main) {
-            isLoaded = true
-        }
+        group.notify(queue: .main) { isLoaded = true }
+    }
+}
+
+// MARK: - Preference Key
+
+private struct FramePreferenceKey: PreferenceKey {
+    static var defaultValue: [Int: CGRect] = [:]
+    static func reduce(value: inout [Int: CGRect], nextValue: () -> [Int: CGRect]) {
+        value.merge(nextValue()) { $1 }
     }
 }

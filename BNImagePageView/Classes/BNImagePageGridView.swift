@@ -491,6 +491,41 @@ public struct BNImageBuilder {
         vc.modalPresentationStyle = .overFullScreen
         return vc
     }
+
+    public static func build(
+        imageURLs: [String],
+        currentIndex: Int = 0,
+        dismissTargetFrame: CGRect,
+        pageSpacing: Int = 20,
+        transitionStyle: UIPageViewController.TransitionStyle = .scroll,
+        imageViewForIndex: ((Int) -> CGRect?)? = nil
+    ) -> BNImagePageGridView {
+        let pageData = imageURLs.enumerated().map {
+            ImgaePageData(atIndex: IndexPath(row: $0.offset, section: 0), sImageUrl: $0.element, fWidth: 1, fHeight: 1)
+        }
+        let safeIndex = max(0, min(currentIndex, imageURLs.count - 1))
+        let indexPath = IndexPath(row: safeIndex, section: 0)
+        let optionsDict = [convertFromUIPageViewControllerOptionsKey(UIPageViewController.OptionsKey.interPageSpacing): pageSpacing]
+        let vc = BNImagePageGridView(
+            mImageView: UIImageView(),
+            axImgaePageData: pageData,
+            atIndexPath: indexPath,
+            transitionStyle: transitionStyle,
+            navigationOrientation: .horizontal,
+            options: optionsDict)
+        vc.modalPresentationStyle = .overFullScreen
+        // set dismissTargetFrame สำหรับ page แรก
+        if let firstVC = vc.viewControllers?.first as? BNImagePageViewController {
+            firstVC.dismissTargetFrame = dismissTargetFrame
+        }
+        // imageViewForIndex ที่รับ CGRect แทน UIImageView
+        vc.imageViewForIndex = { index in
+            guard let frame = imageViewForIndex?(index) else { return nil }
+            let iv = UIImageView(frame: frame)
+            return iv
+        }
+        return vc
+    }
 }
 
 // Helper function inserted by Swift 4.2 migrator.
