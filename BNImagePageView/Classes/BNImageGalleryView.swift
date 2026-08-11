@@ -103,6 +103,7 @@ public class BNImageGalleryView: UIScrollView {
         let colWidth = (bounds.width - totalSpacing) / CGFloat(columns)
         var colHeights = Array(repeating: CGFloat(0), count: columns)
 
+        print("[BNGallery] aspectRatios: \(aspectRatios.map { String(format: "%.2f", $0) })")
         for (index, _) in imageURLs.enumerated() {
             let ratio = aspectRatios[index]
             let iv = makeImageView(index: index)
