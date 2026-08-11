@@ -135,8 +135,8 @@ class ViewController: UIViewController {
                         imageURLs: self.imageURLs,
                         currentIndex: index,
                         sourceImageView: imageView
-                    ) { [weak gv] idx in
-                        gv?.imageViews[safe: idx]
+                    ) { [weak self] idx in
+                        self?.galleryView?.imageViews[safe: idx]
                     }
                     self.present(vc, animated: false)
                 }
