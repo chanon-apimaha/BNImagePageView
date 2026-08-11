@@ -146,7 +146,7 @@ extension ViewController: UICollectionViewDataSource, UICollectionViewDelegate, 
         guard let cell = collectionView.cellForItem(at: indexPath) as? ImageCell,
               cell.imageView.image != nil else { return }
         feedbackGenerator.impactOccurred()
-        let gridVC = BNImagePageBuilder.build(
+        let gridVC = BNImageBuilder.build(
             imageURLs: imageURLs,
             currentIndex: indexPath.row,
             sourceImageView: cell.imageView

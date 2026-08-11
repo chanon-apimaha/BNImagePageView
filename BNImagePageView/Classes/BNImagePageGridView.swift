@@ -443,7 +443,7 @@ extension BNImagePageGridView : BNImagePageDelegate {
     }
 }
 
-public struct BNImagePageBuilder {
+public struct BNImageBuilder {
     public static func build(
         mImageView: UIImageView,
         pageData: [ImgaePageData],

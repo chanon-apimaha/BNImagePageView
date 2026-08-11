@@ -3,11 +3,11 @@
 ## Phase 1 — Builder Improvement (กำลังทำ)
 
 ### 1.1 เพิ่ม overload `imageURLs`
-เพิ่ม method ใหม่ใน `BNImagePageBuilder` ให้รับ `[String]` โดยตรง แทนที่จะต้องสร้าง `[ImgaePageData]` + `IndexPath` เอง
+เพิ่ม method ใหม่ใน `BNImageBuilder` ให้รับ `[String]` โดยตรง แทนที่จะต้องสร้าง `[ImgaePageData]` + `IndexPath` เอง
 
 ```swift
 // แบบเดิม (ยังใช้ได้)
-BNImagePageBuilder.build(
+BNImageBuilder.build(
     mImageView: cell.imageView,
     pageData: pageData,
     indexPath: indexPath,
@@ -15,7 +15,7 @@ BNImagePageBuilder.build(
 )
 
 // แบบใหม่
-BNImagePageBuilder.build(
+BNImageBuilder.build(
     imageURLs: ["https://...", "https://..."],
     currentIndex: 2,
     sourceImageView: cell.imageView,
@@ -27,15 +27,15 @@ BNImagePageBuilder.build(
 
 ---
 
-### 1.2 Rename `BNImagePageGridViewBuilder` → `BNImagePageBuilder`
+### 1.2 Rename `BNImagePageGridViewBuilder` → `BNImageBuilder`
 ชื่อเดิมยาวและสื่อถึง Grid เท่านั้น ทั้งที่ใช้ได้กับทุก use case
 
 ```swift
 // ก่อน
-BNImagePageBuilder.build(...)
+BNImageBuilder.build(...)
 
 // หลัง
-BNImagePageBuilder.build(...)
+BNImageBuilder.build(...)
 ```
 
 **Files ที่แก้**:
@@ -76,5 +76,5 @@ BNImageGalleryRepresentable(imageURLs: urls)
 | Task | Status |
 |---|---|
 | 1.1 เพิ่ม overload `imageURLs` | ✅ Done |
-| 1.2 Rename → `BNImagePageBuilder` | ✅ Done |
+| 1.2 Rename → `BNImageBuilder` | ✅ Done |
 | 2.0 Built-in Gallery Cell | 🔲 Todo |
