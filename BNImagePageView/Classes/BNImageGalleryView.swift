@@ -1,161 +1,118 @@
-import UIKit
+import SwiftUI
 import Kingfisher
 
-public class BNImageGalleryView: UIScrollView {
+// MARK: - UIKit Entry Point
 
-    // MARK: - Config
-    public var spacing: CGFloat = 2
-    public var landscapeRatio: CGFloat = 1.8  // threshold สำหรับ full-width
+public class BNImageGalleryView: UIView {
 
-    // MARK: - Private
-    private var imageURLs: [String] = []
-    private var aspectRatios: [CGFloat] = []
-    private var loadedImages: [Int: UIImage] = [:]
-    private var loadAttempts: Int = 0
-    private let contentView = UIView()
-    public private(set) var imageViews: [UIImageView] = []
-    private let loadingIndicator = UIActivityIndicatorView(style: .large)
-    private var onTap: ((Int, UIImageView) -> Void)?
-    private var didLayout = false
+    private var hostingController: UIHostingController<BNGallerySwiftUIView>?
 
-    // MARK: - Init
     public init(imageURLs: [String], onTap: ((Int, UIImageView) -> Void)? = nil) {
         super.init(frame: .zero)
-        self.imageURLs = imageURLs
-        self.aspectRatios = Array(repeating: 1.0, count: imageURLs.count)
-        self.onTap = onTap
-        setup()
-        preloadImages()
+        let swiftUIView = BNGallerySwiftUIView(imageURLs: imageURLs, onTap: onTap)
+        let hc = UIHostingController(rootView: swiftUIView)
+        hc.view.translatesAutoresizingMaskIntoConstraints = false
+        hc.view.backgroundColor = .clear
+        addSubview(hc.view)
+        NSLayoutConstraint.activate([
+            hc.view.topAnchor.constraint(equalTo: topAnchor),
+            hc.view.bottomAnchor.constraint(equalTo: bottomAnchor),
+            hc.view.leadingAnchor.constraint(equalTo: leadingAnchor),
+            hc.view.trailingAnchor.constraint(equalTo: trailingAnchor)
+        ])
+        hostingController = hc
     }
 
     required init?(coder: NSCoder) { fatalError() }
+}
 
-    // MARK: - Setup
-    private func setup() {
-        showsVerticalScrollIndicator = false
-        showsHorizontalScrollIndicator = false
-        addSubview(contentView)
-    }
+// MARK: - SwiftUI View
 
-    public override func didMoveToSuperview() {
-        super.didMoveToSuperview()
-        guard let superview else { return }
-        // loading indicator อยู่ใน superview ไม่ใช่ scrollView
-        loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
-        superview.addSubview(loadingIndicator)
-        NSLayoutConstraint.activate([
-            loadingIndicator.centerXAnchor.constraint(equalTo: superview.centerXAnchor),
-            loadingIndicator.centerYAnchor.constraint(equalTo: superview.centerYAnchor)
-        ])
-        loadingIndicator.startAnimating()
-    }
+struct BNGallerySwiftUIView: View {
+    let imageURLs: [String]
+    let onTap: ((Int, UIImageView) -> Void)?
 
-    // MARK: - Preload
-    private func preloadImages() {
-        let group = DispatchGroup()
-        for (index, urlString) in imageURLs.enumerated() {
-            guard let url = URL(string: urlString) else {
-                loadedImages[index] = UIImage()
-                continue
-            }
-            group.enter()
-            KingfisherManager.shared.retrieveImage(with: url, options: [.cacheOriginalImage]) { [weak self] result in
-                if case .success(let value) = result {
-                    let size = value.image.size
-                    if size.height > 0 {
-                        self?.aspectRatios[index] = size.width / size.height
-                    }
-                    self?.loadedImages[index] = value.image
-                } else {
-                    // โหลดไม่สำเร็จ ใช้ aspect ratio 1:1 แทน
-                    self?.loadedImages[index] = UIImage()
-                }
-                group.leave()
-            }
-        }
-        group.notify(queue: .main) { [weak self] in
-            guard let self else { return }
-            print("[BNGallery] preload done loaded=\(self.loadedImages.count)/\(self.imageURLs.count)")
-            self.loadingIndicator.stopAnimating()
-            self.loadingIndicator.removeFromSuperview()
-            self.didLayout = false
-            self.setNeedsLayout()
-        }
-    }
+    @State private var aspectRatios: [Int: CGFloat] = [:]
+    @State private var isLoaded = false
+    private let spacing: CGFloat = 2
 
-    // MARK: - Layout
-    public override func layoutSubviews() {
-        super.layoutSubviews()
-        print("[BNGallery] layoutSubviews bounds=\(bounds.width) loaded=\(loadedImages.count)/\(imageURLs.count) didLayout=\(didLayout)")
-        guard bounds.width > 0,
-              loadedImages.count == imageURLs.count,
-              !didLayout else { return }
-        didLayout = true
-        layoutMasonry()
-    }
-
-    private func layoutMasonry() {
-        contentView.subviews.forEach { $0.removeFromSuperview() }
-        imageViews.removeAll()
-
-        let columns = columnCount()
-        let totalSpacing = spacing * CGFloat(columns - 1)
-        let colWidth = (bounds.width - totalSpacing) / CGFloat(columns)
-        var colHeights = Array(repeating: CGFloat(0), count: columns)
-
-        print("[BNGallery] aspectRatios: \(aspectRatios.map { String(format: "%.2f", $0) })")
-        for (index, _) in imageURLs.enumerated() {
-            let ratio = aspectRatios[index]
-            let iv = makeImageView(index: index)
-            contentView.addSubview(iv)
-            imageViews.append(iv)
-
-            if ratio >= landscapeRatio {
-                // ดึงทุก column ให้เท่ากับ column ที่สูงที่สุดก่อน ไม่ให้มีช่องว่าง
-                let maxHeight = colHeights.max() ?? 0
-                for i in 0..<columns { colHeights[i] = maxHeight }
-                let y = maxHeight + (maxHeight > 0 ? spacing : 0)
-                let imgHeight = bounds.width / ratio
-                iv.frame = CGRect(x: 0, y: y, width: bounds.width, height: imgHeight)
-                for i in 0..<columns { colHeights[i] = iv.frame.maxY }
+    var body: some View {
+        GeometryReader { geo in
+            if !isLoaded {
+                ProgressView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .onAppear { preload() }
             } else {
-                let minIdx = colHeights.enumerated().min(by: { $0.element < $1.element })!.offset
-                let x = CGFloat(minIdx) * (colWidth + spacing)
-                let y = colHeights[minIdx] + (colHeights[minIdx] > 0 ? spacing : 0)
-                let imgHeight = colWidth / ratio
-                iv.frame = CGRect(x: x, y: y, width: colWidth, height: imgHeight)
-                colHeights[minIdx] = iv.frame.maxY
+                let columns = columnCount(width: geo.size.width)
+                let colWidth = (geo.size.width - spacing * CGFloat(columns - 1)) / CGFloat(columns)
+                let frames = computeFrames(colWidth: colWidth, columns: columns)
+                let totalHeight = frames.map { $0.maxY }.max() ?? 0
+
+                ScrollView {
+                    ZStack(alignment: .topLeading) {
+                        Color.clear.frame(height: totalHeight)
+                        ForEach(imageURLs.indices, id: \.self) { index in
+                            KFImage(URL(string: imageURLs[index]))
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: frames[index].width, height: frames[index].height)
+                                .clipped()
+                                .offset(x: frames[index].minX, y: frames[index].minY)
+                                .onTapGesture {
+                                    onTap?(index, UIImageView())
+                                }
+                        }
+                    }
+                    .frame(width: geo.size.width, height: totalHeight, alignment: .topLeading)
+                }
             }
         }
-
-        let totalHeight = colHeights.max() ?? 0
-        contentView.frame = CGRect(x: 0, y: 0, width: bounds.width, height: totalHeight)
-        contentSize = CGSize(width: bounds.width, height: totalHeight)
     }
 
-    // MARK: - Column Count
-    private func columnCount() -> Int {
-        if bounds.width >= 768 { return 4 }
-        if bounds.width >= 600 { return 3 }
+    private func columnCount(width: CGFloat) -> Int {
+        if width >= 768 { return 4 }
+        if width >= 600 { return 3 }
         return 2
     }
 
-    // MARK: - ImageView Factory
-    private func makeImageView(index: Int) -> UIImageView {
-        let iv = UIImageView()
-        iv.contentMode = .scaleAspectFill
-        iv.clipsToBounds = true
-        iv.backgroundColor = .systemGray5
-        iv.isUserInteractionEnabled = true
-        iv.tag = index
-        iv.image = loadedImages[index]
-        let tap = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
-        iv.addGestureRecognizer(tap)
-        return iv
+    private func computeFrames(colWidth: CGFloat, columns: Int) -> [CGRect] {
+        var colHeights = Array(repeating: CGFloat(0), count: columns)
+        var frames: [CGRect] = []
+
+        for index in imageURLs.indices {
+            let ratio = aspectRatios[index] ?? 1.0
+            let minIdx = colHeights.enumerated().min(by: { $0.element < $1.element })!.offset
+            let x = CGFloat(minIdx) * (colWidth + spacing)
+            let y = colHeights[minIdx] + (colHeights[minIdx] > 0 ? spacing : 0)
+            let h = colWidth / ratio
+            frames.append(CGRect(x: x, y: y, width: colWidth, height: h))
+            colHeights[minIdx] = y + h
+        }
+        return frames
     }
 
-    @objc private func handleTap(_ gesture: UITapGestureRecognizer) {
-        guard let iv = gesture.view as? UIImageView else { return }
-        onTap?(iv.tag, iv)
+    private func preload() {
+        let group = DispatchGroup()
+        for (index, urlString) in imageURLs.enumerated() {
+            guard let url = URL(string: urlString) else {
+                aspectRatios[index] = 1.0
+                continue
+            }
+            group.enter()
+            KingfisherManager.shared.retrieveImage(with: url, options: [.cacheOriginalImage]) { result in
+                DispatchQueue.main.async {
+                    if case .success(let value) = result {
+                        let size = value.image.size
+                        aspectRatios[index] = size.height > 0 ? size.width / size.height : 1.0
+                    } else {
+                        aspectRatios[index] = 1.0
+                    }
+                    group.leave()
+                }
+            }
+        }
+        group.notify(queue: .main) {
+            isLoaded = true
+        }
     }
 }
