@@ -161,9 +161,7 @@ class ViewController: UIViewController {
                         imageURLs: self.imageURLs,
                         currentIndex: index,
                         dismissTargetFrame: frame
-                    ) { [weak self] idx in
-                        self?.galleryView?.imageView(at: idx)
-                    }
+                    )
                     self.present(vc, animated: false)
                 }
                 gv.translatesAutoresizingMaskIntoConstraints = false
