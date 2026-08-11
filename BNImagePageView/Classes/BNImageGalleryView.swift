@@ -5,7 +5,6 @@ public class BNImageGalleryView: UIScrollView {
 
     // MARK: - Config
     public var spacing: CGFloat = 2
-    public var landscapeRatio: CGFloat = 1.5
 
     // MARK: - Private
     private var imageURLs: [String] = []
@@ -34,12 +33,17 @@ public class BNImageGalleryView: UIScrollView {
         showsVerticalScrollIndicator = false
         showsHorizontalScrollIndicator = false
         addSubview(contentView)
+    }
 
+    public override func didMoveToSuperview() {
+        super.didMoveToSuperview()
+        guard let superview else { return }
+        // loading indicator อยู่ใน superview ไม่ใช่ scrollView
         loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(loadingIndicator)
+        superview.addSubview(loadingIndicator)
         NSLayoutConstraint.activate([
-            loadingIndicator.centerXAnchor.constraint(equalTo: centerXAnchor),
-            loadingIndicator.topAnchor.constraint(equalTo: topAnchor, constant: 40)
+            loadingIndicator.centerXAnchor.constraint(equalTo: superview.centerXAnchor),
+            loadingIndicator.centerYAnchor.constraint(equalTo: superview.centerYAnchor)
         ])
         loadingIndicator.startAnimating()
     }
@@ -88,27 +92,16 @@ public class BNImageGalleryView: UIScrollView {
 
         for (index, _) in imageURLs.enumerated() {
             let ratio = aspectRatios[index]
-            let isFullWidth = ratio >= landscapeRatio
-
             let iv = makeImageView(index: index)
             contentView.addSubview(iv)
             imageViews.append(iv)
 
-            if isFullWidth {
-                let maxHeight = colHeights.max() ?? 0
-                let y = maxHeight + (maxHeight > 0 ? spacing : 0)
-                let imgHeight = bounds.width / ratio
-                iv.frame = CGRect(x: 0, y: y, width: bounds.width, height: imgHeight)
-                let newBottom = iv.frame.maxY
-                for i in 0..<columns { colHeights[i] = newBottom }
-            } else {
-                let minIdx = colHeights.enumerated().min(by: { $0.element < $1.element })!.offset
-                let x = CGFloat(minIdx) * (colWidth + spacing)
-                let y = colHeights[minIdx] + (colHeights[minIdx] > 0 ? spacing : 0)
-                let imgHeight = colWidth / ratio
-                iv.frame = CGRect(x: x, y: y, width: colWidth, height: imgHeight)
-                colHeights[minIdx] = iv.frame.maxY
-            }
+            let minIdx = colHeights.enumerated().min(by: { $0.element < $1.element })!.offset
+            let x = CGFloat(minIdx) * (colWidth + spacing)
+            let y = colHeights[minIdx] + (colHeights[minIdx] > 0 ? spacing : 0)
+            let imgHeight = colWidth / ratio
+            iv.frame = CGRect(x: x, y: y, width: colWidth, height: imgHeight)
+            colHeights[minIdx] = iv.frame.maxY
         }
 
         let totalHeight = colHeights.max() ?? 0
