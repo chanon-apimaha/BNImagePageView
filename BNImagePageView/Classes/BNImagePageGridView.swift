@@ -428,7 +428,14 @@ extension BNImagePageGridView : BNImagePageDelegate {
            let index = pageCache.first(where: { $0.value === oViewController })?.key {
             if let realImageView = imageViewForIndex?(index) {
                 oViewController.mImageView = realImageView
-                oViewController.dismissTargetFrame = realImageView.superview?.convert(realImageView.frame, to: nil)
+                if let frame = realImageView.superview?.convert(realImageView.frame, to: nil) {
+                    oViewController.dismissTargetFrame = frame
+                } else if realImageView.superview == nil, realImageView.frame != .zero {
+                    // gallery case: UIImageView ไม่มี superview แต่ frame คือ window coordinates โดยตรง
+                    oViewController.dismissTargetFrame = realImageView.frame
+                } else {
+                    oViewController.dismissTargetFrame = nil
+                }
             } else if let url = URL(string: axImgaePageData[index].sImageUrl),
                       let cached = ImageCache.default.retrieveImageInMemoryCache(forKey: url.absoluteString) {
                 oViewController.mImageView.image = cached
@@ -514,15 +521,13 @@ public struct BNImageBuilder {
             navigationOrientation: .horizontal,
             options: optionsDict)
         vc.modalPresentationStyle = .overFullScreen
-        // set dismissTargetFrame สำหรับ page แรก
-        if let firstVC = vc.viewControllers?.first as? BNImagePageViewController {
-            firstVC.dismissTargetFrame = dismissTargetFrame
-        }
-        // imageViewForIndex ที่รับ CGRect แทน UIImageView
+        // set dismissTargetFrame ผ่าน imageViewForIndex
         vc.imageViewForIndex = { index in
-            guard let frame = imageViewForIndex?(index) else { return nil }
-            let iv = UIImageView(frame: frame)
-            return iv
+            guard let frame = imageViewForIndex?(index) else {
+                // ถ้าไม่มี callback ใช้ dismissTargetFrame ของ index แรกเท่านั้น
+                return index == safeIndex ? UIImageView(frame: dismissTargetFrame) : nil
+            }
+            return UIImageView(frame: frame)
         }
         return vc
     }
