@@ -44,6 +44,7 @@ struct BNGallerySwiftUIView: View {
 
     @State private var aspectRatios: [Int: CGFloat] = [:]
     @State private var isLoaded = false
+    @State private var globalFrames: [Int: CGRect] = [:]
     private let spacing: CGFloat = 2
 
     var body: some View {
@@ -70,24 +71,18 @@ struct BNGallerySwiftUIView: View {
                                 .offset(x: frames[index].minX, y: frames[index].minY)
                                 .background(
                                     GeometryReader { itemGeo in
-                                        Color.clear.preference(
-                                            key: FramePreferenceKey.self,
-                                            value: [index: itemGeo.frame(in: .global)]
-                                        )
+                                        Color.clear.onAppear {
+                                            globalFrames[index] = itemGeo.frame(in: .global)
+                                        }
                                     }
                                 )
                                 .onTapGesture {
-                                    // ดึง frame ใน window coordinates ผ่าน preference
-                                    let frame = frames[index].offsetBy(
-                                        dx: frames[index].minX,
-                                        dy: frames[index].minY
-                                    )
+                                    let frame = globalFrames[index] ?? .zero
                                     onTap?(index, frame)
                                 }
                         }
                     }
                     .frame(width: geo.size.width, height: totalHeight, alignment: .topLeading)
-                    .onPreferenceChange(FramePreferenceKey.self) { _ in }
                 }
             }
         }
@@ -138,11 +133,4 @@ struct BNGallerySwiftUIView: View {
     }
 }
 
-// MARK: - Preference Key
 
-private struct FramePreferenceKey: PreferenceKey {
-    static var defaultValue: [Int: CGRect] = [:]
-    static func reduce(value: inout [Int: CGRect], nextValue: () -> [Int: CGRect]) {
-        value.merge(nextValue()) { $1 }
-    }
-}
