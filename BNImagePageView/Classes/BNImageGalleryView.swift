@@ -6,10 +6,17 @@ import Kingfisher
 public class BNImageGalleryView: UIView {
 
     private var hostingController: UIHostingController<BNGallerySwiftUIView>?
+    private var onTapHandler: ((Int, CGRect) -> Void)?
 
     public init(imageURLs: [String], onTap: ((Int, CGRect) -> Void)? = nil) {
         super.init(frame: .zero)
-        let swiftUIView = BNGallerySwiftUIView(imageURLs: imageURLs, onTap: onTap)
+        self.onTapHandler = onTap
+        let swiftUIView = BNGallerySwiftUIView(imageURLs: imageURLs) { [weak self] index, swiftUIFrame in
+            guard let self else { return }
+            // แปลง SwiftUI global frame เป็น UIKit window coordinates
+            let windowFrame = self.convertSwiftUIFrame(swiftUIFrame)
+            self.onTapHandler?(index, windowFrame)
+        }
         let hc = UIHostingController(rootView: swiftUIView)
         hc.view.translatesAutoresizingMaskIntoConstraints = false
         hc.view.backgroundColor = .clear
@@ -28,6 +35,11 @@ public class BNImageGalleryView: UIView {
     public func imageView(at index: Int) -> UIImageView? {
         hostingController?.view.allSubviews.compactMap { $0 as? UIImageView }.first { $0.tag == index }
     }
+
+    private func convertSwiftUIFrame(_ frame: CGRect) -> CGRect {
+        // SwiftUI .global coordinate = UIKit window coordinate บน iOS
+        return frame
+    }
 }
 
 private extension UIView {
@@ -44,7 +56,6 @@ struct BNGallerySwiftUIView: View {
 
     @State private var aspectRatios: [Int: CGFloat] = [:]
     @State private var isLoaded = false
-    @State private var globalFrames: [Int: CGRect] = [:]
     private let spacing: CGFloat = 2
 
     var body: some View {
@@ -69,19 +80,11 @@ struct BNGallerySwiftUIView: View {
                                 .frame(width: frames[index].width, height: frames[index].height)
                                 .clipped()
                                 .offset(x: frames[index].minX, y: frames[index].minY)
-                                .background(
-                                    GeometryReader { itemGeo in
-                                        Color.clear
-                                            .onAppear { globalFrames[index] = itemGeo.frame(in: .global) }
-                                            .onChange(of: itemGeo.frame(in: .global)) { newFrame in
-                                                globalFrames[index] = newFrame
-                                            }
+                                .overlay(
+                                    TapFrameView { windowFrame in
+                                        onTap?(index, windowFrame)
                                     }
                                 )
-                                .onTapGesture {
-                                    let frame = globalFrames[index] ?? .zero
-                                    onTap?(index, frame)
-                                }
                         }
                     }
                     .frame(width: geo.size.width, height: totalHeight, alignment: .topLeading)
@@ -136,3 +139,35 @@ struct BNGallerySwiftUIView: View {
 }
 
 
+
+// MARK: - TapFrameView
+
+private struct TapFrameView: UIViewRepresentable {
+    let onTap: (CGRect) -> Void
+
+    func makeUIView(context: Context) -> UIView {
+        let view = UIView()
+        view.backgroundColor = .clear
+        let tap = UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleTap(_:)))
+        view.addGestureRecognizer(tap)
+        return view
+    }
+
+    func updateUIView(_ uiView: UIView, context: Context) {
+        context.coordinator.onTap = onTap
+    }
+
+    func makeCoordinator() -> Coordinator { Coordinator(onTap: onTap) }
+
+    class Coordinator: NSObject {
+        var onTap: (CGRect) -> Void
+        init(onTap: @escaping (CGRect) -> Void) { self.onTap = onTap }
+
+        @objc func handleTap(_ gesture: UITapGestureRecognizer) {
+            guard let view = gesture.view else { return }
+            // แปลง frame เป็น window coordinates
+            let frame = view.convert(view.bounds, to: nil)
+            onTap(frame)
+        }
+    }
+}
