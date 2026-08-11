@@ -13,7 +13,6 @@ public class BNImageGalleryView: UIView {
         self.onTapHandler = onTap
         let swiftUIView = BNGallerySwiftUIView(imageURLs: imageURLs) { [weak self] index, swiftUIFrame in
             guard let self else { return }
-            // แปลง SwiftUI global frame เป็น UIKit window coordinates
             let windowFrame = self.convertSwiftUIFrame(swiftUIFrame)
             self.onTapHandler?(index, windowFrame)
         }
@@ -56,6 +55,7 @@ struct BNGallerySwiftUIView: View {
 
     @State private var aspectRatios: [Int: CGFloat] = [:]
     @State private var isLoaded = false
+    @State private var globalFrames: [Int: CGRect] = [:]
     private let spacing: CGFloat = 2
 
     var body: some View {
@@ -80,9 +80,18 @@ struct BNGallerySwiftUIView: View {
                                 .frame(width: frames[index].width, height: frames[index].height)
                                 .clipped()
                                 .offset(x: frames[index].minX, y: frames[index].minY)
-                                .overlay(
-                                    TapFrameView { windowFrame in
-                                        onTap?(index, windowFrame)
+                                .simultaneousGesture(
+                                    TapGesture().onEnded {
+                                        let frame = globalFrames[index] ?? .zero
+                                        onTap?(index, frame)
+                                    }
+                                )
+                                .background(
+                                    GeometryReader { itemGeo in
+                                        Color.clear
+                                            .onAppear {
+                                                globalFrames[index] = itemGeo.frame(in: .global)
+                                            }
                                     }
                                 )
                         }
@@ -140,40 +149,3 @@ struct BNGallerySwiftUIView: View {
 
 
 
-// MARK: - TapFrameView
-
-private struct TapFrameView: UIViewRepresentable {
-    let onTap: (CGRect) -> Void
-
-    func makeUIView(context: Context) -> PassThroughView {
-        let view = PassThroughView()
-        view.backgroundColor = .clear
-        let tap = UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleTap(_:)))
-        view.addGestureRecognizer(tap)
-        return view
-    }
-
-    func updateUIView(_ uiView: PassThroughView, context: Context) {
-        context.coordinator.onTap = onTap
-    }
-
-    func makeCoordinator() -> Coordinator { Coordinator(onTap: onTap) }
-
-    class Coordinator: NSObject {
-        var onTap: (CGRect) -> Void
-        init(onTap: @escaping (CGRect) -> Void) { self.onTap = onTap }
-
-        @objc func handleTap(_ gesture: UITapGestureRecognizer) {
-            guard let view = gesture.view else { return }
-            let frame = view.convert(view.bounds, to: nil)
-            onTap(frame)
-        }
-    }
-}
-
-private class PassThroughView: UIView {
-    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-        let result = super.hitTest(point, with: event)
-        return result == self ? self : result
-    }
-}
