@@ -75,6 +75,6 @@ BNImageGalleryRepresentable(imageURLs: urls)
 
 | Task | Status |
 |---|---|
-| 1.1 เพิ่ม overload `imageURLs` | 🔲 Todo |
+| 1.1 เพิ่ม overload `imageURLs` | ✅ Done |
 | 1.2 Rename → `BNImagePageBuilder` | 🔲 Todo |
 | 2.0 Built-in Gallery Cell | 🔲 Todo |
