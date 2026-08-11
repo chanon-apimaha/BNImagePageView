@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/chanon-apimaha/BNImagePageView.git",
       "state" : {
-        "branch" : "fix/share-button-safe-area",
-        "revision" : "9e6f2d65f171fd559eda3f34bc24221c0a3eb099"
+        "branch" : "fix/builder-imageURLs-overload",
+        "revision" : "afd7bc6215a419fe943755c2128fa472238e83bd"
       }
     },
     {
