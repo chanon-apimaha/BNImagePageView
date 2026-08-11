@@ -145,15 +145,15 @@ struct BNGallerySwiftUIView: View {
 private struct TapFrameView: UIViewRepresentable {
     let onTap: (CGRect) -> Void
 
-    func makeUIView(context: Context) -> UIView {
-        let view = UIView()
+    func makeUIView(context: Context) -> PassThroughView {
+        let view = PassThroughView()
         view.backgroundColor = .clear
         let tap = UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleTap(_:)))
         view.addGestureRecognizer(tap)
         return view
     }
 
-    func updateUIView(_ uiView: UIView, context: Context) {
+    func updateUIView(_ uiView: PassThroughView, context: Context) {
         context.coordinator.onTap = onTap
     }
 
@@ -165,9 +165,15 @@ private struct TapFrameView: UIViewRepresentable {
 
         @objc func handleTap(_ gesture: UITapGestureRecognizer) {
             guard let view = gesture.view else { return }
-            // แปลง frame เป็น window coordinates
             let frame = view.convert(view.bounds, to: nil)
             onTap(frame)
         }
+    }
+}
+
+private class PassThroughView: UIView {
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        let result = super.hitTest(point, with: event)
+        return result == self ? self : result
     }
 }
