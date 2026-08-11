@@ -14,7 +14,6 @@ class ViewController: UIViewController {
     private let imageURLs: [String] = [10,20,30,40,50,60,70,80,90,100,110,120,130,140,155,160,170,180,190,200]
         .map { "https://picsum.photos/id/\($0)/400/300.jpg" }
 
-    private var pageData: [ImgaePageData] = []
     private var collectionView: UICollectionView!
     private var pageIndicator: UIPageControl!
     private var headerLabel: UILabel!
@@ -27,10 +26,6 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         feedbackGenerator.prepare()
-
-        pageData = imageURLs.enumerated().map {
-            ImgaePageData(atIndex: IndexPath(row: $0.offset, section: 0), sImageUrl: $0.element, fWidth: 400, fHeight: 300)
-        }
 
         setupHeader()
         setupSegment()
@@ -152,9 +147,9 @@ extension ViewController: UICollectionViewDataSource, UICollectionViewDelegate, 
               cell.imageView.image != nil else { return }
         feedbackGenerator.impactOccurred()
         let gridVC = BNImagePageGridViewBuilder.build(
-            mImageView: cell.imageView,
-            pageData: pageData,
-            indexPath: indexPath
+            imageURLs: imageURLs,
+            currentIndex: indexPath.row,
+            sourceImageView: cell.imageView
         ) { [weak self] (index: Int) -> UIImageView? in
             let ip = IndexPath(row: index, section: 0)
             return (self?.collectionView.cellForItem(at: ip) as? ImageCell)?.imageView
