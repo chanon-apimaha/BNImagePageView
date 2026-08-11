@@ -112,6 +112,8 @@ class ViewController: UIViewController {
             layout.minimumLineSpacing = 16
             layout.sectionInset = UIEdgeInsets(top: 8, left: 24, bottom: 8, right: 24)
             layout.scrollDirection = .horizontal
+        case .gallery:
+            break
         }
         return layout
     }
