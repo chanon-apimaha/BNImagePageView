@@ -54,7 +54,10 @@ public class BNImageGalleryView: UIScrollView {
     private func preloadImages() {
         let group = DispatchGroup()
         for (index, urlString) in imageURLs.enumerated() {
-            guard let url = URL(string: urlString) else { continue }
+            guard let url = URL(string: urlString) else {
+                loadedImages[index] = UIImage()
+                continue
+            }
             group.enter()
             KingfisherManager.shared.retrieveImage(with: url, options: [.cacheOriginalImage]) { [weak self] result in
                 if case .success(let value) = result {
@@ -82,7 +85,9 @@ public class BNImageGalleryView: UIScrollView {
     // MARK: - Layout
     public override func layoutSubviews() {
         super.layoutSubviews()
-        guard bounds.width > 0, !loadedImages.isEmpty, !didLayout else { return }
+        guard bounds.width > 0,
+              loadedImages.count == imageURLs.count,
+              !didLayout else { return }
         didLayout = true
         layoutMasonry()
     }
