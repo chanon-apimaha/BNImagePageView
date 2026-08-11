@@ -18,9 +18,10 @@ class ViewController: UIViewController {
     private var pageIndicator: UIPageControl!
     private var headerLabel: UILabel!
     private var currentLayout: LayoutType = .list
+    private var galleryView: BNImageGalleryView?
     private let feedbackGenerator = UIImpactFeedbackGenerator(style: .light)
 
-    enum LayoutType: Int { case list, grid, paging }
+    enum LayoutType: Int { case list, grid, paging, gallery }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -48,7 +49,7 @@ class ViewController: UIViewController {
     }
 
     private func setupSegment() {
-        let segment = UISegmentedControl(items: ["List", "Grid", "Paging"])
+        let segment = UISegmentedControl(items: ["List", "Grid", "Paging", "Gallery"])
         segment.selectedSegmentIndex = 0
         segment.translatesAutoresizingMaskIntoConstraints = false
         segment.addTarget(self, action: #selector(segmentChanged(_:)), for: .valueChanged)
@@ -117,13 +118,45 @@ class ViewController: UIViewController {
 
     @objc private func segmentChanged(_ sender: UISegmentedControl) {
         currentLayout = LayoutType(rawValue: sender.selectedSegmentIndex) ?? .list
+        let isGallery = currentLayout == .gallery
         let isPaging = currentLayout == .paging
-        collectionView.decelerationRate = isPaging ? .fast : .normal
-        pageIndicator.isHidden = !isPaging
-        UIView.animate(withDuration: 0.3) {
-            self.collectionView.setCollectionViewLayout(self.makeLayout(for: self.currentLayout), animated: false)
+
+        // toggle gallery vs collectionView
+        collectionView.isHidden = isGallery
+        pageIndicator.isHidden = !isPaging || isGallery
+
+        if isGallery {
+            if galleryView == nil {
+                let gv = BNImageGalleryView(imageURLs: imageURLs) { [weak self] index, imageView in
+                    guard let self else { return }
+                    let vc = BNImageBuilder.build(
+                        imageURLs: self.imageURLs,
+                        currentIndex: index,
+                        sourceImageView: imageView
+                    ) { [weak gv] idx in
+                        gv?.imageViews[safe: idx]
+                    }
+                    self.present(vc, animated: false)
+                }
+                gv.translatesAutoresizingMaskIntoConstraints = false
+                view.addSubview(gv)
+                NSLayoutConstraint.activate([
+                    gv.topAnchor.constraint(equalTo: collectionView.topAnchor),
+                    gv.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                    gv.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                    gv.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+                ])
+                galleryView = gv
+            }
+            galleryView?.isHidden = false
+        } else {
+            galleryView?.isHidden = true
+            collectionView.decelerationRate = isPaging ? .fast : .normal
+            UIView.animate(withDuration: 0.3) {
+                self.collectionView.setCollectionViewLayout(self.makeLayout(for: self.currentLayout), animated: false)
+            }
+            collectionView.reloadData()
         }
-        collectionView.reloadData()
     }
 }
 
@@ -343,3 +376,8 @@ class ImageCell: UICollectionViewCell {
     }
 }
 
+private extension Array {
+    subscript(safe index: Int) -> Element? {
+        indices.contains(index) ? self[index] : nil
+    }
+}
