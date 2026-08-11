@@ -464,6 +464,33 @@ public struct BNImagePageGridViewBuilder {
         vc.modalPresentationStyle = .overFullScreen
         return vc
     }
+
+    public static func build(
+        imageURLs: [String],
+        currentIndex: Int = 0,
+        sourceImageView: UIImageView? = nil,
+        pageSpacing: Int = 20,
+        transitionStyle: UIPageViewController.TransitionStyle = .scroll,
+        imageViewForIndex: ((Int) -> UIImageView?)? = nil
+    ) -> BNImagePageGridView {
+        let pageData = imageURLs.enumerated().map {
+            ImgaePageData(atIndex: IndexPath(row: $0.offset, section: 0), sImageUrl: $0.element, fWidth: 1, fHeight: 1)
+        }
+        let safeIndex = max(0, min(currentIndex, imageURLs.count - 1))
+        let indexPath = IndexPath(row: safeIndex, section: 0)
+        let placeholder = sourceImageView ?? UIImageView()
+        let optionsDict = [convertFromUIPageViewControllerOptionsKey(UIPageViewController.OptionsKey.interPageSpacing): pageSpacing]
+        let vc = BNImagePageGridView(
+            mImageView: placeholder,
+            axImgaePageData: pageData,
+            atIndexPath: indexPath,
+            transitionStyle: transitionStyle,
+            navigationOrientation: .horizontal,
+            options: optionsDict)
+        vc.imageViewForIndex = imageViewForIndex
+        vc.modalPresentationStyle = .overFullScreen
+        return vc
+    }
 }
 
 // Helper function inserted by Swift 4.2 migrator.
