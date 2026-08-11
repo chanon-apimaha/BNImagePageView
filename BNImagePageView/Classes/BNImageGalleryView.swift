@@ -11,6 +11,7 @@ public class BNImageGalleryView: UIScrollView {
     private var imageURLs: [String] = []
     private var aspectRatios: [CGFloat] = []
     private var loadedImages: [Int: UIImage] = [:]
+    private var loadAttempts: Int = 0
     private let contentView = UIView()
     public private(set) var imageViews: [UIImageView] = []
     private let loadingIndicator = UIActivityIndicatorView(style: .large)
@@ -62,15 +63,19 @@ public class BNImageGalleryView: UIScrollView {
                         self?.aspectRatios[index] = size.width / size.height
                     }
                     self?.loadedImages[index] = value.image
+                } else {
+                    // โหลดไม่สำเร็จ ใช้ aspect ratio 1:1 แทน
+                    self?.loadedImages[index] = UIImage()
                 }
                 group.leave()
             }
         }
         group.notify(queue: .main) { [weak self] in
-            self?.loadingIndicator.stopAnimating()
-            self?.loadingIndicator.removeFromSuperview()
-            self?.didLayout = false
-            self?.setNeedsLayout()
+            guard let self else { return }
+            self.loadingIndicator.stopAnimating()
+            self.loadingIndicator.removeFromSuperview()
+            self.didLayout = false
+            self.setNeedsLayout()
         }
     }
 
