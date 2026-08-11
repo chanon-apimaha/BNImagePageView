@@ -5,6 +5,7 @@ public class BNImageGalleryView: UIScrollView {
 
     // MARK: - Config
     public var spacing: CGFloat = 2
+    public var landscapeRatio: CGFloat = 1.8  // threshold สำหรับ full-width
 
     // MARK: - Private
     private var imageURLs: [String] = []
@@ -96,12 +97,22 @@ public class BNImageGalleryView: UIScrollView {
             contentView.addSubview(iv)
             imageViews.append(iv)
 
-            let minIdx = colHeights.enumerated().min(by: { $0.element < $1.element })!.offset
-            let x = CGFloat(minIdx) * (colWidth + spacing)
-            let y = colHeights[minIdx] + (colHeights[minIdx] > 0 ? spacing : 0)
-            let imgHeight = colWidth / ratio
-            iv.frame = CGRect(x: x, y: y, width: colWidth, height: imgHeight)
-            colHeights[minIdx] = iv.frame.maxY
+            if ratio >= landscapeRatio {
+                // ดึงทุก column ให้เท่ากับ column ที่สูงที่สุดก่อน ไม่ให้มีช่องว่าง
+                let maxHeight = colHeights.max() ?? 0
+                for i in 0..<columns { colHeights[i] = maxHeight }
+                let y = maxHeight + (maxHeight > 0 ? spacing : 0)
+                let imgHeight = bounds.width / ratio
+                iv.frame = CGRect(x: 0, y: y, width: bounds.width, height: imgHeight)
+                for i in 0..<columns { colHeights[i] = iv.frame.maxY }
+            } else {
+                let minIdx = colHeights.enumerated().min(by: { $0.element < $1.element })!.offset
+                let x = CGFloat(minIdx) * (colWidth + spacing)
+                let y = colHeights[minIdx] + (colHeights[minIdx] > 0 ? spacing : 0)
+                let imgHeight = colWidth / ratio
+                iv.frame = CGRect(x: x, y: y, width: colWidth, height: imgHeight)
+                colHeights[minIdx] = iv.frame.maxY
+            }
         }
 
         let totalHeight = colHeights.max() ?? 0
