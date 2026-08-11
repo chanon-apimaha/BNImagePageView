@@ -80,18 +80,19 @@ struct BNGallerySwiftUIView: View {
                                 .frame(width: frames[index].width, height: frames[index].height)
                                 .clipped()
                                 .offset(x: frames[index].minX, y: frames[index].minY)
+                                .overlay(
+                                    GeometryReader { itemGeo in
+                                        Color.clear
+                                            .onAppear { globalFrames[index] = itemGeo.frame(in: .global) }
+                                            .onChange(of: itemGeo.frame(in: .global).minY) { _ in
+                                                globalFrames[index] = itemGeo.frame(in: .global)
+                                            }
+                                    }
+                                )
                                 .simultaneousGesture(
                                     TapGesture().onEnded {
                                         let frame = globalFrames[index] ?? .zero
                                         onTap?(index, frame)
-                                    }
-                                )
-                                .background(
-                                    GeometryReader { itemGeo in
-                                        Color.clear
-                                            .onAppear {
-                                                globalFrames[index] = itemGeo.frame(in: .global)
-                                            }
                                     }
                                 )
                         }
