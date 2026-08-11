@@ -135,6 +135,7 @@ Banchai Nangpang, pong.np1@gmail.com
 | [SwiftUI](docs/SWIFTUI.md) | BNImagePageViewRepresentable |
 | [Architecture](docs/ARCHITECTURE.md) | class diagram, data flow |
 | [UI/UX](docs/UI_UX.md) | layout ปัจจุบัน และแนวทางปรับปรุง |
+| [Roadmap](docs/ROADMAP.md) | แผนงาน builder improvement และ gallery cell |
 
 ## Author
 
