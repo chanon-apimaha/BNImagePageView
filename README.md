@@ -63,6 +63,20 @@ navigationController?.BNImagePage(mImageViewShowFirst: imageView, axImgaePageDat
 navigationController?.BNImagePageHideShare(mImageViewShowFirst: imageView, sImageUrl: "https://example.com/image.jpg")
 ```
 
+### UIKit — BNImageBuilder (แนะนำ)
+
+```swift
+// ส่งแค่ URLs ไม่ต้องสร้าง ImgaePageData เอง
+let vc = BNImageBuilder.build(
+    imageURLs: ["https://example.com/1.jpg", "https://example.com/2.jpg"],
+    currentIndex: indexPath.row,
+    sourceImageView: cell.imageView
+) { index in
+    (collectionView.cellForItem(at: IndexPath(row: index, section: 0)) as? MyCell)?.imageView
+}
+present(vc, animated: false)
+```
+
 ### SwiftUI
 
 ```swift
