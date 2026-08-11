@@ -11,8 +11,34 @@ class ViewController: UIViewController {
 
     override open var supportedInterfaceOrientations: UIInterfaceOrientationMask { .portrait }
 
-    private let imageURLs: [String] = [10,20,30,40,50,60,70,80,90,100,110,120,130,140,155,160,170,180,190,200]
-        .map { "https://picsum.photos/id/\($0)/400/300.jpg" }
+    private let imageURLs: [String] = [
+        // landscape (กว้าง)
+        "https://picsum.photos/id/10/800/400.jpg",
+        "https://picsum.photos/id/20/600/400.jpg",
+        // portrait (สูง)
+        "https://picsum.photos/id/30/400/700.jpg",
+        "https://picsum.photos/id/40/400/600.jpg",
+        // square
+        "https://picsum.photos/id/50/400/400.jpg",
+        // landscape กว้างมาก
+        "https://picsum.photos/id/60/900/300.jpg",
+        // portrait สูงมาก
+        "https://picsum.photos/id/70/300/700.jpg",
+        // สี่เหลี่ยมไม่เท่ากัน
+        "https://picsum.photos/id/80/500/350.jpg",
+        "https://picsum.photos/id/90/350/500.jpg",
+        "https://picsum.photos/id/100/450/300.jpg",
+        "https://picsum.photos/id/110/300/450.jpg",
+        "https://picsum.photos/id/120/700/400.jpg",
+        "https://picsum.photos/id/130/400/700.jpg",
+        "https://picsum.photos/id/140/500/500.jpg",
+        "https://picsum.photos/id/155/800/350.jpg",
+        "https://picsum.photos/id/160/350/600.jpg",
+        "https://picsum.photos/id/170/600/400.jpg",
+        "https://picsum.photos/id/180/400/400.jpg",
+        "https://picsum.photos/id/190/750/300.jpg",
+        "https://picsum.photos/id/200/300/600.jpg",
+    ]
 
     private var collectionView: UICollectionView!
     private var pageIndicator: UIPageControl!
