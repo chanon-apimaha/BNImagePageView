@@ -26,7 +26,7 @@ import Kingfisher
 open class BNSetting {
     public static var titlefont: UIFont = .systemFont(ofSize: 16)
     public static var mButtonClose: UIButton = UIButton()
-    public static var closeImage : UIImage? = UIImage(named:"icon-close")?.withRenderingMode(.alwaysTemplate)
+    public static var closeImage: UIImage? = UIImage(systemName: "xmark")?.withRenderingMode(.alwaysTemplate)
 }
 
 open class BNImagePageGridView: UIPageViewController {
@@ -147,7 +147,7 @@ open class BNImagePageGridView: UIPageViewController {
     }
     
     private func setUpButtonClose() {
-        self.mButtonClose.setImage(UIImage(named:"icon-close")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        self.mButtonClose.setImage(UIImage(systemName: "xmark")?.withRenderingMode(.alwaysTemplate), for: .normal)
         self.mButtonClose.tintColor = .white
         self.mButtonClose.contentEdgeInsets = UIEdgeInsets(top: 5,left: 5,bottom: 5,right: 5) 
         self.mButtonClose.backgroundColor = UIColor.black.withAlphaComponent(0.6)
