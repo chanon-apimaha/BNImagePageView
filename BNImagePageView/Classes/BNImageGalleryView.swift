@@ -49,14 +49,19 @@ private extension UIView {
 
 // MARK: - SwiftUI View
 
-struct BNGallerySwiftUIView: View {
-    let imageURLs: [String]
-    let onTap: ((Int, CGRect) -> Void)?
+public struct BNGallerySwiftUIView: View {
+    public let imageURLs: [String]
+    public let onTap: ((Int, CGRect) -> Void)?
 
     @State private var aspectRatios: [Int: CGFloat] = [:]
     @State private var isLoaded = false
     @State private var globalFrames: [Int: CGRect] = [:]
     private let spacing: CGFloat = 2
+
+    public init(imageURLs: [String], onTap: ((Int, CGRect) -> Void)? = nil) {
+        self.imageURLs = imageURLs
+        self.onTap = onTap
+    }
 
     var body: some View {
         GeometryReader { geo in
