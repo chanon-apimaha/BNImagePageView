@@ -112,8 +112,7 @@ public struct BNGallerySwiftUIView: View {
     }
 
     private var columnCount: Int {
-        if containerWidth >= 768 { return 4 }
-        if containerWidth >= 600 { return 3 }
+        if containerWidth >= 390 { return 4 }
         return 2
     }
 
@@ -127,50 +126,45 @@ public struct BNGallerySwiftUIView: View {
         totalHeight = frames.map { $0.maxY }.max() ?? 0
     }
 
+    private let targetRowHeight: CGFloat = 150
+
     private func computeFrames(colWidth: CGFloat, columns: Int) -> [CGRect] {
-        // Pattern: full width, then N columns, repeat
-        // group: 1 full + (columns) items = columns+1 per group
-        let groupSize = columns + 1
-        var frames: [CGRect] = []
+        var frames: [CGRect] = Array(repeating: .zero, count: imageURLs.count)
         var y: CGFloat = 0
+        var rowStart = 0
 
-        var i = 0
-        while i < imageURLs.count {
-            let posInGroup = i % groupSize
+        while rowStart < imageURLs.count {
+            var rowWidth: CGFloat = 0
+            var rowEnd = rowStart
 
-            if posInGroup == 0 {
-                // full width
-                let ratio = aspectRatios[i] ?? (16.0/9.0)
-                let h = containerWidth / ratio
-                frames.append(CGRect(x: 0, y: y, width: containerWidth, height: h))
-                y += h + spacing
-                i += 1
-            } else {
-                // N columns row
-                var rowItems: [Int] = []
-                while rowItems.count < columns && i < imageURLs.count && (i % groupSize) != 0 {
-                    rowItems.append(i)
-                    i += 1
+            // เพิ่มภาพเข้า row จนเกิน containerWidth
+            while rowEnd < imageURLs.count {
+                let ratio = aspectRatios[rowEnd] ?? 1.0
+                let w = targetRowHeight * ratio
+                if rowWidth + w + spacing * CGFloat(rowEnd - rowStart) > containerWidth && rowEnd > rowStart {
+                    break
                 }
-                let maxH = rowItems.map { idx -> CGFloat in
-                    let ratio = aspectRatios[idx] ?? (16.0/9.0)
-                    return colWidth / ratio
-                }.max() ?? colWidth
-
-                for (j, idx) in rowItems.enumerated() {
-                    let x = CGFloat(j) * (colWidth + spacing)
-                    frames.append(CGRect(x: x, y: y, width: colWidth, height: maxH))
-                }
-                // fill empty slots
-                if rowItems.count < columns {
-                    for j in rowItems.count..<columns {
-                        let x = CGFloat(j) * (colWidth + spacing)
-                        frames.append(CGRect(x: x, y: y, width: colWidth, height: 0))
-                    }
-                }
-                y += maxH + spacing
+                rowWidth += w
+                rowEnd += 1
             }
+
+            let count = rowEnd - rowStart
+            let totalSpacing = spacing * CGFloat(count - 1)
+            let totalRatio = (rowStart..<rowEnd).reduce(0.0) { $0 + (aspectRatios[$1] ?? 1.0) }
+            let rowHeight = totalRatio > 0 ? (containerWidth - totalSpacing) / totalRatio : targetRowHeight
+
+            var x: CGFloat = 0
+            for i in rowStart..<rowEnd {
+                let ratio = aspectRatios[i] ?? 1.0
+                let w = rowHeight * ratio
+                frames[i] = CGRect(x: x, y: y, width: w, height: rowHeight)
+                x += w + spacing
+            }
+
+            y += rowHeight + spacing
+            rowStart = rowEnd
         }
+
         return frames
     }
 
