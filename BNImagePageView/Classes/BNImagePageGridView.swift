@@ -422,6 +422,8 @@ open class BNImagePageGridView: UIPageViewController {
         }, completion: { _ in
             self.mPageTitle.isHidden = true
             self.mCaptionLabel.isHidden = true
+            self.mButtonPrev.isHidden = true
+            self.mButtonNext.isHidden = true
             self.mButtonShare.isHidden = true
             self.mButtonClose.isHidden = true
         })
@@ -446,6 +448,8 @@ open class BNImagePageGridView: UIPageViewController {
         }, completion: { _ in
             self.mPageTitle.isHidden = true
             self.mCaptionLabel.isHidden = true
+            self.mButtonPrev.isHidden = true
+            self.mButtonNext.isHidden = true
             self.mButtonShare.isHidden = true
             self.mButtonClose.isHidden = true
         })
