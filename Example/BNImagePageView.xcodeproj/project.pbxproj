@@ -541,7 +541,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/chanon-apimaha/BNImagePageView.git";
 			requirement = {
-				branch = "fix/share-button-safe-area";
+				branch = "feat/built-in-gallery";
 				kind = branch;
 			};
 		};
