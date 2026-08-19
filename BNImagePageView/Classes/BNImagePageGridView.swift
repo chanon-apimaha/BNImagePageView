@@ -381,6 +381,12 @@ open class BNImagePageGridView: UIPageViewController {
         mCaptionLabel.numberOfLines = 0
         mCaptionLabel.textAlignment = .center
         mCaptionLabel.translatesAutoresizingMaskIntoConstraints = false
+        mCaptionLabel.layer.shadowColor = UIColor.black.cgColor
+        mCaptionLabel.layer.shadowOffset = .zero
+        mCaptionLabel.layer.shadowRadius = 3
+        mCaptionLabel.layer.shadowOpacity = 1
+        mCaptionLabel.layer.shouldRasterize = true
+        mCaptionLabel.layer.rasterizationScale = UIScreen.main.scale
         view.addSubview(mCaptionLabel)
         NSLayoutConstraint.activate([
             mCaptionLabel.leadingAnchor.constraint(equalTo: mPageTitle.trailingAnchor, constant: 8),
