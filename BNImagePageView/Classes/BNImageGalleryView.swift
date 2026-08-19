@@ -67,14 +67,6 @@ public struct BNGallerySwiftUIView: View {
 
     public var body: some View {
         ZStack(alignment: .topLeading) {
-            // measure width
-            GeometryReader { geo in
-                Color.clear
-                    .onAppear { containerWidth = geo.size.width; recalculate() }
-                    .onChange(of: geo.size.width) { containerWidth = $0; recalculate() }
-            }
-            .frame(height: 0)
-
             if !isLoaded {
                 ProgressView()
                     .frame(maxWidth: .infinity)
@@ -109,7 +101,14 @@ public struct BNGallerySwiftUIView: View {
                 }
             }
         }
-        .frame(height: isLoaded ? totalHeight : 44)
+        .frame(maxWidth: .infinity, height: isLoaded ? totalHeight : 44)
+        .background(
+            GeometryReader { geo in
+                Color.clear
+                    .onAppear { containerWidth = geo.size.width; recalculate() }
+                    .onChange(of: geo.size.width) { containerWidth = $0; recalculate() }
+            }
+        )
     }
 
     private var columnCount: Int {
