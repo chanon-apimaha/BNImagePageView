@@ -56,6 +56,8 @@ public struct BNGallerySwiftUIView: View {
     @State private var aspectRatios: [Int: CGFloat] = [:]
     @State private var isLoaded = false
     @State private var globalFrames: [Int: CGRect] = [:]
+    @State private var totalHeight: CGFloat = 0
+    @State private var containerWidth: CGFloat = UIScreen.main.bounds.width
     private let spacing: CGFloat = 2
 
     public init(imageURLs: [String], onTap: ((Int, CGRect) -> Void)? = nil) {
@@ -64,17 +66,21 @@ public struct BNGallerySwiftUIView: View {
     }
 
     public var body: some View {
-        GeometryReader { geo in
+        ZStack(alignment: .topLeading) {
+            // measure width
+            GeometryReader { geo in
+                Color.clear
+                    .onAppear { containerWidth = geo.size.width; recalculate() }
+                    .onChange(of: geo.size.width) { containerWidth = $0; recalculate() }
+            }
+            .frame(height: 0)
+
             if !isLoaded {
                 ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .frame(maxWidth: .infinity)
                     .onAppear { preload() }
             } else {
-                let columns = columnCount(width: geo.size.width)
-                let colWidth = (geo.size.width - spacing * CGFloat(columns - 1)) / CGFloat(columns)
-                let frames = computeFrames(colWidth: colWidth, columns: columns)
-                let totalHeight = frames.map { $0.maxY }.max() ?? 0
-
+                let frames = computeFrames(colWidth: colWidth, columns: columnCount)
                 ZStack(alignment: .topLeading) {
                     Color.clear.frame(height: totalHeight)
                     ForEach(imageURLs.indices, id: \.self) { index in
@@ -101,22 +107,25 @@ public struct BNGallerySwiftUIView: View {
                             )
                     }
                 }
-                .frame(width: geo.size.width, height: totalHeight, alignment: .topLeading)
             }
         }
-        .frame(height: computedHeight)
-        .onAppear { preload() }
+        .frame(height: isLoaded ? totalHeight : 44)
     }
 
-    private var computedHeight: CGFloat? {
-        guard isLoaded else { return 44 }
-        return nil
-    }
-
-    private func columnCount(width: CGFloat) -> Int {
-        if width >= 768 { return 4 }
-        if width >= 600 { return 3 }
+    private var columnCount: Int {
+        if containerWidth >= 768 { return 4 }
+        if containerWidth >= 600 { return 3 }
         return 2
+    }
+
+    private var colWidth: CGFloat {
+        (containerWidth - spacing * CGFloat(columnCount - 1)) / CGFloat(columnCount)
+    }
+
+    private func recalculate() {
+        guard isLoaded else { return }
+        let frames = computeFrames(colWidth: colWidth, columns: columnCount)
+        totalHeight = frames.map { $0.maxY }.max() ?? 0
     }
 
     private func computeFrames(colWidth: CGFloat, columns: Int) -> [CGRect] {
@@ -154,7 +163,11 @@ public struct BNGallerySwiftUIView: View {
                 }
             }
         }
-        group.notify(queue: .main) { isLoaded = true }
+        group.notify(queue: .main) {
+            isLoaded = true
+            let frames = self.computeFrames(colWidth: self.colWidth, columns: self.columnCount)
+            self.totalHeight = frames.map { $0.maxY }.max() ?? 0
+        }
     }
 }
 
