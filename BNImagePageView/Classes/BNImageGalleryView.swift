@@ -75,37 +75,42 @@ public struct BNGallerySwiftUIView: View {
                 let frames = computeFrames(colWidth: colWidth, columns: columns)
                 let totalHeight = frames.map { $0.maxY }.max() ?? 0
 
-                ScrollView {
-                    ZStack(alignment: .topLeading) {
-                        Color.clear.frame(height: totalHeight)
-                        ForEach(imageURLs.indices, id: \.self) { index in
-                            KFImage(URL(string: imageURLs[index]))
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: frames[index].width, height: frames[index].height)
-                                .clipped()
-                                .offset(x: frames[index].minX, y: frames[index].minY)
-                                .overlay(
-                                    GeometryReader { itemGeo in
-                                        Color.clear
-                                            .onAppear { globalFrames[index] = itemGeo.frame(in: .global) }
-                                            .onChange(of: itemGeo.frame(in: .global).minY) { _ in
-                                                globalFrames[index] = itemGeo.frame(in: .global)
-                                            }
-                                    }
-                                )
-                                .simultaneousGesture(
-                                    TapGesture().onEnded {
-                                        let frame = globalFrames[index] ?? .zero
-                                        onTap?(index, frame)
-                                    }
-                                )
-                        }
+                ZStack(alignment: .topLeading) {
+                    Color.clear.frame(height: totalHeight)
+                    ForEach(imageURLs.indices, id: \.self) { index in
+                        KFImage(URL(string: imageURLs[index]))
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: frames[index].width, height: frames[index].height)
+                            .clipped()
+                            .offset(x: frames[index].minX, y: frames[index].minY)
+                            .overlay(
+                                GeometryReader { itemGeo in
+                                    Color.clear
+                                        .onAppear { globalFrames[index] = itemGeo.frame(in: .global) }
+                                        .onChange(of: itemGeo.frame(in: .global).minY) { _ in
+                                            globalFrames[index] = itemGeo.frame(in: .global)
+                                        }
+                                }
+                            )
+                            .simultaneousGesture(
+                                TapGesture().onEnded {
+                                    let frame = globalFrames[index] ?? .zero
+                                    onTap?(index, frame)
+                                }
+                            )
                     }
-                    .frame(width: geo.size.width, height: totalHeight, alignment: .topLeading)
                 }
+                .frame(width: geo.size.width, height: totalHeight, alignment: .topLeading)
             }
         }
+        .frame(height: computedHeight)
+        .onAppear { preload() }
+    }
+
+    private var computedHeight: CGFloat? {
+        guard isLoaded else { return 44 }
+        return nil
     }
 
     private func columnCount(width: CGFloat) -> Int {
