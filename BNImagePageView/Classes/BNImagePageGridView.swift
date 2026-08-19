@@ -419,6 +419,8 @@ open class BNImagePageGridView: UIPageViewController {
             self.mCaptionLabel.alpha = 0
             self.mButtonClose.alpha = 0
             self.mButtonShare.alpha = 0
+            self.mButtonPrev.alpha = 0
+            self.mButtonNext.alpha = 0
         }, completion: { _ in
             self.mPageTitle.isHidden = true
             self.mCaptionLabel.isHidden = true
@@ -445,6 +447,8 @@ open class BNImagePageGridView: UIPageViewController {
             self.mCaptionLabel.alpha = 0
             self.mButtonClose.alpha = 0
             self.mButtonShare.alpha = 0
+            self.mButtonPrev.alpha = 0
+            self.mButtonNext.alpha = 0
         }, completion: { _ in
             self.mPageTitle.isHidden = true
             self.mCaptionLabel.isHidden = true
@@ -471,6 +475,11 @@ open class BNImagePageGridView: UIPageViewController {
             self.mPageTitle.alpha = 1
             self.mButtonClose.alpha = 1
             self.mButtonShare.alpha = 1
+            self.mCaptionLabel.isHidden = false
+            self.mCaptionLabel.alpha = 1
+            self.mButtonPrev.isHidden = false
+            self.mButtonNext.isHidden = false
+            self.updateArrowVisibility()
         }, completion: { _ in })
     }
 
@@ -488,6 +497,11 @@ open class BNImagePageGridView: UIPageViewController {
             self.mPageTitle.alpha = 1
             self.mButtonClose.alpha = 1
             self.mButtonShare.alpha = 0
+            self.mCaptionLabel.isHidden = false
+            self.mCaptionLabel.alpha = 1
+            self.mButtonPrev.isHidden = false
+            self.mButtonNext.isHidden = false
+            self.updateArrowVisibility()
         }, completion: { _ in })
     }
     
