@@ -149,11 +149,6 @@ open class BNImagePageGridView: UIPageViewController {
         self.view.addGestureRecognizer(oneTapGest)
     }
     
-    override open func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        BNOrientationHelper.unlock()
-    }
-
     override open func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         BNOrientationHelper.lockPortrait()
@@ -162,6 +157,7 @@ open class BNImagePageGridView: UIPageViewController {
     override open func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         self.view.backgroundColor = .black
+        BNOrientationHelper.unlock()
     }
     
     private func setUpButtonClose() {
