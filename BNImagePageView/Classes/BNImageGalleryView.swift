@@ -101,12 +101,12 @@ public struct BNGallerySwiftUIView: View {
                 }
             }
         }
-        .frame(maxWidth: .infinity, height: isLoaded ? totalHeight : 44)
+        .frame(maxWidth: .infinity, minHeight: isLoaded ? totalHeight : 44, maxHeight: isLoaded ? totalHeight : 44)
         .background(
             GeometryReader { geo in
                 Color.clear
-                    .onAppear { containerWidth = geo.size.width; recalculate() }
-                    .onChange(of: geo.size.width) { containerWidth = $0; recalculate() }
+                    .onAppear { containerWidth = geo.size.width; recalculate(); print("[BNGallery] containerWidth: \(geo.size.width)") }
+                    .onChange(of: geo.size.width) { containerWidth = $0; recalculate(); print("[BNGallery] containerWidth changed: \($0)") }
             }
         )
     }
@@ -128,16 +128,48 @@ public struct BNGallerySwiftUIView: View {
     }
 
     private func computeFrames(colWidth: CGFloat, columns: Int) -> [CGRect] {
-        var colHeights = Array(repeating: CGFloat(0), count: columns)
+        // Pattern: full width, then N columns, repeat
+        // group: 1 full + (columns) items = columns+1 per group
+        let groupSize = columns + 1
         var frames: [CGRect] = []
-        for index in imageURLs.indices {
-            let ratio = aspectRatios[index] ?? 1.0
-            let minIdx = colHeights.enumerated().min(by: { $0.element < $1.element })!.offset
-            let x = CGFloat(minIdx) * (colWidth + spacing)
-            let y = colHeights[minIdx] + (colHeights[minIdx] > 0 ? spacing : 0)
-            let h = colWidth / ratio
-            frames.append(CGRect(x: x, y: y, width: colWidth, height: h))
-            colHeights[minIdx] = y + h
+        var y: CGFloat = 0
+
+        var i = 0
+        while i < imageURLs.count {
+            let posInGroup = i % groupSize
+
+            if posInGroup == 0 {
+                // full width
+                let ratio = aspectRatios[i] ?? (16.0/9.0)
+                let h = containerWidth / ratio
+                frames.append(CGRect(x: 0, y: y, width: containerWidth, height: h))
+                y += h + spacing
+                i += 1
+            } else {
+                // N columns row
+                var rowItems: [Int] = []
+                while rowItems.count < columns && i < imageURLs.count && (i % groupSize) != 0 {
+                    rowItems.append(i)
+                    i += 1
+                }
+                let maxH = rowItems.map { idx -> CGFloat in
+                    let ratio = aspectRatios[idx] ?? (16.0/9.0)
+                    return colWidth / ratio
+                }.max() ?? colWidth
+
+                for (j, idx) in rowItems.enumerated() {
+                    let x = CGFloat(j) * (colWidth + spacing)
+                    frames.append(CGRect(x: x, y: y, width: colWidth, height: maxH))
+                }
+                // fill empty slots
+                if rowItems.count < columns {
+                    for j in rowItems.count..<columns {
+                        let x = CGFloat(j) * (colWidth + spacing)
+                        frames.append(CGRect(x: x, y: y, width: colWidth, height: 0))
+                    }
+                }
+                y += maxH + spacing
+            }
         }
         return frames
     }
@@ -163,9 +195,10 @@ public struct BNGallerySwiftUIView: View {
             }
         }
         group.notify(queue: .main) {
-            isLoaded = true
             let frames = self.computeFrames(colWidth: self.colWidth, columns: self.columnCount)
             self.totalHeight = frames.map { $0.maxY }.max() ?? 0
+            print("[BNGallery] loaded, totalHeight: \(self.totalHeight), containerWidth: \(self.containerWidth)")
+            self.isLoaded = true
         }
     }
 }
