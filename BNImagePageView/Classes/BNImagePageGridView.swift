@@ -77,6 +77,7 @@ open class BNImagePageGridView: UIPageViewController {
     private var mButtonNext: UIButton = UIButton()
 
     open var mPageTitle: UIButton = UIButton()
+    private var mCaptionLabel: UILabel = UILabel()
     fileprivate var mConsLeftPageTitle: NSLayoutConstraint = NSLayoutConstraint()
     fileprivate var mConsTopPageTitle: NSLayoutConstraint = NSLayoutConstraint()
     fileprivate var mConsWidthPageTitle: NSLayoutConstraint = NSLayoutConstraint()
@@ -138,9 +139,8 @@ open class BNImagePageGridView: UIPageViewController {
             let firstVC = getViewController(index: index)
             self.iCurrentIndex = index
             setViewControllers([firstVC], direction: .forward, animated: false, completion: nil)
-            let pageCaption = self.axImgaePageData[index].caption
-            let pageTitle = pageCaption.isEmpty ? "\(index + 1)/\(self.iNumOfPage)" : "\(index + 1)/\(self.iNumOfPage)  \(pageCaption)"
-            self.mPageTitle.setTitle(pageTitle, for: .normal)
+            self.mPageTitle.setTitle("\(index + 1)/\(self.iNumOfPage)", for: .normal)
+            self.mCaptionLabel.text = self.axImgaePageData[index].caption
         }
         
         let oneTapGest = UITapGestureRecognizer(target: self, action: #selector(self.handleOneTapScrollView(recognizer:)))
@@ -270,9 +270,8 @@ open class BNImagePageGridView: UIPageViewController {
     }
 
     private func updateTitleAndArrows(index: Int) {
-        let caption = axImgaePageData[index].caption
-        let titleText = caption.isEmpty ? "\(index + 1)/\(iNumOfPage)" : "\(index + 1)/\(iNumOfPage)  \(caption)"
-        mPageTitle.setTitle(titleText, for: .normal)
+        mPageTitle.setTitle("\(index + 1)/\(iNumOfPage)", for: .normal)
+        mCaptionLabel.text = axImgaePageData[index].caption
         updateArrowVisibility()
     }
 
@@ -360,8 +359,21 @@ open class BNImagePageGridView: UIPageViewController {
         self.mConsTopPageTitle.constant = 8
         self.mConsLeftPageTitle.constant = 8
         self.mPageTitle.isHidden = false
-        self.mPageTitle.layer.cornerRadius = 4.0//PTConfig.layerStyle.fCornerRadius
+        self.mPageTitle.layer.cornerRadius = 4.0
         self.mPageTitle.contentEdgeInsets = UIEdgeInsets(top: 4, left: 8, bottom: 4, right: 8)
+
+        // Caption label — center between page number and X button
+        mCaptionLabel.textColor = .white
+        mCaptionLabel.font = BNSetting.titlefont
+        mCaptionLabel.numberOfLines = 0
+        mCaptionLabel.textAlignment = .center
+        mCaptionLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(mCaptionLabel)
+        NSLayoutConstraint.activate([
+            mCaptionLabel.leadingAnchor.constraint(equalTo: mPageTitle.trailingAnchor, constant: 8),
+            mCaptionLabel.trailingAnchor.constraint(equalTo: mButtonClose.leadingAnchor, constant: -8),
+            mCaptionLabel.centerYAnchor.constraint(equalTo: mPageTitle.centerYAnchor),
+        ])
     }
     
     @objc open func handleOneTapScrollView(recognizer: UITapGestureRecognizer) {
@@ -403,10 +415,12 @@ open class BNImagePageGridView: UIPageViewController {
         
         UIView.animate(withDuration: 0.2, delay: 0, options: [], animations: {
             self.mPageTitle.alpha = 0
+            self.mCaptionLabel.alpha = 0
             self.mButtonClose.alpha = 0
             self.mButtonShare.alpha = 0
         }, completion: { _ in
             self.mPageTitle.isHidden = true
+            self.mCaptionLabel.isHidden = true
             self.mButtonShare.isHidden = true
             self.mButtonClose.isHidden = true
         })
@@ -425,10 +439,12 @@ open class BNImagePageGridView: UIPageViewController {
         
         UIView.animate(withDuration: 0.2, delay: 0, options: [], animations: {
             self.mPageTitle.alpha = 0
+            self.mCaptionLabel.alpha = 0
             self.mButtonClose.alpha = 0
             self.mButtonShare.alpha = 0
         }, completion: { _ in
             self.mPageTitle.isHidden = true
+            self.mCaptionLabel.isHidden = true
             self.mButtonShare.isHidden = true
             self.mButtonClose.isHidden = true
         })
@@ -479,9 +495,8 @@ extension BNImagePageGridView: UIPageViewControllerDataSource, UIPageViewControl
         if completed, let oCurrentVC = pageViewController.viewControllers?.first as? BNImagePageViewController,
            let index = pageCache.first(where: { $0.value === oCurrentVC })?.key {
             self.iCurrentIndex = index
-            let pageCaption = self.axImgaePageData[index].caption
-            let pageTitle = pageCaption.isEmpty ? "\(index + 1)/\(self.iNumOfPage)" : "\(index + 1)/\(self.iNumOfPage)  \(pageCaption)"
-            self.mPageTitle.setTitle(pageTitle, for: .normal)
+            self.mPageTitle.setTitle("\(index + 1)/\(self.iNumOfPage)", for: .normal)
+            self.mCaptionLabel.text = self.axImgaePageData[index].caption
             self.updateArrowVisibility()
         }
     }
