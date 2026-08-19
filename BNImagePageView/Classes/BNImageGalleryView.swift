@@ -107,8 +107,8 @@ public struct BNGallerySwiftUIView: View {
         .background(
             GeometryReader { geo in
                 Color.clear
-                    .onAppear { containerWidth = geo.size.width; recalculate(); print("[BNGallery] containerWidth: \(geo.size.width)") }
-                    .onChange(of: geo.size.width) { containerWidth = $0; recalculate(); print("[BNGallery] containerWidth changed: \($0)") }
+                    .onAppear { containerWidth = geo.size.width; recalculate() }
+                    .onChange(of: geo.size.width) { containerWidth = $0; recalculate() }
             }
         )
     }
@@ -214,7 +214,6 @@ public struct BNGallerySwiftUIView: View {
         group.notify(queue: .main) {
             let frames = self.computeFrames(colWidth: self.colWidth, columns: self.columnCount)
             self.totalHeight = frames.map { $0.maxY }.max() ?? 0
-            print("[BNGallery] loaded, totalHeight: \(self.totalHeight), containerWidth: \(self.containerWidth)")
             self.isLoaded = true
         }
     }
