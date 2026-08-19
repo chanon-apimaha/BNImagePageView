@@ -129,40 +129,61 @@ public struct BNGallerySwiftUIView: View {
     private let targetRowHeight: CGFloat = 150
 
     private func computeFrames(colWidth: CGFloat, columns: Int) -> [CGRect] {
+        guard !imageURLs.isEmpty else { return [] }
         var frames: [CGRect] = Array(repeating: .zero, count: imageURLs.count)
-        var y: CGFloat = 0
-        var rowStart = 0
 
-        while rowStart < imageURLs.count {
-            var rowWidth: CGFloat = 0
-            var rowEnd = rowStart
+        // Step 1: คำนวณ width ของแต่ละภาพที่ targetRowHeight
+        let widths = imageURLs.indices.map { i -> CGFloat in
+            let ratio = aspectRatios[i] ?? (16.0/9.0)
+            return floor(targetRowHeight * ratio)
+        }
+        let totalWidth = widths.reduce(0, +)
 
-            // เพิ่มภาพเข้า row จนเกิน containerWidth
-            while rowEnd < imageURLs.count {
-                let ratio = aspectRatios[rowEnd] ?? 1.0
-                let w = targetRowHeight * ratio
-                if rowWidth + w + spacing * CGFloat(rowEnd - rowStart) > containerWidth && rowEnd > rowStart {
-                    break
-                }
-                rowWidth += w
-                rowEnd += 1
+        // Step 2: คำนวณจำนวน rows
+        var numRows = Int(ceil(totalWidth / containerWidth))
+        if numRows > imageURLs.count { numRows = imageURLs.count }
+        if numRows < 1 { numRows = 1 }
+        let finalRowWidth = totalWidth / CGFloat(numRows)
+
+        // Step 3: แบ่งภาพเข้า rows
+        var rows: [[Int]] = []
+        var currentRow: [Int] = []
+        var progressWidth: CGFloat = 0
+        var eachRowWidth: CGFloat = 0
+        var numRow = 0
+        var rowsWidths: [CGFloat] = []
+
+        for i in imageURLs.indices {
+            let w = widths[i]
+            if (progressWidth + w / 2) > CGFloat(numRow + 1) * finalRowWidth {
+                rowsWidths.append(eachRowWidth)
+                rows.append(currentRow)
+                currentRow = []
+                eachRowWidth = 0
+                numRow += 1
             }
+            progressWidth += w
+            eachRowWidth += w
+            currentRow.append(i)
+        }
+        rowsWidths.append(eachRowWidth)
+        rows.append(currentRow)
 
-            let count = rowEnd - rowStart
-            let totalSpacing = spacing * CGFloat(count - 1)
-            let totalRatio = (rowStart..<rowEnd).reduce(0.0) { $0 + (aspectRatios[$1] ?? 1.0) }
-            let rowHeight = totalRatio > 0 ? (containerWidth - totalSpacing) / totalRatio : targetRowHeight
+        // Step 4: คำนวณ position
+        var y: CGFloat = 0
+        for (rowIdx, row) in rows.enumerated() {
+            let rowWidth = rowsWidths[rowIdx]
+            let gapWidth = spacing * CGFloat(row.count - 1)
+            let ratio = rowWidth > 0 ? (containerWidth - gapWidth) / rowWidth : 1.0
+            let rowHeight = (targetRowHeight * ratio).rounded()
 
             var x: CGFloat = 0
-            for i in rowStart..<rowEnd {
-                let ratio = aspectRatios[i] ?? 1.0
-                let w = rowHeight * ratio
+            for i in row {
+                let w = (widths[i] * ratio).rounded()
                 frames[i] = CGRect(x: x, y: y, width: w, height: rowHeight)
                 x += w + spacing
             }
-
             y += rowHeight + spacing
-            rowStart = rowEnd
         }
 
         return frames
