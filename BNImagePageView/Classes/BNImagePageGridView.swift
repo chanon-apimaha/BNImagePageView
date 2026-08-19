@@ -229,12 +229,12 @@ open class BNImagePageGridView: UIPageViewController {
         view.addSubview(mButtonNext)
 
         NSLayoutConstraint.activate([
-            mButtonPrev.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            mButtonPrev.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             mButtonPrev.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             mButtonPrev.widthAnchor.constraint(equalToConstant: 40),
             mButtonPrev.heightAnchor.constraint(equalToConstant: 40),
 
-            mButtonNext.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            mButtonNext.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
             mButtonNext.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             mButtonNext.widthAnchor.constraint(equalToConstant: 40),
             mButtonNext.heightAnchor.constraint(equalToConstant: 40),
