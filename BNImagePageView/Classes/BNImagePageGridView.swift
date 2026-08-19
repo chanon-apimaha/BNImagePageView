@@ -72,10 +72,11 @@ open class BNImagePageGridView: UIPageViewController {
     fileprivate var mConsWidthShare: NSLayoutConstraint = NSLayoutConstraint()
     fileprivate var mConsHeightShare: NSLayoutConstraint = NSLayoutConstraint()
     
-    open var mPageTitle: UIButton = UIButton()
-    fileprivate var mConsLeftPageTitle: NSLayoutConstraint = NSLayoutConstraint()
-    fileprivate var mConsTopPageTitle: NSLayoutConstraint = NSLayoutConstraint()
-    fileprivate var mConsWidthPageTitle: NSLayoutConstraint = NSLayoutConstraint()
+    // Arrow buttons
+    private var mButtonPrev: UIButton = UIButton()
+    private var mButtonNext: UIButton = UIButton()
+
+
     fileprivate var mConsHeightPageTitle: NSLayoutConstraint = NSLayoutConstraint()
     
     fileprivate var pageCache: [Int: BNImagePageViewController] = [:]
@@ -123,6 +124,7 @@ open class BNImagePageGridView: UIPageViewController {
         self.delegate = self
         self.setUpButtonClose()
         self.setUpButtonShare()
+        self.setUpArrowButtons()
         
         if self.iNumOfPage > 1 {
             self.setPageTitle()
@@ -201,7 +203,76 @@ open class BNImagePageGridView: UIPageViewController {
         self.mConsRightClose.constant = -8
         self.mButtonClose.layer.cornerRadius = self.mConsWidthClose.constant / 2.0
     }
-    
+
+    private func setUpArrowButtons() {
+        guard iNumOfPage > 1 else { return }
+
+        func makeArrow(_ systemName: String) -> UIButton {
+            let btn = UIButton()
+            btn.setImage(UIImage(systemName: systemName)?.withRenderingMode(.alwaysTemplate), for: .normal)
+            btn.tintColor = .white
+            btn.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+            btn.layer.cornerRadius = 20
+            btn.clipsToBounds = true
+            btn.translatesAutoresizingMaskIntoConstraints = false
+            return btn
+        }
+
+        mButtonPrev = makeArrow("chevron.left")
+        mButtonNext = makeArrow("chevron.right")
+
+        view.addSubview(mButtonPrev)
+        view.addSubview(mButtonNext)
+
+        NSLayoutConstraint.activate([
+            mButtonPrev.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            mButtonPrev.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            mButtonPrev.widthAnchor.constraint(equalToConstant: 40),
+            mButtonPrev.heightAnchor.constraint(equalToConstant: 40),
+
+            mButtonNext.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            mButtonNext.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            mButtonNext.widthAnchor.constraint(equalToConstant: 40),
+            mButtonNext.heightAnchor.constraint(equalToConstant: 40),
+        ])
+
+        mButtonPrev.addTarget(self, action: #selector(tappedPrev), for: .touchUpInside)
+        mButtonNext.addTarget(self, action: #selector(tappedNext), for: .touchUpInside)
+        updateArrowVisibility()
+    }
+
+    @objc private func tappedPrev() {
+        guard iCurrentIndex > 0 else { return }
+        let prevIndex = iCurrentIndex - 1
+        let vc = getViewController(index: prevIndex)
+        setViewControllers([vc], direction: .reverse, animated: true) { [weak self] _ in
+            self?.iCurrentIndex = prevIndex
+            self?.updateTitleAndArrows(index: prevIndex)
+        }
+    }
+
+    @objc private func tappedNext() {
+        guard iCurrentIndex < iNumOfPage - 1 else { return }
+        let nextIndex = iCurrentIndex + 1
+        let vc = getViewController(index: nextIndex)
+        setViewControllers([vc], direction: .forward, animated: true) { [weak self] _ in
+            self?.iCurrentIndex = nextIndex
+            self?.updateTitleAndArrows(index: nextIndex)
+        }
+    }
+
+    private func updateArrowVisibility() {
+        mButtonPrev.alpha = iCurrentIndex > 0 ? 1.0 : 0.3
+        mButtonNext.alpha = iCurrentIndex < iNumOfPage - 1 ? 1.0 : 0.3
+    }
+
+    private func updateTitleAndArrows(index: Int) {
+        let caption = axImgaePageData[index].caption
+        let titleText = caption.isEmpty ? "\(index + 1)/\(iNumOfPage)" : "\(index + 1)/\(iNumOfPage)  \(caption)"
+        mPageTitle.setTitle(titleText, for: .normal)
+        updateArrowVisibility()
+    }
+
     private func setUpButtonShare() {
         self.mButtonShare.setImage(UIImage(systemName: "square.and.arrow.up")?.withRenderingMode(.alwaysTemplate), for: .normal)
         self.mButtonShare.tintColor = .white
@@ -408,6 +479,7 @@ extension BNImagePageGridView: UIPageViewControllerDataSource, UIPageViewControl
             let pageCaption = self.axImgaePageData[index].caption
             let pageTitle = pageCaption.isEmpty ? "\(index + 1)/\(self.iNumOfPage)" : "\(index + 1)/\(self.iNumOfPage)  \(pageCaption)"
             self.mPageTitle.setTitle(pageTitle, for: .normal)
+            self.updateArrowVisibility()
         }
     }
 
