@@ -67,6 +67,7 @@ open class BNImagePageGridView: UIPageViewController {
     fileprivate var mConsHeightClose: NSLayoutConstraint = NSLayoutConstraint()
     
     internal var mButtonShare: UIButton = UIButton()
+    public var isHideShare: Bool = false
     fileprivate var mConsRightShare: NSLayoutConstraint = NSLayoutConstraint()
     fileprivate var mConsBottomShare: NSLayoutConstraint = NSLayoutConstraint()
     fileprivate var mConsWidthShare: NSLayoutConstraint = NSLayoutConstraint()
@@ -326,7 +327,7 @@ open class BNImagePageGridView: UIPageViewController {
         
         self.mConsWidthShare.constant = 40
         self.mConsHeightShare.constant = 40
-        self.mButtonShare.isHidden = false
+        if !self.isHideShare { self.mButtonShare.isHidden = false }
         self.mButtonShare.layer.cornerRadius = self.mConsWidthShare.constant / 2.0
     }
     
@@ -462,7 +463,7 @@ open class BNImagePageGridView: UIPageViewController {
         UIView.animate(withDuration: 0.2, delay: 0, options: [], animations: {
             self.mPageTitle.isHidden = false
             self.mButtonClose.isHidden = false
-            self.mButtonShare.isHidden = false
+            if !self.isHideShare { self.mButtonShare.isHidden = false }
             self.mPageTitle.alpha = 1
             self.mButtonClose.alpha = 1
             self.mButtonShare.alpha = 1
@@ -479,7 +480,7 @@ open class BNImagePageGridView: UIPageViewController {
         UIView.animate(withDuration: 0.2, delay: 0, options: [], animations: {
             self.mPageTitle.isHidden = false
             self.mButtonClose.isHidden = false
-            self.mButtonShare.isHidden = false
+            if !self.isHideShare { self.mButtonShare.isHidden = false }
             self.mPageTitle.alpha = 1
             self.mButtonClose.alpha = 1
             self.mButtonShare.alpha = 0
@@ -623,6 +624,10 @@ public struct BNImageBuilder {
             navigationOrientation: .horizontal,
             options: optionsDict)
         vc.modalPresentationStyle = .overFullScreen
+        if hideShare {
+            vc.mButtonShare.isHidden = true
+            vc.isHideShare = true
+        }
         // set dismissTargetFrame ผ่าน imageViewForIndex
         vc.imageViewForIndex = { index in
             guard let frame = imageViewForIndex?(index) else {
