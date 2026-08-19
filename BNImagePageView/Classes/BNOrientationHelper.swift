@@ -1,9 +1,6 @@
 import UIKit
 
 public enum BNOrientationHelper {
-    public static let willPresentNotification = Notification.Name("BNImagePageViewWillPresent")
-    public static let willDismissNotification = Notification.Name("BNImagePageViewWillDismiss")
-
     public static func unlock() {
         if #available(iOS 16.0, *) {
             guard let scene = UIApplication.shared.connectedScenes
