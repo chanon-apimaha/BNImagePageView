@@ -63,7 +63,7 @@ public struct BNGallerySwiftUIView: View {
         self.onTap = onTap
     }
 
-    var body: some View {
+    public var body: some View {
         GeometryReader { geo in
             if !isLoaded {
                 ProgressView()
