@@ -149,8 +149,14 @@ open class BNImagePageGridView: UIPageViewController {
         self.view.addGestureRecognizer(oneTapGest)
     }
     
+    override open func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        NotificationCenter.default.post(name: BNOrientationHelper.willPresentNotification, object: nil)
+    }
+
     override open func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        NotificationCenter.default.post(name: BNOrientationHelper.willDismissNotification, object: nil)
         BNOrientationHelper.lockPortrait()
     }
 

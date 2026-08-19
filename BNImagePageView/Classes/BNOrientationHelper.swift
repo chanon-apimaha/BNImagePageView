@@ -1,6 +1,9 @@
 import UIKit
 
 public enum BNOrientationHelper {
+    public static let willPresentNotification = Notification.Name("BNImagePageViewWillPresent")
+    public static let willDismissNotification = Notification.Name("BNImagePageViewWillDismiss")
+
     public static func unlock() {
         if #available(iOS 16.0, *) {
             guard let scene = UIApplication.shared.connectedScenes
@@ -16,9 +19,8 @@ public enum BNOrientationHelper {
             guard let scene = UIApplication.shared.connectedScenes
                 .compactMap({ $0 as? UIWindowScene }).first else { return }
             scene.requestGeometryUpdate(.iOS(interfaceOrientations: .portrait))
-        } else {
-            UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
-            UINavigationController.attemptRotationToDeviceOrientation()
         }
+        UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
+        UIViewController.attemptRotationToDeviceOrientation()
     }
 }
