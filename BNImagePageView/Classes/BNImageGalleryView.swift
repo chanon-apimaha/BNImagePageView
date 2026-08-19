@@ -51,6 +51,7 @@ private extension UIView {
 
 public struct BNGallerySwiftUIView: View {
     public let imageURLs: [String]
+    public let captions: [String]
     public let onTap: ((Int, CGRect) -> Void)?
 
     @State private var aspectRatios: [Int: CGFloat] = [:]
@@ -60,8 +61,9 @@ public struct BNGallerySwiftUIView: View {
     @State private var containerWidth: CGFloat = UIScreen.main.bounds.width
     private let spacing: CGFloat = 2
 
-    public init(imageURLs: [String], onTap: ((Int, CGRect) -> Void)? = nil) {
+    public init(imageURLs: [String], captions: [String] = [], onTap: ((Int, CGRect) -> Void)? = nil) {
         self.imageURLs = imageURLs
+        self.captions = captions
         self.onTap = onTap
     }
 

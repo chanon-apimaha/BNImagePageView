@@ -133,7 +133,9 @@ open class BNImagePageGridView: UIPageViewController {
             let firstVC = getViewController(index: index)
             self.iCurrentIndex = index
             setViewControllers([firstVC], direction: .forward, animated: false, completion: nil)
-            self.mPageTitle.setTitle("\(index + 1)/\(self.iNumOfPage)", for: .normal)
+            let pageCaption = self.axImgaePageData[index].caption
+            let pageTitle = pageCaption.isEmpty ? "\(index + 1)/\(self.iNumOfPage)" : "\(index + 1)/\(self.iNumOfPage)  \(pageCaption)"
+            self.mPageTitle.setTitle(pageTitle, for: .normal)
         }
         
         let oneTapGest = UITapGestureRecognizer(target: self, action: #selector(self.handleOneTapScrollView(recognizer:)))
@@ -403,7 +405,9 @@ extension BNImagePageGridView: UIPageViewControllerDataSource, UIPageViewControl
         if completed, let oCurrentVC = pageViewController.viewControllers?.first as? BNImagePageViewController,
            let index = pageCache.first(where: { $0.value === oCurrentVC })?.key {
             self.iCurrentIndex = index
-            self.mPageTitle.setTitle("\(index + 1)/\(self.iNumOfPage)", for: .normal)
+            let pageCaption = self.axImgaePageData[index].caption
+            let pageTitle = pageCaption.isEmpty ? "\(index + 1)/\(self.iNumOfPage)" : "\(index + 1)/\(self.iNumOfPage)  \(pageCaption)"
+            self.mPageTitle.setTitle(pageTitle, for: .normal)
         }
     }
 
@@ -501,14 +505,22 @@ public struct BNImageBuilder {
 
     public static func build(
         imageURLs: [String],
+        captions: [String] = [],
         currentIndex: Int = 0,
         dismissTargetFrame: CGRect,
+        hideShare: Bool = false,
         pageSpacing: Int = 20,
         transitionStyle: UIPageViewController.TransitionStyle = .scroll,
         imageViewForIndex: ((Int) -> CGRect?)? = nil
     ) -> BNImagePageGridView {
-        let pageData = imageURLs.enumerated().map {
-            ImgaePageData(atIndex: IndexPath(row: $0.offset, section: 0), sImageUrl: $0.element, fWidth: 1, fHeight: 1)
+        let pageData = imageURLs.enumerated().map { item in
+            ImgaePageData(
+                atIndex: IndexPath(row: item.offset, section: 0),
+                sImageUrl: item.element,
+                fWidth: 1,
+                fHeight: 1,
+                caption: captions.indices.contains(item.offset) ? captions[item.offset] : ""
+            )
         }
         let safeIndex = max(0, min(currentIndex, imageURLs.count - 1))
         let indexPath = IndexPath(row: safeIndex, section: 0)

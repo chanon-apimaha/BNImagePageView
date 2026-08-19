@@ -27,11 +27,13 @@ public class ImgaePageData {
     public var sImageUrl: String = ""
     public var fWidth: CGFloat = 0.0
     public var fHeight: CGFloat = 0.0
+    public var caption: String = ""
 
-    public init(atIndex: IndexPath, sImageUrl: String, fWidth: CGFloat, fHeight: CGFloat) {
+    public init(atIndex: IndexPath, sImageUrl: String, fWidth: CGFloat, fHeight: CGFloat, caption: String = "") {
         self.atIndex = atIndex
         self.sImageUrl = sImageUrl
         self.fWidth = fWidth
         self.fHeight = fHeight
+        self.caption = caption
     }
 }
