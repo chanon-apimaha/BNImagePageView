@@ -384,7 +384,7 @@ open class BNImagePageGridView: UIPageViewController {
     private func toggleBuutonCloseAndShare(iSecoundDelay: Int = 0) {
         self.work.cancel()
         self.work = DispatchWorkItem(block: {
-            if !self.mButtonClose.isHidden && !self.mButtonShare.isHidden && !self.mPageTitle.isHidden {
+            if !self.mButtonClose.isHidden && !self.mPageTitle.isHidden {
                 self.buttonHide()
             } else {
                 self.buttonShow()
