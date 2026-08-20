@@ -44,7 +44,7 @@ class ViewController: UIViewController {
     private var pageIndicator: UIPageControl!
     private var headerLabel: UILabel!
     private var currentLayout: LayoutType = .list
-    private var galleryView: BNImageGalleryView?
+    private var galleryVC: UIViewController?
     private let feedbackGenerator = UIImpactFeedbackGenerator(style: .light)
 
     enum LayoutType: Int { case list, grid, paging, gallery }
@@ -154,29 +154,12 @@ class ViewController: UIViewController {
         pageIndicator.isHidden = !isPaging || isGallery
 
         if isGallery {
-            if galleryView == nil {
-                let gv = BNImageGalleryView(imageURLs: imageURLs) { [weak self] index, frame in
-                    guard let self else { return }
-                    let vc = BNImageBuilder.build(
-                        imageURLs: self.imageURLs,
-                        currentIndex: index,
-                        dismissTargetFrame: frame
-                    )
-                    self.present(vc, animated: false)
-                }
-                gv.translatesAutoresizingMaskIntoConstraints = false
-                view.addSubview(gv)
-                NSLayoutConstraint.activate([
-                    gv.topAnchor.constraint(equalTo: collectionView.topAnchor),
-                    gv.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                    gv.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                    gv.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-                ])
-                galleryView = gv
+            if galleryVC == nil {
+                galleryVC = BNImageBuilder.buildGalleryView(imageURLs: imageURLs, in: self, matching: collectionView)
             }
-            galleryView?.isHidden = false
+            galleryVC?.view.isHidden = false
         } else {
-            galleryView?.isHidden = true
+            galleryVC?.view.isHidden = true
             collectionView.decelerationRate = isPaging ? .fast : .normal
             UIView.animate(withDuration: 0.3) {
                 self.collectionView.setCollectionViewLayout(self.makeLayout(for: self.currentLayout), animated: false)

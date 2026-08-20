@@ -72,7 +72,6 @@
 				607FACD21AFB9204008FA782 /* Example for BNImagePageView */,
 				607FACE81AFB9204008FA782 /* Tests */,
 				607FACD11AFB9204008FA782 /* Products */,
-				9088720562D1178EFBDD9016 /* Pods */,
 				8BA136C43029CFF2005EFD92 /* Frameworks */,
 			);
 			sourceTree = "<group>";
@@ -142,13 +141,6 @@
 			children = (
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		9088720562D1178EFBDD9016 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -539,7 +531,7 @@
 /* Begin XCLocalSwiftPackageReference section */
 		8BA136BA3029CC3F005EFD92 /* XCLocalSwiftPackageReference "../" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = "../";
+			relativePath = ../;
 		};
 /* End XCLocalSwiftPackageReference section */
 

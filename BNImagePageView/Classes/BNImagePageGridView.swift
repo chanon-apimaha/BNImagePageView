@@ -582,6 +582,22 @@ extension BNImagePageGridView : BNImagePageDelegate {
 }
 
 public struct BNImageBuilder {
+    @discardableResult
+    public static func buildGalleryView(imageURLs: [String], in parent: UIViewController, matching collectionView: UICollectionView) -> UIViewController {
+        let vc = BNGalleryViewController(imageURLs: imageURLs)
+        parent.addChild(vc)
+        vc.view.translatesAutoresizingMaskIntoConstraints = false
+        parent.view.insertSubview(vc.view, aboveSubview: collectionView)
+        NSLayoutConstraint.activate([
+            vc.view.topAnchor.constraint(equalTo: collectionView.topAnchor),
+            vc.view.leadingAnchor.constraint(equalTo: collectionView.leadingAnchor),
+            vc.view.trailingAnchor.constraint(equalTo: collectionView.trailingAnchor),
+            vc.view.bottomAnchor.constraint(equalTo: collectionView.bottomAnchor)
+        ])
+        vc.didMove(toParent: parent)
+        DispatchQueue.main.async { print("galleryVC.view.frame:", vc.view.frame) }
+        return vc
+    }
     public static func build(
         mImageView: UIImageView,
         pageData: [ImgaePageData],
@@ -605,14 +621,16 @@ public struct BNImageBuilder {
 
     public static func build(
         imageURLs: [String],
+        captions: [String] = [],
         currentIndex: Int = 0,
         sourceImageView: UIImageView? = nil,
+        hideShare: Bool = false,
         pageSpacing: Int = 20,
         transitionStyle: UIPageViewController.TransitionStyle = .scroll,
         imageViewForIndex: ((Int) -> UIImageView?)? = nil
     ) -> BNImagePageGridView {
         let pageData = imageURLs.enumerated().map {
-            ImgaePageData(atIndex: IndexPath(row: $0.offset, section: 0), sImageUrl: $0.element, fWidth: 1, fHeight: 1)
+            ImgaePageData(atIndex: IndexPath(row: $0.offset, section: 0), sImageUrl: $0.element, fWidth: 1, fHeight: 1, caption: captions.indices.contains($0.offset) ? captions[$0.offset] : "")
         }
         let safeIndex = max(0, min(currentIndex, imageURLs.count - 1))
         let indexPath = IndexPath(row: safeIndex, section: 0)
@@ -627,53 +645,13 @@ public struct BNImageBuilder {
             options: optionsDict)
         vc.imageViewForIndex = imageViewForIndex
         vc.modalPresentationStyle = .overFullScreen
-        return vc
-    }
-
-    public static func build(
-        imageURLs: [String],
-        captions: [String] = [],
-        currentIndex: Int = 0,
-        dismissTargetFrame: CGRect,
-        hideShare: Bool = false,
-        pageSpacing: Int = 20,
-        transitionStyle: UIPageViewController.TransitionStyle = .scroll,
-        imageViewForIndex: ((Int) -> CGRect?)? = nil
-    ) -> BNImagePageGridView {
-        let pageData = imageURLs.enumerated().map { item in
-            ImgaePageData(
-                atIndex: IndexPath(row: item.offset, section: 0),
-                sImageUrl: item.element,
-                fWidth: 1,
-                fHeight: 1,
-                caption: captions.indices.contains(item.offset) ? captions[item.offset] : ""
-            )
-        }
-        let safeIndex = max(0, min(currentIndex, imageURLs.count - 1))
-        let indexPath = IndexPath(row: safeIndex, section: 0)
-        let optionsDict = [convertFromUIPageViewControllerOptionsKey(UIPageViewController.OptionsKey.interPageSpacing): pageSpacing]
-        let vc = BNImagePageGridView(
-            mImageView: UIImageView(),
-            axImgaePageData: pageData,
-            atIndexPath: indexPath,
-            transitionStyle: transitionStyle,
-            navigationOrientation: .horizontal,
-            options: optionsDict)
-        vc.modalPresentationStyle = .overFullScreen
         if hideShare {
             vc.mButtonShare.isHidden = true
             vc.isHideShare = true
         }
-        // set dismissTargetFrame ผ่าน imageViewForIndex
-        vc.imageViewForIndex = { index in
-            guard let frame = imageViewForIndex?(index) else {
-                // ถ้าไม่มี callback ใช้ dismissTargetFrame ของ index แรกเท่านั้น
-                return index == safeIndex ? UIImageView(frame: dismissTargetFrame) : nil
-            }
-            return UIImageView(frame: frame)
-        }
         return vc
     }
+
 }
 
 // Helper function inserted by Swift 4.2 migrator.

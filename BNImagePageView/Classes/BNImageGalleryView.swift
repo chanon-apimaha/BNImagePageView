@@ -3,47 +3,50 @@ import Kingfisher
 
 // MARK: - UIKit Entry Point
 
-public class BNImageGalleryView: UIView {
+public class BNGalleryViewController: UIViewController {
+    private let imageURLs: [String]
 
-    private var hostingController: UIHostingController<BNGallerySwiftUIView>?
-    private var onTapHandler: ((Int, CGRect) -> Void)?
-
-    public init(imageURLs: [String], onTap: ((Int, CGRect) -> Void)? = nil) {
-        super.init(frame: .zero)
-        self.onTapHandler = onTap
-        let swiftUIView = BNGallerySwiftUIView(imageURLs: imageURLs) { [weak self] index, swiftUIFrame in
-            guard let self else { return }
-            let windowFrame = self.convertSwiftUIFrame(swiftUIFrame)
-            self.onTapHandler?(index, windowFrame)
-        }
-        let hc = UIHostingController(rootView: swiftUIView)
-        hc.view.translatesAutoresizingMaskIntoConstraints = false
-        hc.view.backgroundColor = .clear
-        addSubview(hc.view)
-        NSLayoutConstraint.activate([
-            hc.view.topAnchor.constraint(equalTo: topAnchor),
-            hc.view.bottomAnchor.constraint(equalTo: bottomAnchor),
-            hc.view.leadingAnchor.constraint(equalTo: leadingAnchor),
-            hc.view.trailingAnchor.constraint(equalTo: trailingAnchor)
-        ])
-        hostingController = hc
+    public init(imageURLs: [String]) {
+        self.imageURLs = imageURLs
+        super.init(nibName: nil, bundle: nil)
     }
 
     required init?(coder: NSCoder) { fatalError() }
 
-    public func imageView(at index: Int) -> UIImageView? {
-        hostingController?.view.allSubviews.compactMap { $0 as? UIImageView }.first { $0.tag == index }
-    }
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+        view.clipsToBounds = true
 
-    private func convertSwiftUIFrame(_ frame: CGRect) -> CGRect {
-        // SwiftUI .global coordinate = UIKit window coordinate บน iOS
-        return frame
-    }
-}
+        let swiftUIView = BNGallerySwiftUIView(imageURLs: imageURLs) { [weak self] index, _ in
+            guard let self else { return }
+            let vc = BNImageBuilder.build(imageURLs: self.imageURLs, currentIndex: index)
+            self.present(vc, animated: false)
+        }
+        let hc = UIHostingController(rootView: swiftUIView)
+        if #available(iOS 16.0, *) {
+            hc.sizingOptions = .intrinsicContentSize
+        }
+        addChild(hc)
+        hc.view.translatesAutoresizingMaskIntoConstraints = false
+        hc.view.backgroundColor = .clear
 
-private extension UIView {
-    var allSubviews: [UIView] {
-        subviews + subviews.flatMap { $0.allSubviews }
+        let scrollView = UIScrollView()
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(scrollView)
+        scrollView.addSubview(hc.view)
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+
+            hc.view.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
+            hc.view.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+            hc.view.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+            hc.view.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+            hc.view.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor)
+        ])
+        hc.didMove(toParent: self)
     }
 }
 
@@ -103,7 +106,7 @@ public struct BNGallerySwiftUIView: View {
                 }
             }
         }
-        .frame(maxWidth: .infinity, minHeight: isLoaded ? totalHeight : 44, maxHeight: isLoaded ? totalHeight : 44)
+        .frame(maxWidth: .infinity, minHeight: isLoaded ? totalHeight : 44)
         .background(
             GeometryReader { geo in
                 Color.clear
@@ -134,20 +137,17 @@ public struct BNGallerySwiftUIView: View {
         guard !imageURLs.isEmpty else { return [] }
         var frames: [CGRect] = Array(repeating: .zero, count: imageURLs.count)
 
-        // Step 1: คำนวณ width ของแต่ละภาพที่ targetRowHeight
         let widths = imageURLs.indices.map { i -> CGFloat in
             let ratio = aspectRatios[i] ?? (16.0/9.0)
             return floor(targetRowHeight * ratio)
         }
         let totalWidth = widths.reduce(0, +)
 
-        // Step 2: คำนวณจำนวน rows
         var numRows = Int(ceil(totalWidth / containerWidth))
         if numRows > imageURLs.count { numRows = imageURLs.count }
         if numRows < 1 { numRows = 1 }
         let finalRowWidth = totalWidth / CGFloat(numRows)
 
-        // Step 3: แบ่งภาพเข้า rows
         var rows: [[Int]] = []
         var currentRow: [Int] = []
         var progressWidth: CGFloat = 0
@@ -171,7 +171,6 @@ public struct BNGallerySwiftUIView: View {
         rowsWidths.append(eachRowWidth)
         rows.append(currentRow)
 
-        // Step 4: คำนวณ position
         var y: CGFloat = 0
         for (rowIdx, row) in rows.enumerated() {
             let rowWidth = rowsWidths[rowIdx]
@@ -218,6 +217,3 @@ public struct BNGallerySwiftUIView: View {
         }
     }
 }
-
-
-
