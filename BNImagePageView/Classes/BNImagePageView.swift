@@ -67,7 +67,7 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
     
     override open func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = .black
+        self.view.backgroundColor = .clear
         if self.oRetrieveImageTask != nil {
             self.oRetrieveImageTask.cancel()
         }
@@ -97,7 +97,6 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
                     self.setZoomImageFrame(imageSize: size)
                     self.mImageView.alpha = 0
                     self.mZoomImageView.alpha = 1
-                    self.view.backgroundColor = UIColor.black.withAlphaComponent(1.0)
                 }, completion: { (didComplete) -> Void in
                     self.loadImage()
                 })
@@ -106,7 +105,6 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
                 self.setZoomImageFrame(imageSize: size)
                 self.mImageView.alpha = 0
                 self.mZoomImageView.alpha = 1
-                self.view.backgroundColor = UIColor.black.withAlphaComponent(1.0)
                 self.loadImage()
             }
         }
@@ -322,7 +320,9 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
             if let frame = targetFrame { self.mZoomImageView.frame = frame }
             self.mZoomImageView.alpha = 0
             self.mLoadingActivity.center = self.mZoomImageView.center
-            self.view.backgroundColor = UIColor.black.withAlphaComponent(0.0)
+            if let oViewController = self.delegate as? BNImagePageGridView {
+                oViewController.blurView.alpha = 0
+            }
         }, completion: { _ in
             NotificationCenter.default.post(name: NSNotification.Name("BNImagePageViewNearDismiss"), object: nil)
             self.mLoadingActivity.removeFromSuperview()
@@ -350,11 +350,11 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
             oViewController.mButtonClose.isHidden = true
             oViewController.mButtonShare.isHidden = true
             oViewController.mPageTitle.isHidden = true
+            oViewController.blurView.alpha = 0
             oViewController.view.backgroundColor = .clear
         }
         // ไม่ replace image — ใช้ภาพที่แสดงอยู่แล้วใน mZoomImageView
         let targetFrame = dismissTargetFrame ?? self.mImageView.superview?.convert(self.mImageView.frame, to: nil)
-        self.view.backgroundColor = UIColor.black.withAlphaComponent(0.0)
         NotificationCenter.default.post(name: NSNotification.Name("BNImagePageViewNearDismiss"), object: nil)
         UIView.animate(withDuration: 0.55, delay: 0, usingSpringWithDamping: 0.75, initialSpringVelocity: 0.3, options: .curveEaseInOut, animations: {
             if let frame = targetFrame { self.mZoomImageView.frame = frame }
@@ -372,11 +372,7 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
         })
     }
     
-    override open func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
-        UIView.animate(withDuration: 0.2, animations: { () -> Void in
-            self.view.backgroundColor = self.view.backgroundColor?.withAlphaComponent(1.0)
-        }, completion:nil)
-    }
+    override open func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {}
     
     @objc private func rotationView(notification: NSNotification) {
         self.mLoadingActivity.center = self.view.center
@@ -591,7 +587,6 @@ extension BNImagePageViewController: UIGestureRecognizerDelegate {
             //set ZoomImage background alpha
             let fZoomImageCenterPositionOnScreen = ((self.mZoomImageView.frame.origin.y + (self.mZoomImageView.frame.height / 2 )) / UIScreen.main.bounds.height)
             if fZoomImageCenterPositionOnScreen >= 0.5 {
-                //ลากรูปไปส่วนบน
                 let fAlpha: CGFloat = {
                     var fAlpha: CGFloat = 0.5
                     if fZoomImageCenterPositionOnScreen <= 1.0 {
@@ -600,24 +595,21 @@ extension BNImagePageViewController: UIGestureRecognizerDelegate {
                         fAlpha = fAlpha / 1.0
                     }
                     return fAlpha }()
-                self.view.backgroundColor = self.view.backgroundColor?.withAlphaComponent(fAlpha)
                 if let oViewController = self.delegate as? BNImagePageGridView {
-                    oViewController.view.backgroundColor = .clear
+                    oViewController.blurView.alpha = fAlpha
                     oViewController.mButtonClose.alpha = ((fAlpha) - 0.5) * 2
                     oViewController.mButtonShare.alpha = oViewController.mButtonClose.alpha
                     oViewController.mPageTitle.alpha = oViewController.mButtonClose.alpha
                 }
             } else {
-                //ลากรูปไปส่วนล่าง
                 let fAlpha: CGFloat = {
                     var fAlpha: CGFloat = 0.5
                     if fZoomImageCenterPositionOnScreen > 0 {
                         fAlpha = fAlpha + fZoomImageCenterPositionOnScreen
                     }
                     return fAlpha }()
-                self.view.backgroundColor = self.view.backgroundColor?.withAlphaComponent(fAlpha)
                 if let oViewController = self.delegate as? BNImagePageGridView {
-                    oViewController.view.backgroundColor = .clear
+                    oViewController.blurView.alpha = fAlpha
                     oViewController.mButtonClose.alpha = ((fAlpha) - 0.5) * 2
                     oViewController.mButtonShare.alpha = oViewController.mButtonClose.alpha
                     oViewController.mPageTitle.alpha = oViewController.mButtonClose.alpha
@@ -667,13 +659,14 @@ extension BNImagePageViewController: UIGestureRecognizerDelegate {
     
     func resetZoomScaleToMinimum() {
         UIView.animate(withDuration: 0.2, animations: { () -> Void in
-            self.view.backgroundColor = self.view.backgroundColor?.withAlphaComponent(1)
+            if let oViewController = self.delegate as? BNImagePageGridView {
+                oViewController.blurView.alpha = 1.0
+            }
             self.mZoomImageView.center = self.view.center
             self.mLoadingActivity.center = self.mZoomImageView.center
             self.mScrollView.setZoomScale(self.mScrollView.minimumZoomScale, animated: true)
         }, completion: { (bool) in
             if let oViewController = self.delegate as? BNImagePageGridView {
-                oViewController.view.backgroundColor = .black
                 oViewController.mButtonClose.alpha = 1.0
                 oViewController.mButtonShare.alpha = 1.0
                 oViewController.mPageTitle.alpha = 1.0

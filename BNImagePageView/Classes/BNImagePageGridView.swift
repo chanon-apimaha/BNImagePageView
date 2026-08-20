@@ -68,6 +68,7 @@ open class BNImagePageGridView: UIPageViewController {
     
     internal var mButtonShare: UIButton = UIButton()
     public var isHideShare: Bool = false
+    internal var blurView: UIVisualEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterialDark))
     fileprivate var mConsRightShare: NSLayoutConstraint = NSLayoutConstraint()
     fileprivate var mConsBottomShare: NSLayoutConstraint = NSLayoutConstraint()
     fileprivate var mConsWidthShare: NSLayoutConstraint = NSLayoutConstraint()
@@ -125,6 +126,9 @@ open class BNImagePageGridView: UIPageViewController {
     override open func viewDidLoad()
     {
         super.viewDidLoad()
+        blurView.frame = view.bounds
+        blurView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        view.insertSubview(blurView, at: 0)
         self.dataSource = self
         self.delegate = self
         self.setUpButtonClose()
@@ -162,7 +166,6 @@ open class BNImagePageGridView: UIPageViewController {
 
     override open func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        self.view.backgroundColor = .black
         BNOrientationHelper.unlock()
     }
     
