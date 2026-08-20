@@ -60,7 +60,7 @@ open class BNImagePageGridView: UIPageViewController {
     
     fileprivate var iCurrentIndex: Int = 0
     
-    open var mButtonClose: UIButton = BNSetting.mButtonClose
+    open var mButtonClose: UIButton = UIButton()
     fileprivate var mConsRightClose: NSLayoutConstraint = NSLayoutConstraint()
     fileprivate var mConsTopClose: NSLayoutConstraint = NSLayoutConstraint()
     fileprivate var mConsWidthClose: NSLayoutConstraint = NSLayoutConstraint()

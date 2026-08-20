@@ -79,7 +79,7 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
         if self.bIsShowImage {
             self.mScrollView.setZoomScale(self.mScrollView.minimumZoomScale, animated: true)
             
-            let startingFrame = self.mImageView.superview?.convert(self.mImageView.frame, to: nil)
+            let startingFrame = self.mImageView.superview?.convert(self.mImageView.frame, to: nil) ?? (self.mImageView.frame != .zero ? self.mImageView.frame : nil)
             if let startingFrame = startingFrame {
                 self.mZoomImageView.frame = startingFrame
             }
