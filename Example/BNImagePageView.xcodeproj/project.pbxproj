@@ -222,7 +222,7 @@
 			);
 			mainGroup = 607FACC71AFB9204008FA782;
 			packageReferences = (
-				8BA136BA3029CC3F005EFD92 /* XCRemoteSwiftPackageReference "BNImagePageView" */,
+				8BA136BA3029CC3F005EFD92 /* XCLocalSwiftPackageReference "../" */,
 			);
 			productRefGroup = 607FACD11AFB9204008FA782 /* Products */;
 			projectDirPath = "";
@@ -536,21 +536,17 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-		8BA136BA3029CC3F005EFD92 /* XCRemoteSwiftPackageReference "BNImagePageView" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/chanon-apimaha/BNImagePageView.git";
-			requirement = {
-				branch = "feat/built-in-gallery";
-				kind = branch;
-			};
+/* Begin XCLocalSwiftPackageReference section */
+		8BA136BA3029CC3F005EFD92 /* XCLocalSwiftPackageReference "../" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "../";
 		};
-/* End XCRemoteSwiftPackageReference section */
+/* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		8BA136C53029CFF2005EFD92 /* BNImagePageView */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 8BA136BA3029CC3F005EFD92 /* XCRemoteSwiftPackageReference "BNImagePageView" */;
+			package = 8BA136BA3029CC3F005EFD92 /* XCLocalSwiftPackageReference "../" */;
 			productName = BNImagePageView;
 		};
 /* End XCSwiftPackageProductDependency section */

@@ -1,15 +1,6 @@
 {
-  "originHash" : "bc27eecdd6478b6f6bc8734b8fd214bc66fe30456bcdf679bdbfbe7de8f215d5",
+  "originHash" : "1e0033ee4f33fe35492ba91b48de5c6e8cebaed158741e84e783b74ebdf70ea9",
   "pins" : [
-    {
-      "identity" : "bnimagepageview",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/chanon-apimaha/BNImagePageView.git",
-      "state" : {
-        "branch" : "feat/built-in-gallery",
-        "revision" : "1cae56c7860318f57fa4a12c450ebf22d8f54c3b"
-      }
-    },
     {
       "identity" : "kingfisher",
       "kind" : "remoteSourceControl",
