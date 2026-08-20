@@ -312,19 +312,19 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
         self.mImageView.alpha = 0
         self.mScrollView.setZoomScale(self.mScrollView.minimumZoomScale, animated: false)
         if let oViewController = self.delegate as? BNImagePageGridView {
-            oViewController.mButtonClose.alpha = 0.0
-            oViewController.mButtonShare.alpha = 0.0
-            oViewController.mPageTitle.alpha = 0.0
+            oViewController.mButtonClose.isHidden = true
+            oViewController.mButtonShare.isHidden = true
+            oViewController.mPageTitle.isHidden = true
         }
         // ไม่ replace image — ใช้ภาพที่แสดงอยู่แล้วใน mZoomImageView
         let targetFrame = dismissTargetFrame ?? self.mImageView.superview?.convert(self.mImageView.frame, to: nil)
-        NotificationCenter.default.post(name: NSNotification.Name("BNImagePageViewNearDismiss"), object: nil)
         UIView.animate(withDuration: 0.55, delay: 0, usingSpringWithDamping: 0.75, initialSpringVelocity: 0.3, options: .curveEaseInOut, animations: {
             if let frame = targetFrame { self.mZoomImageView.frame = frame }
             self.mZoomImageView.alpha = 0
             self.mLoadingActivity.center = self.mZoomImageView.center
             self.view.backgroundColor = UIColor.black.withAlphaComponent(0.0)
         }, completion: { _ in
+            NotificationCenter.default.post(name: NSNotification.Name("BNImagePageViewNearDismiss"), object: nil)
             self.mLoadingActivity.removeFromSuperview()
             self.mZoomImageView.subviews.last?.removeFromSuperview()
             self.mZoomImageView.removeFromSuperview()
@@ -343,18 +343,23 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
         self.mScrollView.setZoomScale(self.mScrollView.minimumZoomScale, animated: false)
         self.mImageView.alpha = 0
         if let oViewController = self.delegate as? BNImagePageGridView {
-            oViewController.mButtonClose.alpha = 0.0
-            oViewController.mButtonShare.alpha = 0.0
-            oViewController.mPageTitle.alpha = 0.0
+            oViewController.work.cancel()
+            oViewController.mButtonClose.layer.removeAllAnimations()
+            oViewController.mButtonShare.layer.removeAllAnimations()
+            oViewController.mPageTitle.layer.removeAllAnimations()
+            oViewController.mButtonClose.isHidden = true
+            oViewController.mButtonShare.isHidden = true
+            oViewController.mPageTitle.isHidden = true
+            oViewController.view.backgroundColor = .clear
         }
         // ไม่ replace image — ใช้ภาพที่แสดงอยู่แล้วใน mZoomImageView
         let targetFrame = dismissTargetFrame ?? self.mImageView.superview?.convert(self.mImageView.frame, to: nil)
+        self.view.backgroundColor = UIColor.black.withAlphaComponent(0.0)
         NotificationCenter.default.post(name: NSNotification.Name("BNImagePageViewNearDismiss"), object: nil)
         UIView.animate(withDuration: 0.55, delay: 0, usingSpringWithDamping: 0.75, initialSpringVelocity: 0.3, options: .curveEaseInOut, animations: {
             if let frame = targetFrame { self.mZoomImageView.frame = frame }
             self.mZoomImageView.alpha = 0
             self.mLoadingActivity.center = self.mZoomImageView.center
-            self.view.backgroundColor = UIColor.black.withAlphaComponent(0.0)
         }, completion: { _ in
             self.mLoadingActivity.removeFromSuperview()
             self.mZoomImageView.subviews.last?.removeFromSuperview()
@@ -630,22 +635,25 @@ extension BNImagePageViewController: UIGestureRecognizerDelegate {
                 self.fEndpointX = point.x//จุดสิ้นสุดของการลากรูป แกน X
                 
                 if ( progressYPositionAfterShortTime > 0.4) {
-                    //การลากรูปบวกกับความแรงของการลากมากกว่า 40%
-                    //ปิดดูรูป
+                    if let oViewController = self.delegate as? BNImagePageGridView {
+                        oViewController.mButtonClose.isHidden = true
+                        oViewController.mButtonShare.isHidden = true
+                        oViewController.mPageTitle.isHidden = true
+                    }
                     self.zoomOut()
                 } else {
-                    //หากการลากรูปบวกกับความแรงของการลากน้อยกว่า 40%
-                    //จะเพิ่มเงื่อนไขการปล่อยนิ้วเพื่อปิดรูป โดยกำหนดเพิ่มที่สำหรับการปิด ด้านบนหน้าจอและด้านล่างหน้าจอ วัดการขอบ บน 20% และล่าง 20% ของหน้าจอ
                     self.bIsOut = false
                     if self.fStartpointY > self.fEndpointY {
                         self.bIsOut = ((self.fStartpointY - self.fEndpointY) > ((UIScreen.main.bounds.height / 10)*2)) ? true : false
                     } else if self.fStartpointY < self.fEndpointY {
                         self.bIsOut = ((self.fEndpointY - self.fStartpointY) > ((UIScreen.main.bounds.height / 10)*2)) ? true : false
                     }
-                    
-                    //ตรวจสอบความเป็นไปได้ที่จะปิดดูรูป
                     if self.bIsOut {
-                        //ปิดดูรูป
+                        if let oViewController = self.delegate as? BNImagePageGridView {
+                            oViewController.mButtonClose.isHidden = true
+                            oViewController.mButtonShare.isHidden = true
+                            oViewController.mPageTitle.isHidden = true
+                        }
                         self.zoomOut()
                     } else {
                         self.resetZoomScaleToMinimum()
