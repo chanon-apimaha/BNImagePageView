@@ -17,9 +17,10 @@ public class BNGalleryViewController: UIViewController {
         super.viewDidLoad()
         view.clipsToBounds = true
 
-        let swiftUIView = BNGallerySwiftUIView(imageURLs: imageURLs) { [weak self] index, _ in
+        let swiftUIView = BNGallerySwiftUIView(imageURLs: imageURLs) { [weak self] index, frame in
             guard let self else { return }
             let vc = BNImageBuilder.build(imageURLs: self.imageURLs, currentIndex: index)
+            vc.imageViewForIndex = { _ in UIImageView(frame: frame) }
             self.present(vc, animated: false)
         }
         let hc = UIHostingController(rootView: swiftUIView)
@@ -52,6 +53,51 @@ public class BNGalleryViewController: UIViewController {
 
 // MARK: - SwiftUI View
 
+final class BNFrameReportingView: UIView {
+    var onFrame: ((CGRect) -> Void)?
+    private var scrollObservations: [NSKeyValueObservation] = []
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        reportFrame()
+    }
+
+    override func didMoveToWindow() {
+        super.didMoveToWindow()
+        reportFrame()
+        scrollObservations.removeAll()
+        var v: UIView? = superview
+        while let current = v {
+            if let scrollView = current as? UIScrollView {
+                let obs = scrollView.observe(\.contentOffset, options: [.new]) { [weak self] _, _ in
+                    self?.reportFrame()
+                }
+                scrollObservations.append(obs)
+            }
+            v = current.superview
+        }
+    }
+
+    private func reportFrame() {
+        guard let window = window else { return }
+        let frame = convert(bounds, to: window)
+        onFrame?(frame)
+    }
+}
+
+struct BNFrameReader: UIViewRepresentable {
+    let onFrame: (CGRect) -> Void
+    func makeUIView(context: Context) -> BNFrameReportingView {
+        let v = BNFrameReportingView()
+        v.backgroundColor = .clear
+        v.onFrame = onFrame
+        return v
+    }
+    func updateUIView(_ uiView: BNFrameReportingView, context: Context) {
+        uiView.onFrame = onFrame
+    }
+}
+
 public struct BNGallerySwiftUIView: View {
     public let imageURLs: [String]
     public let captions: [String]
@@ -62,6 +108,7 @@ public struct BNGallerySwiftUIView: View {
     @State private var globalFrames: [Int: CGRect] = [:]
     @State private var totalHeight: CGFloat = 0
     @State private var containerWidth: CGFloat = UIScreen.main.bounds.width
+    @State private var viewOrigin: CGPoint = .zero
     private let spacing: CGFloat = 2
 
     public init(imageURLs: [String], captions: [String] = [], onTap: ((Int, CGRect) -> Void)? = nil) {
@@ -87,19 +134,15 @@ public struct BNGallerySwiftUIView: View {
                             .frame(width: frames[index].width, height: frames[index].height)
                             .clipped()
                             .offset(x: frames[index].minX, y: frames[index].minY)
-                            .overlay(
-                                GeometryReader { itemGeo in
-                                    Color.clear
-                                        .onAppear { globalFrames[index] = itemGeo.frame(in: .global) }
-                                        .onChange(of: itemGeo.frame(in: .global).minY) { _ in
-                                            globalFrames[index] = itemGeo.frame(in: .global)
-                                        }
-                                }
-                            )
                             .simultaneousGesture(
                                 TapGesture().onEnded {
-                                    let frame = globalFrames[index] ?? .zero
-                                    onTap?(index, frame)
+                                    let screenFrame = CGRect(
+                                        x: frames[index].minX + viewOrigin.x,
+                                        y: frames[index].minY + viewOrigin.y,
+                                        width: frames[index].width,
+                                        height: frames[index].height
+                                    )
+                                    onTap?(index, screenFrame)
                                 }
                             )
                     }
@@ -108,10 +151,18 @@ public struct BNGallerySwiftUIView: View {
         }
         .frame(maxWidth: .infinity, minHeight: isLoaded ? totalHeight : 44)
         .background(
-            GeometryReader { geo in
-                Color.clear
-                    .onAppear { containerWidth = geo.size.width; recalculate() }
-                    .onChange(of: geo.size.width) { containerWidth = $0; recalculate() }
+            ZStack {
+                BNFrameReader { frame in
+                    viewOrigin = frame.origin
+                }
+                GeometryReader { geo in
+                    Color.clear
+                        .onAppear {
+                            containerWidth = geo.size.width
+                            recalculate()
+                        }
+                        .onChange(of: geo.size.width) { containerWidth = $0; recalculate() }
+                }
             }
         )
     }

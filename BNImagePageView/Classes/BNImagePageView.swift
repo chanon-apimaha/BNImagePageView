@@ -328,7 +328,6 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
             self.mZoomImageView.subviews.last?.removeFromSuperview()
             self.mZoomImageView.removeFromSuperview()
             self.mScrollView.removeFromSuperview()
-            self.clearCacheImage()
             self.dismiss(animated: false) { self.mImageView.alpha = 1 }
             if let oViewController = self.delegate as? UIViewController {
                 oViewController.dismiss(animated: false, completion: nil)
@@ -359,7 +358,6 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
             self.mZoomImageView.subviews.last?.removeFromSuperview()
             self.mZoomImageView.removeFromSuperview()
             self.mScrollView.removeFromSuperview()
-            self.clearCacheImage()
             self.dismiss(animated: false) { self.mImageView.alpha = 1 }
             if let oViewController = self.delegate as? UIViewController {
                 oViewController.dismiss(animated: false, completion: nil)
