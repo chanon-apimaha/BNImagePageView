@@ -103,6 +103,7 @@ public struct BNGallerySwiftUIView: View {
     public let captions: [String]
     public let onTap: ((Int, CGRect) -> Void)?
     public let frameForIndex: ((Int, CGRect) -> Void)?
+    @Binding public var hiddenIndex: Int?
 
     @State private var aspectRatios: [Int: CGFloat] = [:]
     @State private var isLoaded = false
@@ -112,9 +113,10 @@ public struct BNGallerySwiftUIView: View {
     @State private var viewOrigin: CGPoint = .zero
     private let spacing: CGFloat = 2
 
-    public init(imageURLs: [String], captions: [String] = [], onTap: ((Int, CGRect) -> Void)? = nil, frameForIndex: ((Int, CGRect) -> Void)? = nil) {
+    public init(imageURLs: [String], captions: [String] = [], hiddenIndex: Binding<Int?> = .constant(nil), onTap: ((Int, CGRect) -> Void)? = nil, frameForIndex: ((Int, CGRect) -> Void)? = nil) {
         self.imageURLs = imageURLs
         self.captions = captions
+        self._hiddenIndex = hiddenIndex
         self.onTap = onTap
         self.frameForIndex = frameForIndex
     }
@@ -135,6 +137,7 @@ public struct BNGallerySwiftUIView: View {
                             .aspectRatio(contentMode: .fill)
                             .frame(width: frames[index].width, height: frames[index].height)
                             .clipped()
+                            .opacity(hiddenIndex == index ? 0 : 1)
                             .offset(x: frames[index].minX, y: frames[index].minY)
                             .simultaneousGesture(
                                 TapGesture().onEnded {

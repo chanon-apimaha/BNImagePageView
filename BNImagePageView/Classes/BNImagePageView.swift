@@ -318,6 +318,7 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
         }
         // ไม่ replace image — ใช้ภาพที่แสดงอยู่แล้วใน mZoomImageView
         let targetFrame = dismissTargetFrame ?? self.mImageView.superview?.convert(self.mImageView.frame, to: nil)
+        NotificationCenter.default.post(name: NSNotification.Name("BNImagePageViewNearDismiss"), object: nil)
         UIView.animate(withDuration: 0.55, delay: 0, usingSpringWithDamping: 0.75, initialSpringVelocity: 0.3, options: .curveEaseInOut, animations: {
             if let frame = targetFrame { self.mZoomImageView.frame = frame }
             self.mZoomImageView.alpha = 0
@@ -348,6 +349,7 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
         }
         // ไม่ replace image — ใช้ภาพที่แสดงอยู่แล้วใน mZoomImageView
         let targetFrame = dismissTargetFrame ?? self.mImageView.superview?.convert(self.mImageView.frame, to: nil)
+        NotificationCenter.default.post(name: NSNotification.Name("BNImagePageViewNearDismiss"), object: nil)
         UIView.animate(withDuration: 0.55, delay: 0, usingSpringWithDamping: 0.75, initialSpringVelocity: 0.3, options: .curveEaseInOut, animations: {
             if let frame = targetFrame { self.mZoomImageView.frame = frame }
             self.mZoomImageView.alpha = 0

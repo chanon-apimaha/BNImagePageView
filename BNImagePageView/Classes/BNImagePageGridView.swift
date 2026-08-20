@@ -264,6 +264,7 @@ open class BNImagePageGridView: UIPageViewController {
         setViewControllers([vc], direction: .reverse, animated: true) { [weak self] _ in
             self?.iCurrentIndex = prevIndex
             self?.updateTitleAndArrows(index: prevIndex)
+            NotificationCenter.default.post(name: NSNotification.Name("BNImagePageViewDidChangePage"), object: nil, userInfo: ["index": prevIndex])
         }
     }
 
@@ -274,6 +275,7 @@ open class BNImagePageGridView: UIPageViewController {
         setViewControllers([vc], direction: .forward, animated: true) { [weak self] _ in
             self?.iCurrentIndex = nextIndex
             self?.updateTitleAndArrows(index: nextIndex)
+            NotificationCenter.default.post(name: NSNotification.Name("BNImagePageViewDidChangePage"), object: nil, userInfo: ["index": nextIndex])
         }
     }
 
@@ -535,6 +537,7 @@ extension BNImagePageGridView: UIPageViewControllerDataSource, UIPageViewControl
             self.mPageTitle.setTitle("\(index + 1)/\(self.iNumOfPage)", for: .normal)
             self.mCaptionLabel.text = self.axImgaePageData[index].caption
             self.updateArrowVisibility()
+            NotificationCenter.default.post(name: NSNotification.Name("BNImagePageViewDidChangePage"), object: nil, userInfo: ["index": index])
         }
     }
 
