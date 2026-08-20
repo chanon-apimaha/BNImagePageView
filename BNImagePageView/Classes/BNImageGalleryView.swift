@@ -102,6 +102,7 @@ public struct BNGallerySwiftUIView: View {
     public let imageURLs: [String]
     public let captions: [String]
     public let onTap: ((Int, CGRect) -> Void)?
+    public let frameForIndex: ((Int, CGRect) -> Void)?
 
     @State private var aspectRatios: [Int: CGFloat] = [:]
     @State private var isLoaded = false
@@ -111,10 +112,11 @@ public struct BNGallerySwiftUIView: View {
     @State private var viewOrigin: CGPoint = .zero
     private let spacing: CGFloat = 2
 
-    public init(imageURLs: [String], captions: [String] = [], onTap: ((Int, CGRect) -> Void)? = nil) {
+    public init(imageURLs: [String], captions: [String] = [], onTap: ((Int, CGRect) -> Void)? = nil, frameForIndex: ((Int, CGRect) -> Void)? = nil) {
         self.imageURLs = imageURLs
         self.captions = captions
         self.onTap = onTap
+        self.frameForIndex = frameForIndex
     }
 
     public var body: some View {
@@ -142,6 +144,16 @@ public struct BNGallerySwiftUIView: View {
                                         width: frames[index].width,
                                         height: frames[index].height
                                     )
+                                    // ส่ง frame ทุก index ให้ caller ตอน tap
+                                    for i in imageURLs.indices {
+                                        let sf = CGRect(
+                                            x: frames[i].minX + viewOrigin.x,
+                                            y: frames[i].minY + viewOrigin.y,
+                                            width: frames[i].width,
+                                            height: frames[i].height
+                                        )
+                                        frameForIndex?(i, sf)
+                                    }
                                     onTap?(index, screenFrame)
                                 }
                             )
