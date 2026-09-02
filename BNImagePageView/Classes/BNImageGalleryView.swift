@@ -111,7 +111,7 @@ public struct BNGallerySwiftUIView: View {
     @State private var totalHeight: CGFloat = 0
     @State private var containerWidth: CGFloat = UIScreen.main.bounds.width
     @State private var viewOrigin: CGPoint = .zero
-    private let spacing: CGFloat = 2
+    private let spacing: CGFloat = 5.5
 
     public init(imageURLs: [String], captions: [String] = [], hiddenIndex: Binding<Int?> = .constant(nil), onTap: ((Int, CGRect) -> Void)? = nil, frameForIndex: ((Int, CGRect) -> Void)? = nil) {
         self.imageURLs = imageURLs
