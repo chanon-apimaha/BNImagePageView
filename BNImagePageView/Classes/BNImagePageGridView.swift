@@ -75,11 +75,11 @@ open class BNImagePageGridView: UIPageViewController {
     fileprivate var mConsHeightShare: NSLayoutConstraint = NSLayoutConstraint()
     
     // Arrow buttons
-    private var mButtonPrev: UIButton = UIButton()
-    private var mButtonNext: UIButton = UIButton()
+    public var mButtonPrev: UIButton = UIButton()
+    public var mButtonNext: UIButton = UIButton()
 
     open var mPageTitle: UIButton = UIButton()
-    private var mCaptionLabel: UILabel = UILabel()
+    public var mCaptionLabel: UILabel = UILabel()
     fileprivate var mConsLeftPageTitle: NSLayoutConstraint = NSLayoutConstraint()
     fileprivate var mConsTopPageTitle: NSLayoutConstraint = NSLayoutConstraint()
     fileprivate var mConsWidthPageTitle: NSLayoutConstraint = NSLayoutConstraint()

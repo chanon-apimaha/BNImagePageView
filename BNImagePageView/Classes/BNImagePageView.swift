@@ -310,12 +310,27 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
         self.mImageView.alpha = 0
         self.mScrollView.setZoomScale(self.mScrollView.minimumZoomScale, animated: false)
         if let oViewController = self.delegate as? BNImagePageGridView {
+            oViewController.mButtonClose.layer.removeAllAnimations()
+            oViewController.mButtonShare.layer.removeAllAnimations()
+            oViewController.mPageTitle.layer.removeAllAnimations()
+            oViewController.mButtonPrev.layer.removeAllAnimations()
+            oViewController.mButtonNext.layer.removeAllAnimations()
+            oViewController.mCaptionLabel.layer.removeAllAnimations()
+            oViewController.mButtonClose.alpha = 0
+            oViewController.mButtonShare.alpha = 0
+            oViewController.mPageTitle.alpha = 0
+            oViewController.mButtonPrev.alpha = 0
+            oViewController.mButtonNext.alpha = 0
+            oViewController.mCaptionLabel.alpha = 0
             oViewController.mButtonClose.isHidden = true
             oViewController.mButtonShare.isHidden = true
             oViewController.mPageTitle.isHidden = true
+            oViewController.mButtonPrev.isHidden = true
+            oViewController.mButtonNext.isHidden = true
         }
         // ไม่ replace image — ใช้ภาพที่แสดงอยู่แล้วใน mZoomImageView
         let targetFrame = dismissTargetFrame ?? self.mImageView.superview?.convert(self.mImageView.frame, to: nil)
+        NotificationCenter.default.post(name: NSNotification.Name("BNImagePageViewNearDismiss"), object: nil)
         UIView.animate(withDuration: 0.55, delay: 0, usingSpringWithDamping: 0.75, initialSpringVelocity: 0.3, options: .curveEaseInOut, animations: {
             if let frame = targetFrame { self.mZoomImageView.frame = frame }
             self.mZoomImageView.alpha = 0
@@ -324,7 +339,6 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
                 oViewController.blurView.alpha = 0
             }
         }, completion: { _ in
-            NotificationCenter.default.post(name: NSNotification.Name("BNImagePageViewNearDismiss"), object: nil)
             self.mLoadingActivity.removeFromSuperview()
             self.mZoomImageView.subviews.last?.removeFromSuperview()
             self.mZoomImageView.removeFromSuperview()
@@ -347,9 +361,20 @@ open class BNImagePageViewController: UIViewController, UIPopoverPresentationCon
             oViewController.mButtonClose.layer.removeAllAnimations()
             oViewController.mButtonShare.layer.removeAllAnimations()
             oViewController.mPageTitle.layer.removeAllAnimations()
+            oViewController.mButtonPrev.layer.removeAllAnimations()
+            oViewController.mButtonNext.layer.removeAllAnimations()
+            oViewController.mCaptionLabel.layer.removeAllAnimations()
+            oViewController.mButtonClose.alpha = 0
+            oViewController.mButtonShare.alpha = 0
+            oViewController.mPageTitle.alpha = 0
+            oViewController.mButtonPrev.alpha = 0
+            oViewController.mButtonNext.alpha = 0
+            oViewController.mCaptionLabel.alpha = 0
             oViewController.mButtonClose.isHidden = true
             oViewController.mButtonShare.isHidden = true
             oViewController.mPageTitle.isHidden = true
+            oViewController.mButtonPrev.isHidden = true
+            oViewController.mButtonNext.isHidden = true
             oViewController.blurView.alpha = 0
             oViewController.view.backgroundColor = .clear
         }
@@ -628,6 +653,12 @@ extension BNImagePageViewController: UIGestureRecognizerDelegate {
                 
                 if ( progressYPositionAfterShortTime > 0.4) {
                     if let oViewController = self.delegate as? BNImagePageGridView {
+                        oViewController.mButtonClose.layer.removeAllAnimations()
+                        oViewController.mButtonShare.layer.removeAllAnimations()
+                        oViewController.mPageTitle.layer.removeAllAnimations()
+                        oViewController.mButtonClose.alpha = 0
+                        oViewController.mButtonShare.alpha = 0
+                        oViewController.mPageTitle.alpha = 0
                         oViewController.mButtonClose.isHidden = true
                         oViewController.mButtonShare.isHidden = true
                         oViewController.mPageTitle.isHidden = true
@@ -642,6 +673,12 @@ extension BNImagePageViewController: UIGestureRecognizerDelegate {
                     }
                     if self.bIsOut {
                         if let oViewController = self.delegate as? BNImagePageGridView {
+                            oViewController.mButtonClose.layer.removeAllAnimations()
+                            oViewController.mButtonShare.layer.removeAllAnimations()
+                            oViewController.mPageTitle.layer.removeAllAnimations()
+                            oViewController.mButtonClose.alpha = 0
+                            oViewController.mButtonShare.alpha = 0
+                            oViewController.mPageTitle.alpha = 0
                             oViewController.mButtonClose.isHidden = true
                             oViewController.mButtonShare.isHidden = true
                             oViewController.mPageTitle.isHidden = true
